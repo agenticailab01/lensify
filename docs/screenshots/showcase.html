@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ProjectLens — Sample Screenshots</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-2: #161b22;
+    --bg-3: #1c2128;
+    --fg: #e6edf3;
+    --fg-2: #8b949e;
+    --fg-3: #6e7681;
+    --accent: #58a6ff;
+    --accent-2: #1f6feb;
+    --green: #3fb950;
+    --orange: #f78166;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #bc8cff;
+    --border: #30363d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.55;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 48px 32px; }
+  .hero {
+    text-align: center;
+    padding: 48px 24px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 {
+    font-size: 42px;
+    margin: 0 0 8px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p { color: var(--fg-2); margin: 8px 0; font-size: 17px; }
+  h2 {
+    font-size: 26px;
+    margin: 64px 0 8px;
+    color: var(--fg);
+  }
+  h2 .num {
+    color: var(--accent);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    margin-right: 12px;
+    opacity: 0.7;
+  }
+  .caption {
+    color: var(--fg-2);
+    margin: 0 0 20px;
+    font-size: 14px;
+  }
+  /* Screenshot frames */
+  .screen {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    margin: 16px 0 40px;
+  }
+  .titlebar {
+    background: var(--bg-3);
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--fg-3);
+  }
+  .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--red);
+  }
+  .dot.y { background: var(--yellow); }
+  .dot.g { background: var(--green); }
+  .titlebar .url {
+    margin-left: 16px;
+    color: var(--fg-2);
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 12px;
+  }
+  .body {
+    padding: 20px 24px;
+    font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .body.docs { font-family: inherit; }
+  .keyword { color: var(--purple); }
+  .string { color: var(--green); }
+  .number { color: var(--orange); }
+  .comment { color: var(--fg-3); font-style: italic; }
+  .prompt { color: var(--green); font-weight: bold; }
+  .label { color: var(--accent); }
+  .heading {
+    color: var(--accent);
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+    margin: 16px 0 6px;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--bg-3);
+    color: var(--fg-2);
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tag.green { background: rgba(63, 185, 80, 0.18); color: var(--green); }
+  .tag.orange { background: rgba(247, 129, 102, 0.18); color: var(--orange); }
+  .tag.red { background: rgba(248, 81, 73, 0.18); color: var(--red); }
+  /* Lens panels */
+  .lens-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    padding: 18px;
+  }
+  .panel {
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+  }
+  .panel-title {
+    color: var(--fg-3);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .big {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .row { display: flex; justify-content: space-between; margin: 4px 0; font-size: 12px; }
+  .row .k { color: var(--fg-2); }
+  .row .v { color: var(--fg); font-family: "JetBrains Mono", monospace; }
+  /* Mermaid-like diagram */
+  .diagram {
+    grid-column: span 2;
+    padding: 22px 16px;
+    text-align: center;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .diagram svg { max-width: 100%; height: auto; }
+  /* Risk bars */
+  .risk { display: flex; align-items: center; margin: 6px 0; font-size: 12px; }
+  .risk .conf {
+    width: 70px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    margin-right: 10px;
+  }
+  .risk .conf.e { background: rgba(63, 185, 80, 0.2); color: var(--green); }
+  .risk .conf.i { background: rgba(210, 153, 34, 0.2); color: var(--yellow); }
+  .risk .conf.a { background: rgba(247, 129, 102, 0.2); color: var(--orange); }
+  /* Chat thread mockup */
+  .chat { padding: 16px 18px; }
+  .msg { margin: 12px 0; max-width: 95%; }
+  .msg.user {
+    background: var(--bg-3);
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+  }
+  .msg.agent {
+    background: rgba(63, 185, 80, 0.08);
+    border-left: 3px solid var(--green);
+    padding: 12px 16px;
+    border-radius: 8px;
+  }
+  .msg .who {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--fg-3);
+    margin-bottom: 4px;
+  }
+  .msg.user .who { color: var(--accent); }
+  .msg.agent .who { color: var(--green); }
+  .msg .body-text { font-size: 14px; line-height: 1.55; color: var(--fg); font-family: inherit; }
+  .tool-call {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+  }
+  .tool-call .head {
+    color: var(--purple);
+    margin-bottom: 6px;
+  }
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 18px;
+  }
+  .stat-card {
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-card .v {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .stat-card .l {
+    font-size: 11px;
+    color: var(--fg-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px;
+    text-align: center;
+    color: var(--fg-3);
+    font-size: 12px;
+    margin-top: 64px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--accent);
+    color: white;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  pre { margin: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="badge">Sample Screenshots</div>
+  <h1>ProjectLens v0.15.0</h1>
+  <p>Adaptive project lens + token-optimized context capsule for AI coding agents</p>
+  <p style="font-size:14px;">Six representative views of the plugin in action</p>
+</div>
+
+<!-- 1. LENS.html one-pager -->
+<h2><span class="num">01</span>LENS.html — the one-page project lens</h2>
+<p class="caption">Generated by <code>/projectlens</code> or <code>projectlens .</code> — humans read in 30 seconds.</p>
+
+<div class="screen">
+  <div class="titlebar">
+    <div class="dot"></div><div class="dot y"></div><div class="dot g"></div>
+    <span class="url">file:///path/to/projectlens-out/LENS.html</span>
+  </div>
+  <div class="lens-grid">
+    <div class="panel">
+      <div class="panel-title">What this is</div>
+      <div class="big">Python AI/ML API</div>
+      <div class="row"><span class="k">Files</span><span class="v">312</span></div>
+      <div class="row"><span class="k">LOC</span><span class="v">18,450</span></div>
+      <div class="row"><span class="k">Languages</span><span class="v">Python 94% · YAML 4% · SQL 2%</span></div>
+      <div class="row"><span class="k">Tier</span><span class="v">T2 Atlas</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Frameworks detected</div>
+      <div style="font-size:12px; line-height:1.9;">
+        <span class="tag green">FastAPI</span>
+        <span class="tag green">SQLAlchemy</span>
+        <span class="tag green">Pydantic</span>
+        <span class="tag green">Transformers</span>
+        <span class="tag green">LangChain</span>
+        <span class="tag green">Pinecone</span>
+        <span class="tag green">MLflow</span>
+        <span class="tag green">Docker Compose</span>
+      </div>
+      <div style="font-size:11px; color:var(--fg-3); margin-top:8px;">8 of 30 adapters fired</div>
+    </div>
+    <div class="diagram">
+      <div class="panel-title" style="text-align:left;">The picture · hub-spoke shape</div>
+      <svg viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#58a6ff"/>
+          </marker>
+        </defs>
+        <g font-family="-apple-system, system-ui" font-size="11" fill="#e6edf3" text-anchor="middle">
+          <rect x="300" y="80" width="140" height="40" rx="6" fill="#1f6feb" stroke="#58a6ff"/>
+          <text x="370" y="105" font-weight="700">api/  (hub)</text>
+
+          <rect x="20" y="20" width="120" height="34" rx="6" fill="#1c2128" stroke="#30363d"/>
+          <text x="80" y="42">models/ · ORM</text>
+
+          <rect x="620" y="20" width="120" height="34" rx="6" fill="#1c2128" stroke="#30363d"/>
+          <text x="680" y="42">ml/ · inference</text>
+
+          <rect x="20" y="148" width="120" height="34" rx="6" fill="#1c2128" stroke="#30363d"/>
+          <text x="80" y="170">db/ · sessions</text>
+
+          <rect x="620" y="148" width="120" height="34" rx="6" fill="#1c2128" stroke="#30363d"/>
+          <text x="680" y="170">rag/ · pinecone</text>
+
+          <line x1="140" y1="40" x2="300" y2="90" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <line x1="620" y1="40" x2="440" y2="90" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <line x1="140" y1="165" x2="300" y2="115" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <line x1="620" y1="165" x2="440" y2="115" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arrow)"/>
+        </g>
+      </svg>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Day-1 narrative</div>
+      <p style="font-size:12px; margin:0; color:var(--fg);">
+        A FastAPI service exposing 14 routes. Persistence via SQLAlchemy → PostgreSQL.
+        Inference path: Transformers (DistilBERT) wrapped behind a Pinecone-backed RAG.
+        Experiments tracked in MLflow. Docker Compose for local dev.
+        Entry point is <code style="color:var(--accent);">api/main.py</code>.
+      </p>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Hotspots (last 90 days)</div>
+      <div class="row"><span class="k">api/routes/users.py</span><span class="v">47 commits</span></div>
+      <div class="row"><span class="k">ml/embeddings.py</span><span class="v">31 commits</span></div>
+      <div class="row"><span class="k">rag/retriever.py</span><span class="v">24 commits</span></div>
+      <div class="row"><span class="k">models/user.py</span><span class="v">19 commits</span></div>
+      <div class="row"><span class="k">tests/conftest.py</span><span class="v">17 commits</span></div>
+    </div>
+    <div class="panel" style="grid-column: span 2;">
+      <div class="panel-title">Risks &amp; unknowns</div>
+      <div class="risk"><span class="conf e">EXTRACTED</span><span>4 routes lack auth dependency</span></div>
+      <div class="risk"><span class="conf i">INFERRED</span><span>LCEL pipe expression in <code>rag/chains.py</code> — confidence INFERRED</span></div>
+      <div class="risk"><span class="conf a">AMBIGUOUS</span><span>1 notebook with parse error: <code>experiments/draft.ipynb</code></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. LENS.capsule.md -->
+<h2><span class="num">02</span>LENS.capsule.md — the agent-facing context block</h2>
+<p class="caption">800–3,600 tokens, ingested by your AI agent <em>instead of</em> 30+ raw files.</p>
+
+<div class="screen">
+  <div class="titlebar">
+    <div class="dot"></div><div class="dot y"></div><div class="dot g"></div>
+    <span class="url">projectlens-out/LENS.capsule.md</span>
+    <span style="margin-left:auto; font-size:11px;">529 tokens · T2 Atlas</span>
+  </div>
+  <div class="body">
+<pre><span class="comment">&lt;!-- projectlens-begin --&gt;</span>
+
+<span class="heading"># SUMMARY</span>
+Python AI/ML API in Python; 312 files, 18,450 LOC.
+
+<span class="heading">## ENTRY</span>
+- <span class="string">`api/main.py`</span> — main
+- <span class="string">`scripts/migrate.py`</span> — cli
+
+<span class="heading">## ROUTES</span>
+- <span class="string">`GET /users`</span>  (api/routes/users.py:14)
+- <span class="string">`POST /users`</span>  (api/routes/users.py:23)
+- <span class="string">`POST /chat`</span>  (api/routes/chat.py:11)
+- <span class="string">`GET /health`</span>  (api/main.py:34)
+
+<span class="heading">## SQLALCHEMY</span>
+- model <span class="string">`User`</span> — class User(Base) → table users · 4 cols  (models/user.py:6)
+- model <span class="string">`Post`</span> — class Post(Base) → table posts · 5 cols  (models/post.py:8)
+- engine <span class="string">`engine`</span> — create_engine(postgresql://***@host/db)
+- relationships: User→Post, Post→User
+
+<span class="heading">## TRANSFORMERS</span>
+- model <span class="string">`tok`</span> — AutoTokenizer ← <span class="string">`distilbert-base-uncased`</span>
+- model <span class="string">`model`</span> — AutoModelForSequenceClassification ← <span class="string">`distilbert-base-uncased`</span>
+
+<span class="heading">## PINECONE</span>
+- create <span class="string">`docs`</span> — create_index('docs', dim=1536, metric='cosine')
+- ops: upsert×3, query×8
+
+<span class="heading">## MLFLOW</span>
+- experiment <span class="string">`demand-forecast`</span> — set_experiment('demand-forecast')
+- model flavors: sklearn, pytorch
+- tracking URI: http://mlflow.example.com:5000
+
+<span class="comment">&lt;!-- projectlens-end --&gt;</span></pre>
+  </div>
+</div>
+
+<!-- 3. Cursor MCP integration -->
+<h2><span class="num">03</span>Cursor — via the MCP server</h2>
+<p class="caption">Same engine, exposed as three MCP tools any host can call.</p>
+
+<div class="screen">
+  <div class="titlebar">
+    <div class="dot"></div><div class="dot y"></div><div class="dot g"></div>
+    <span class="url">Cursor · Chat</span>
+  </div>
+  <div class="chat">
+    <div class="msg user">
+      <div class="who">You</div>
+      <div class="body-text">@projectlens scan this repo and tell me what frameworks are in use.</div>
+    </div>
+    <div class="msg agent">
+      <div class="who">Cursor</div>
+      <div class="body-text">I'll scan the project structure first.</div>
+      <div class="tool-call">
+        <div class="head">▶ <span class="label">projectlens_scan</span> · &nbsp;path: "."</div>
+        <div style="color:var(--fg-3);">→ returned 529-token capsule · 8 frameworks detected · 113ms</div>
+      </div>
+      <div class="body-text" style="margin-top:10px;">
+        I scanned 312 files and found a FastAPI + SQLAlchemy backend serving an
+        ML inference path that uses HuggingFace Transformers (DistilBERT) and
+        Pinecone for RAG. Experiments are tracked in MLflow, and there's a
+        Docker Compose setup for local dev. Entry point is <code>api/main.py</code>.
+        Want me to walk through any specific framework section?
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. /projectlens compact -->
+<h2><span class="num">04</span>/projectlens compact — mid-session token reclaim</h2>
+<p class="caption">After 80 turns of editing, generates WORKING_CONTEXT.md and lets you /clear with continuity.</p>
+
+<div class="screen">
+  <div class="titlebar">
+    <div class="dot"></div><div class="dot y"></div><div class="dot g"></div>
+    <span class="url">Claude Code · session-37a9b1</span>
+  </div>
+  <div class="body docs" style="padding:18px;">
+    <div style="color:var(--green); font-weight:700;">/projectlens compact</div>
+    <div style="color:var(--fg-3); font-size:12px; margin:6px 0 14px;">→ Generating WORKING_CONTEXT.md from session state…</div>
+    <div style="background:var(--bg-3); border:1px solid var(--border); border-radius:6px; padding:14px;">
+      <pre style="font-size:12px; color:var(--fg); margin:0;">{
+  "version": "0.15.0",
+  "turn": 78,
+  "session_id": "sess-37a9b1",
+  "files_tracked": 24,
+  "edits": 41,
+  "bash": 18,
+  "tests": {"passed": 23, "failed": 1},
+  <span class="string">"tokens_reclaimed_est": 18420</span>,
+  "llm_enhanced": true,
+  "llm": {"input": 412, "output": 188, "est_usd": 0.001},
+  "path": "projectlens-out/WORKING_CONTEXT.md",
+  "size_bytes": 4218,
+  "memory_written": ".projectlens-memory/memory-sess-37a9b1.json"
+}</pre>
+    </div>
+    <div style="color:var(--fg-2); font-size:12px; margin-top:14px;">
+      ✓ Wrote <span style="color:var(--accent);">projectlens-out/WORKING_CONTEXT.md</span> &nbsp;(reclaim ~18.4k tokens)
+      <br>✓ Saved memory entry — will be recalled at next session start.
+      <br>Now run <code>/clear</code> and paste WORKING_CONTEXT.md at the top of the next session.
+    </div>
+  </div>
+</div>
+
+<!-- 5. /projectlens stats -->
+<h2><span class="num">05</span>/projectlens stats — lifetime savings</h2>
+<p class="caption">Real numbers from a working session. Everything's in <code>~/.projectlens/stats.json</code>.</p>
+
+<div class="screen">
+  <div class="titlebar">
+    <div class="dot"></div><div class="dot y"></div><div class="dot g"></div>
+    <span class="url">$ projectlens stats</span>
+  </div>
+  <div class="body" style="padding:20px;">
+<pre style="margin-bottom:18px;">ProjectLens — lifetime stats
+<span style="color:var(--fg-3);">========================================</span>
+Tracking since:   <span class="number">2026-05-23</span>  (2 day(s) ago)
+Tokens saved:     <span class="number">1,752,795</span>
+Estimated $ saved: <span style="color:var(--green);">~$26.29</span>  (at Opus input pricing)</pre>
+    <div class="stats-grid" style="padding:0;">
+      <div class="stat-card"><span class="v">104</span><span class="l">dedup hooks</span></div>
+      <div class="stat-card"><span class="v">84</span><span class="l">compressions</span></div>
+      <div class="stat-card"><span class="v">90</span><span class="l">compactor runs</span></div>
+      <div class="stat-card"><span class="v">84</span><span class="l">memory recalls</span></div>
+      <div class="stat-card"><span class="v">84</span><span class="l">selective injections</span></div>
+      <div class="stat-card"><span class="v">144</span><span class="l">scans</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Read dedup hook flag -->
+<h2><span class="num">06</span>Read dedup hook in action</h2>
+<p class="caption">PreToolUse:Read fires before the agent re-reads the same file. ~25% savings on long sessions.</p>
+
+<div class="screen">
+  <div class="titlebar">
+    <div class="dot"></div><div class="dot y"></div><div class="dot g"></div>
+    <span class="url">Claude Code · turn 47</span>
+  </div>
+  <div class="chat">
+    <div class="msg agent">
+      <div class="who">Agent</div>
+      <div class="body-text">Let me look at the user model.</div>
+      <div class="tool-call">
+        <div class="head">▶ <span class="label">Read</span> &nbsp;<span class="string">models/user.py</span></div>
+        <div style="color:var(--yellow); margin-top:8px;">
+          ⚠ <strong>ProjectLens dedup:</strong> <span class="string">models/user.py</span> was already
+          read at turn 12. <span style="color:var(--fg-2);">Content unchanged.</span>
+        </div>
+        <div style="color:var(--fg-3); margin-top:6px; font-size:11px;">
+          Skipping the re-read · 412 tokens saved · cumulative session savings: 8.7k
+        </div>
+      </div>
+      <div class="body-text" style="margin-top:10px;">
+        I already have the User model from earlier. It has 4 columns: id, email,
+        name, created_at, with a one-to-many <code>posts</code> relationship.
+        What would you like to do with it?
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p style="margin:4px 0;">ProjectLens v0.15.0 · MIT · <a href="https://github.com/agenticailab01/projectlens" style="color:var(--accent); text-decoration:none;">github.com/agenticailab01/projectlens</a></p>
+  <p style="margin:4px 0;">All screenshots are illustrative renderings — install the plugin and run <code>/projectlens</code> to see real output for your project.</p>
+</footer>
+
+</div>
+</body>
+</html>

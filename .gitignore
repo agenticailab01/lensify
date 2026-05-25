@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
+*.whl
+
+# Virtualenvs
+.venv/
+venv/
+env/
+.env
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.cache/
+coverage.xml
+*.cover
+
+# Type-checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+.ruff_cache/
+
+# Editors / IDE
+.idea/
+.vscode/
+.vs/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.lnk
+
+# ProjectLens runtime data (must never be committed)
+projectlens-out/
+.projectlens-memory/
+.projectlens-state/
+.projectlens-cache/
+
+# Local secrets / configs
+.env.local
+.env.*.local
+secrets/
+*.pem
+*.key
+
+# Package artefacts (built locally, distributed via releases instead)
+*.plugin
+projectlens-*.zip
+
+# Logs
+*.log
+logs/
+
+# Node (in case anyone clones via a JS workflow)
+node_modules/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Local scratch
+scratch/
+tmp/

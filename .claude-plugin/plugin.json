@@ -1,0 +1,12 @@
+{
+  "name": "projectlens",
+  "version": "0.15.0",
+  "description": "Single-scan adaptive project lens plus token-optimized context capsule for any codebase. Cuts orientation tokens by 70-90%.",
+  "author": {
+    "name": "Sachin Patil",
+    "email": "agenticailab01@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["context", "tokens", "codebase", "skill"],
+  "hooks": "./hooks/hooks.json"
+}

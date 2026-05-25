@@ -1,0 +1,157 @@
+{
+  "bentoml": {
+    "pack": "_serving",
+    "module": "_serving.bentoml",
+    "signatures": ["import bentoml", "from bentoml"]
+  },
+  "chainlit": {
+    "pack": "_ai_uis",
+    "module": "_ai_uis.chainlit",
+    "signatures": ["import chainlit", "from chainlit"]
+  },
+  "chroma": {
+    "pack": "_vector_db",
+    "module": "_vector_db.chroma",
+    "signatures": ["import chromadb", "from chromadb"]
+  },
+  "comet": {
+    "pack": "_experiment",
+    "module": "_experiment.comet",
+    "signatures": ["import comet_ml", "from comet_ml"]
+  },
+  "datasets_hf": {
+    "pack": "_ml_core",
+    "module": "_ml_core.datasets_hf",
+    "signatures": ["import datasets", "from datasets"]
+  },
+  "docker_compose": {
+    "pack": "_enterprise",
+    "module": "_enterprise.docker_compose",
+    "signatures": ["docker-compose"]
+  },
+  "dspy": {
+    "pack": "_ai_apps",
+    "module": "_ai_apps.dspy",
+    "signatures": ["import dspy", "from dspy"]
+  },
+  "fastapi": {
+    "pack": "_enterprise",
+    "module": "_enterprise.fastapi",
+    "signatures": ["import fastapi", "from fastapi"]
+  },
+  "gradio": {
+    "pack": "_ai_uis",
+    "module": "_ai_uis.gradio",
+    "signatures": ["import gradio", "from gradio"]
+  },
+  "jupyter": {
+    "pack": "_notebooks",
+    "module": "_notebooks.jupyter",
+    "signatures": ["ipynb"]
+  },
+  "langchain": {
+    "pack": "_ai_apps",
+    "module": "_ai_apps.langchain",
+    "signatures": [
+      "import langchain", "from langchain",
+      "import langchain_core", "from langchain_core",
+      "import langchain_community", "from langchain_community",
+      "import langchain_openai", "from langchain_openai"
+    ]
+  },
+  "langgraph": {
+    "pack": "_ai_apps",
+    "module": "_ai_apps.langgraph",
+    "signatures": ["import langgraph", "from langgraph"]
+  },
+  "llamaindex": {
+    "pack": "_ai_apps",
+    "module": "_ai_apps.llamaindex",
+    "signatures": ["import llama_index", "from llama_index"]
+  },
+  "mlflow": {
+    "pack": "_experiment",
+    "module": "_experiment.mlflow",
+    "signatures": ["import mlflow", "from mlflow"]
+  },
+  "pinecone": {
+    "pack": "_vector_db",
+    "module": "_vector_db.pinecone",
+    "signatures": ["import pinecone", "from pinecone"]
+  },
+  "pydantic": {
+    "pack": "_enterprise",
+    "module": "_enterprise.pydantic",
+    "signatures": ["import pydantic", "from pydantic"]
+  },
+  "pydantic_ai": {
+    "pack": "_ai_apps",
+    "module": "_ai_apps.pydantic_ai",
+    "signatures": ["import pydantic_ai", "from pydantic_ai"]
+  },
+  "pytorch": {
+    "pack": "_ml_core",
+    "module": "_ml_core.pytorch",
+    "signatures": ["import torch", "from torch"]
+  },
+  "qdrant": {
+    "pack": "_vector_db",
+    "module": "_vector_db.qdrant",
+    "signatures": ["import qdrant_client", "from qdrant_client"]
+  },
+  "ray_serve": {
+    "pack": "_serving",
+    "module": "_serving.ray_serve",
+    "signatures": ["import ray", "from ray"]
+  },
+  "sklearn": {
+    "pack": "_ml_core",
+    "module": "_ml_core.sklearn",
+    "signatures": ["import sklearn", "from sklearn"]
+  },
+  "sqlalchemy": {
+    "pack": "_enterprise",
+    "module": "_enterprise.sqlalchemy",
+    "signatures": ["import sqlalchemy", "from sqlalchemy"]
+  },
+  "streamlit": {
+    "pack": "_ai_uis",
+    "module": "_ai_uis.streamlit",
+    "signatures": ["import streamlit", "from streamlit"]
+  },
+  "tailwind": {
+    "pack": "_enterprise",
+    "module": "_enterprise.tailwind",
+    "signatures": ["tailwind"]
+  },
+  "transformers": {
+    "pack": "_ml_core",
+    "module": "_ml_core.transformers",
+    "signatures": ["import transformers", "from transformers"]
+  },
+  "triton": {
+    "pack": "_serving",
+    "module": "_serving.triton",
+    "signatures": ["import tritonclient", "from tritonclient"]
+  },
+  "vllm": {
+    "pack": "_serving",
+    "module": "_serving.vllm",
+    "signatures": ["import vllm", "from vllm"]
+  },
+  "vue": {
+    "pack": "_enterprise",
+    "module": "_enterprise.vue",
+    "signatures": ["vue"]
+  },
+  "wandb": {
+    "pack": "_experiment",
+    "module": "_experiment.wandb",
+    "signatures": ["import wandb", "from wandb"]
+  },
+  "weaviate": {
+    "pack": "_vector_db",
+    "module": "_vector_db.weaviate",
+    "signatures": ["import weaviate", "from weaviate"]
+  }
+}
