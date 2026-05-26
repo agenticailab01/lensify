@@ -14,7 +14,7 @@ from scripts.memory import save_memory, MemoryEntry
 
 LOADER_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "lensify" / "scripts" / "memory_loader.py"
+    / "plugins" / "lensify" / "skills" / "lensify" / "scripts" / "memory_loader.py"
 )
 
 

@@ -31,7 +31,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = ROOT / "skills" / "lensify" / "scripts"
+SCRIPTS = ROOT / "plugins" / "lensify" / "skills" / "lensify" / "scripts"
 FRAMEWORKS = SCRIPTS / "frameworks"
 
 # ---- Hard caps (CI fails if exceeded) ----
@@ -311,7 +311,7 @@ def test_user_adapter_loader_is_opt_in(monkeypatch, tmp_path):
 
 def test_skill_md_under_3kb_target():
     """SKILL.md must stay lean; references hold the bulk."""
-    skill = ROOT / "skills" / "lensify" / "SKILL.md"
+    skill = ROOT / "plugins" / "lensify" / "skills" / "lensify" / "SKILL.md"
     size = skill.stat().st_size
     # 8KB is the hard cap (current is ~6KB)
     assert size < 8_000, f"SKILL.md is {size}B; hard cap 8000B"

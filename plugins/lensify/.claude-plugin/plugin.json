@@ -1,0 +1,11 @@
+{
+  "name": "lensify",
+  "version": "0.15.0",
+  "description": "Single-scan adaptive project lens + token-optimized context capsule for AI agents. Cuts orientation tokens by 70-90%.",
+  "author": {
+    "name": "Sachin Patil",
+    "email": "agenticailab01@gmail.com"
+  },
+  "license": "MIT",
+  "hooks": "./hooks/hooks.json"
+}

@@ -11,7 +11,7 @@ import pytest
 
 HOOK_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "lensify" / "scripts" / "inject_hook.py"
+    / "plugins" / "lensify" / "skills" / "lensify" / "scripts" / "inject_hook.py"
 )
 
 SAMPLE_SECTIONS = {

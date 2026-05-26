@@ -8,7 +8,7 @@ import pytest
 
 # Make sure the frameworks package is importable
 import sys
-SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "lensify"
+SCRIPTS = Path(__file__).resolve().parent.parent / "plugins" / "lensify" / "skills" / "lensify"
 sys.path.insert(0, str(SCRIPTS))
 
 from scripts.frameworks.base import (  # noqa: E402

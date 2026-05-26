@@ -15,7 +15,7 @@ import pytest
 
 HOOK_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "lensify" / "scripts" / "dedup_hook.py"
+    / "plugins" / "lensify" / "skills" / "lensify" / "scripts" / "dedup_hook.py"
 )
 
 

@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 import sys
-SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "lensify"
+SCRIPTS = Path(__file__).resolve().parent.parent / "plugins" / "lensify" / "skills" / "lensify"
 sys.path.insert(0, str(SCRIPTS))
 
 from scripts.walker import walk  # noqa: E402

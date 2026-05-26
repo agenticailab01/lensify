@@ -31,4 +31,4 @@ norecursedirs = ["tests/fixtures", "*.egg", ".git"]
 
 [tool.setuptools]
 packages = ["scripts", "mcp_server"]
-package-dir = {"scripts" = "skills/lensify/scripts"}
+package-dir = {"scripts" = "plugins/lensify/skills/lensify/scripts"}

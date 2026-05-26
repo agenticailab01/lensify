@@ -13,11 +13,11 @@ from scripts.stats import LifetimeStats, save_stats, record_event
 
 STATUSLINE_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "lensify" / "scripts" / "statusline.py"
+    / "plugins" / "lensify" / "skills" / "lensify" / "scripts" / "statusline.py"
 )
 CLI_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "lensify" / "scripts" / "stats_cli.py"
+    / "plugins" / "lensify" / "skills" / "lensify" / "scripts" / "stats_cli.py"
 )
 
 

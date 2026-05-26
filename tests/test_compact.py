@@ -22,7 +22,7 @@ from scripts.llm_client import LLMResult
 
 COMPACT_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "lensify" / "scripts" / "compact.py"
+    / "plugins" / "lensify" / "skills" / "lensify" / "scripts" / "compact.py"
 )
 
 

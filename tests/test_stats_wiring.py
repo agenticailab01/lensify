@@ -17,7 +17,7 @@ import pytest
 from scripts.stats import load_stats
 
 SCRIPTS = (
-    Path(__file__).resolve().parent.parent / "skills" / "lensify" / "scripts"
+    Path(__file__).resolve().parent.parent / "plugins" / "lensify" / "skills" / "lensify" / "scripts"
 )
 
 

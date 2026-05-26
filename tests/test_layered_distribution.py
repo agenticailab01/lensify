@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = REPO_ROOT / "skills" / "lensify" / "scripts"
+SCRIPTS = REPO_ROOT / "plugins" / "lensify" / "skills" / "lensify" / "scripts"
 
 
 # ---- CLI entry point ----

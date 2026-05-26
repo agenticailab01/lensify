@@ -13,7 +13,7 @@ from scripts.session_state import load_state
 
 HOOK_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "lensify" / "scripts" / "activity_hook.py"
+    / "plugins" / "lensify" / "skills" / "lensify" / "scripts" / "activity_hook.py"
 )
 
 

@@ -20,7 +20,7 @@ import time
 from pathlib import Path
 
 # Make scripts importable
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "lensify"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "plugins" / "lensify" / "skills" / "lensify"))
 
 from scripts.scan import scan  # noqa: E402
 from scripts.walker import walk  # noqa: E402
