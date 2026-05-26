@@ -83,27 +83,31 @@ Then in any project: `/lensify` to scan, `/lensify compact` to recover tokens, `
 2. Drag the file into the Cowork chat window.
 3. Click **Save plugin** on the preview card. Restart the conversation.
 
-### 👉 Cursor / VS Code / Codex / Gemini CLI (MCP) — one config entry
+### 👉 Cursor / VS Code / Codex / Gemini CLI (MCP) — two transparent commands
+
+Step 1 — clone the repo (one-time, ~200 KB):
 
 ```bash
 git clone https://github.com/agenticailab01/lensify ~/lensify
 ```
 
-Then add this to your tool's MCP config (file path differs per tool — see the Installation by tool section below):
+Step 2 — register the MCP server. Pick the line that matches your tool:
 
-```json
-{
-  "mcpServers": {
-    "lensify": {
-      "command": "python3",
-      "args": ["-m", "mcp_server"],
-      "cwd": "/Users/you/lensify"
-    }
-  }
-}
+```bash
+# Cursor
+cursor mcp add lensify python3 -m mcp_server --cwd ~/lensify
+
+# VS Code
+code --add-mcp '{"name":"lensify","type":"stdio","command":"python3","args":["-m","mcp_server"],"cwd":"'"$HOME"'/lensify"}'
+
+# Claude Code MCP
+claude mcp add lensify --scope user --cwd ~/lensify -- python3 -m mcp_server
+
+# Gemini CLI
+gemini mcp add lensify python3 -m mcp_server --cwd ~/lensify
 ```
 
-Fully restart the tool. Three new tools appear: `lensify_scan`, `lensify_compact`, `lensify_stats`.
+These are your tool's **own** documented commands — no `curl | bash`, no remote-script execution. Three new tools appear after restart: `lensify_scan`, `lensify_compact`, `lensify_stats`.
 
 📖 完整步骤说明请参见 **[`USER-INSTALL.md`](../../USER-INSTALL.md)**
 ---

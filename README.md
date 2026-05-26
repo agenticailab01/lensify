@@ -80,30 +80,33 @@ Then in any project: `/lensify` to scan, `/lensify compact` to recover tokens, `
 2. Drag the file into the Cowork chat window.
 3. Click **Save plugin** on the preview card. Restart the conversation.
 
-### 👉 Cursor / VS Code / Codex / Gemini CLI (MCP) — one command in your shell
+### 👉 Cursor / VS Code / Codex / Gemini CLI (MCP) — two transparent commands
 
-Pick the line that matches your tool:
+Step 1 — clone the repo (one-time, ~200 KB):
+
+```bash
+git clone https://github.com/agenticailab01/lensify ~/lensify
+```
+
+Step 2 — register the MCP server. Pick the line that matches your tool:
 
 ```bash
 # Cursor
-bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-cursor.sh)
+cursor mcp add lensify python3 -m mcp_server --cwd ~/lensify
 
 # VS Code
-bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-vscode.sh)
+code --add-mcp '{"name":"lensify","type":"stdio","command":"python3","args":["-m","mcp_server"],"cwd":"'"$HOME"'/lensify"}'
+
+# Claude Code MCP
+claude mcp add lensify --scope user --cwd ~/lensify -- python3 -m mcp_server
 
 # Gemini CLI
-bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-gemini.sh)
-
-# Codex
-bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-codex.sh)
-
-# Or — auto-detect all installed tools and pick interactively
-bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-mcp.sh)
+gemini mcp add lensify python3 -m mcp_server --cwd ~/lensify
 ```
 
-Each script clones the repo if needed, then runs your tool's native MCP-add command. No JSON editing. Fully restart the tool after running — three new tools appear: `lensify_scan`, `lensify_compact`, `lensify_stats`.
+These are your tool's **own** documented commands — no remote-script execution, no `curl | bash`. Three new tools appear after restart: `lensify_scan`, `lensify_compact`, `lensify_stats`.
 
-Prefer a one-click button or native CLI command? See [Installation by tool](#installation-by-tool).
+Prefer a one-click button? See the install badges in [Installation by tool](#installation-by-tool).
 
 📖 Full step-by-step instructions are in **[`USER-INSTALL.md`](USER-INSTALL.md)** — written for users who've never installed a plugin before.
 
@@ -164,54 +167,52 @@ After install, the plugin files land at:
 
 > **Note:** the CLI does not support `claude plugin install <url>` — it works through the marketplace mechanism above. The two-line `/plugin marketplace add` + `/plugin install` flow is the supported path.
 
-### Channel 2 — MCP server (Cursor, VS Code, Codex, Gemini CLI) — one command
+### Channel 2 — MCP server (Cursor, VS Code, Codex, Gemini CLI) — two transparent commands
 
-**Pick the one that matches your tool.** Each runs in your shell, takes ~10 seconds, and writes the right MCP config automatically — no JSON editing.
+**No `curl | bash`, no remote-script execution.** Each tool installs with two commands you type yourself: clone the repo, then run the tool's own MCP-add command. Every step is visible and reviewable.
 
-#### 🚀 One-line installers (curl-pipe)
-
-| Tool | One-line install |
-|---|---|
-| **Cursor** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-cursor.sh)` |
-| **VS Code** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-vscode.sh)` |
-| **Claude Code MCP** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-claude-mcp.sh)` |
-| **Gemini CLI** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-gemini.sh)` |
-| **OpenAI Codex** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-codex.sh)` |
-| **Auto-detect everything** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-mcp.sh)` |
-
-Each script:
-1. Clones the repo to `~/lensify` if not already present (~200 KB, pure Python).
-2. Runs the tool's native MCP-add command (`cursor mcp add`, `code --add-mcp`, `claude mcp add`, `gemini mcp add`, etc.).
-3. Falls back to direct config file write if the CLI isn't available.
-
-After install, fully restart the tool. Three new tools appear: `lensify_scan`, `lensify_compact`, `lensify_stats`.
-
-#### 🖱️ One-click install buttons (Cursor / VS Code)
-
-If you'd rather click a button than run a script, these deeplinks open your editor and prompt you to confirm the MCP server install:
-
-[![Install in Cursor](https://img.shields.io/badge/Install%20in-Cursor-000000?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=lensify&config=eyJjb21tYW5kIjogInB5dGhvbjMiLCAiYXJncyI6IFsiLW0iLCAibWNwX3NlcnZlciJdLCAiY3dkIjogIiRIT01FL2xlbnNpZnkifQ)
-[![Install in VS Code](https://img.shields.io/badge/Install%20in-VS%20Code-007ACC?style=for-the-badge&logo=visualstudiocode)](vscode:mcp/install?%7B%22name%22%3A%20%22lensify%22%2C%20%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22python3%22%2C%20%22args%22%3A%20%5B%22-m%22%2C%20%22mcp_server%22%5D%2C%20%22cwd%22%3A%20%22%24HOME/lensify%22%7D)
-[![Install in VS Code Insiders](https://img.shields.io/badge/Install%20in-VS%20Code%20Insiders-24bfa5?style=for-the-badge&logo=visualstudiocode)](vscode-insiders:mcp/install?%7B%22name%22%3A%20%22lensify%22%2C%20%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22python3%22%2C%20%22args%22%3A%20%5B%22-m%22%2C%20%22mcp_server%22%5D%2C%20%22cwd%22%3A%20%22%24HOME/lensify%22%7D)
-
-You'll still need the repo cloned locally — the buttons handle the config registration, not the file checkout:
+#### Step 1 — clone the repo (one-time, ~200 KB, pure Python)
 
 ```bash
 git clone https://github.com/agenticailab01/lensify ~/lensify
 ```
 
-#### 🛠️ Native CLI commands (if you prefer typing them yourself)
+#### Step 2 — register the MCP server with your tool
+
+Pick the line that matches your tool. **These are the tool's own commands** — they're documented, signed by the tool vendor, and accepted by any reasonable security policy.
 
 | Tool | Command |
 |---|---|
-| Cursor | `cursor mcp add lensify python3 -m mcp_server --cwd ~/lensify` |
-| VS Code | `code --add-mcp '{"name":"lensify","type":"stdio","command":"python3","args":["-m","mcp_server"],"cwd":"~/lensify"}'` |
-| Claude Code | `claude mcp add lensify --scope user --cwd ~/lensify -- python3 -m mcp_server` |
-| Gemini CLI | `gemini mcp add lensify python3 -m mcp_server --cwd ~/lensify` |
+| **Cursor** | `cursor mcp add lensify python3 -m mcp_server --cwd ~/lensify` |
+| **VS Code** | `code --add-mcp '{"name":"lensify","type":"stdio","command":"python3","args":["-m","mcp_server"],"cwd":"'"$HOME"'/lensify"}'` |
+| **Claude Code MCP** | `claude mcp add lensify --scope user --cwd ~/lensify -- python3 -m mcp_server` |
+| **Gemini CLI** | `gemini mcp add lensify python3 -m mcp_server --cwd ~/lensify` |
+| **Codex** | append the `[mcp_servers.lensify]` block (below) to `~/.codex/config.toml` |
 
-#### 📝 Manual config (last resort)
+For Codex (no `mcp add` subcommand yet), append this block to `~/.codex/config.toml`:
 
-Only needed if your tool isn't covered above. Add this to the relevant MCP config file:
+```toml
+[mcp_servers.lensify]
+command = "python3"
+args    = ["-m", "mcp_server"]
+cwd     = "/Users/you/lensify"
+```
+
+Then fully restart the tool. Three new tools appear: `lensify_scan`, `lensify_compact`, `lensify_stats`.
+
+#### 🖱️ Prefer a one-click button? (Cursor / VS Code)
+
+These deeplinks open your editor's native MCP-install dialog and prompt you to confirm — no shell, no script, the tool itself handles the install:
+
+[![Install in Cursor](https://img.shields.io/badge/Install%20in-Cursor-000000?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=lensify&config=eyJjb21tYW5kIjogInB5dGhvbjMiLCAiYXJncyI6IFsiLW0iLCAibWNwX3NlcnZlciJdLCAiY3dkIjogIiRIT01FL2xlbnNpZnkifQ)
+[![Install in VS Code](https://img.shields.io/badge/Install%20in-VS%20Code-007ACC?style=for-the-badge&logo=visualstudiocode)](vscode:mcp/install?%7B%22name%22%3A%22lensify%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22python3%22%2C%22args%22%3A%5B%22-m%22%2C%22mcp_server%22%5D%2C%22cwd%22%3A%22%24HOME%2Flensify%22%7D)
+[![Install in VS Code Insiders](https://img.shields.io/badge/Install%20in-VS%20Code%20Insiders-24bfa5?style=for-the-badge&logo=visualstudiocode)](vscode-insiders:mcp/install?%7B%22name%22%3A%22lensify%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22python3%22%2C%22args%22%3A%5B%22-m%22%2C%22mcp_server%22%5D%2C%22cwd%22%3A%22%24HOME%2Flensify%22%7D)
+
+You still need the repo cloned (Step 1 above). The buttons handle MCP registration, not the file checkout.
+
+#### 📝 Manual config (when your tool isn't covered above)
+
+Add this to the relevant MCP config file by hand:
 
 ```json
 {
@@ -234,6 +235,26 @@ Per-tool config file locations:
 | Claude Desktop | `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) |
 | Gemini CLI | `~/.gemini/settings.json` |
 | Codex | `~/.codex/config.toml` |
+
+#### 🛡️ Why we don't use `curl | bash`
+
+`bash <(curl -fsSL https://...)` is a classic supply-chain attack vector — the script is fetched and executed in one step, with no opportunity to review what it does. Modern AI assistants flag it, and security-conscious users (rightly) refuse it. We deliberately don't put it on the install page.
+
+If you'd like a single command that does the clone + register in one go, the optional convenience scripts live in `install/` in this repo. Review the source first, then run locally:
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/agenticailab01/lensify ~/lensify
+cd ~/lensify
+
+# 2. Read what the script will do
+cat install/install-cursor.sh        # ~20 lines, fully transparent
+
+# 3. Run only if you're satisfied
+bash install/install-cursor.sh
+```
+
+The scripts available: `install-cursor.sh`, `install-vscode.sh`, `install-claude-mcp.sh`, `install-gemini.sh`, `install-codex.sh`, `install-mcp.sh` (auto-detects multiple tools).
 
 #### The 3 MCP tools
 
@@ -263,6 +284,8 @@ Scan/compact/stats are identical across both channels — same Python code under
 | Server starts but tools fail | Run `python3 -m mcp_server` manually from the `cwd`. If it errors there, fix that error first. |
 | JSON-RPC parse errors | A stray `print()` is polluting stdout. Re-clone from a clean release tag. |
 | Slow first call | Cold scan can take 100–250 ms on large repos. Subsequent calls are warm-cached. |
+
+---
 
 ### Channel 3 — Standalone CLI (Aider, Copilot CLI, scripts, CI)
 
