@@ -8,7 +8,7 @@ import pytest
 
 # Make sure the frameworks package is importable
 import sys
-SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "projectlens"
+SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "lensify"
 sys.path.insert(0, str(SCRIPTS))
 
 from scripts.frameworks.base import (  # noqa: E402
@@ -232,10 +232,10 @@ class CustomAdapter(FrameworkAdapter):
 
 def test_user_adapter_loaded_from_project_dir(tmp_path, monkeypatch):
     # User-adapter loading is opt-in for security (running arbitrary
-    # Python from scanned repos). Power users set PROJECTLENS_USER_ADAPTERS=1.
-    monkeypatch.setenv("PROJECTLENS_USER_ADAPTERS", "1")
+    # Python from scanned repos). Power users set LENSIFY_USER_ADAPTERS=1.
+    monkeypatch.setenv("LENSIFY_USER_ADAPTERS", "1")
     (tmp_path / "a.py").write_text("import some_lib\n")
-    fw_dir = tmp_path / ".projectlens" / "frameworks"
+    fw_dir = tmp_path / ".lensify" / "frameworks"
     fw_dir.mkdir(parents=True)
     (fw_dir / "custom.py").write_text(USER_ADAPTER_SOURCE)
 
@@ -247,10 +247,10 @@ def test_user_adapter_loaded_from_project_dir(tmp_path, monkeypatch):
 
 
 def test_user_adapters_disabled_by_default(tmp_path, monkeypatch):
-    """Without PROJECTLENS_USER_ADAPTERS=1, the user-adapter dir is ignored."""
-    monkeypatch.delenv("PROJECTLENS_USER_ADAPTERS", raising=False)
+    """Without LENSIFY_USER_ADAPTERS=1, the user-adapter dir is ignored."""
+    monkeypatch.delenv("LENSIFY_USER_ADAPTERS", raising=False)
     (tmp_path / "a.py").write_text("import some_lib\n")
-    fw_dir = tmp_path / ".projectlens" / "frameworks"
+    fw_dir = tmp_path / ".lensify" / "frameworks"
     fw_dir.mkdir(parents=True)
     (fw_dir / "custom.py").write_text(USER_ADAPTER_SOURCE)
 
@@ -262,8 +262,8 @@ def test_user_adapters_disabled_by_default(tmp_path, monkeypatch):
 
 
 def test_malformed_user_adapter_silently_ignored(tmp_path, monkeypatch):
-    monkeypatch.setenv("PROJECTLENS_USER_ADAPTERS", "1")
-    fw_dir = tmp_path / ".projectlens" / "frameworks"
+    monkeypatch.setenv("LENSIFY_USER_ADAPTERS", "1")
+    fw_dir = tmp_path / ".lensify" / "frameworks"
     fw_dir.mkdir(parents=True)
     (fw_dir / "broken.py").write_text("syntax error !!")
     walk_result = walk(str(tmp_path))

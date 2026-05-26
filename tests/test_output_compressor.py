@@ -239,7 +239,7 @@ def test_format_for_agent_includes_size_info(tmp_path):
     text = json.dumps({"items": [{"id": i} for i in range(200)]})
     result = compress(text, project_root=tmp_path)
     out = format_for_agent(result)
-    assert "ProjectLens" in out
+    assert "Lensify" in out
     assert "json" in out
     assert "ratio" in out.lower()
     assert result.summary in out
@@ -252,19 +252,19 @@ def test_format_for_agent_empty_for_passthrough(tmp_path):
 
 
 def test_is_disabled_default_false(monkeypatch):
-    monkeypatch.delenv("PROJECTLENS_COMPRESS_OUTPUT", raising=False)
-    monkeypatch.delenv("PROJECTLENS_DEDUP", raising=False)
+    monkeypatch.delenv("LENSIFY_COMPRESS_OUTPUT", raising=False)
+    monkeypatch.delenv("LENSIFY_DEDUP", raising=False)
     assert is_disabled() is False
 
 
 def test_is_disabled_via_specific_env(monkeypatch):
-    monkeypatch.setenv("PROJECTLENS_COMPRESS_OUTPUT", "0")
+    monkeypatch.setenv("LENSIFY_COMPRESS_OUTPUT", "0")
     assert is_disabled() is True
 
 
 def test_is_disabled_via_global_env(monkeypatch):
-    monkeypatch.delenv("PROJECTLENS_COMPRESS_OUTPUT", raising=False)
-    monkeypatch.setenv("PROJECTLENS_DEDUP", "off")
+    monkeypatch.delenv("LENSIFY_COMPRESS_OUTPUT", raising=False)
+    monkeypatch.setenv("LENSIFY_DEDUP", "off")
     assert is_disabled() is True
 
 

@@ -1,4 +1,4 @@
-# ProjectLens — translated READMEs
+# Lensify — translated READMEs
 
 Choose your language:
 

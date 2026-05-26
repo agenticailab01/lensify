@@ -1,15 +1,15 @@
 # Changelog
 
-All notable changes to ProjectLens.
+All notable changes to Lensify.
 
 ## v0.15.0 — Layered distribution (MCP + CLI + AGENTS.md)
 
-ProjectLens now ships in **four distribution channels** so it works with virtually any AI coding tool. The Claude Code / Cowork plugin stays exactly as-is — the three new channels are *additive*, reuse the same scan engine, and add zero dependencies to plugin users.
+Lensify now ships in **four distribution channels** so it works with virtually any AI coding tool. The Claude Code / Cowork plugin stays exactly as-is — the three new channels are *additive*, reuse the same scan engine, and add zero dependencies to plugin users.
 
 ### Added
-- **`mcp_server/`** — pure-stdlib MCP stdio server (JSON-RPC 2.0, ~250 LOC). Exposes three tools: `projectlens_scan`, `projectlens_compact`, `projectlens_stats`. Compatible with Cursor, VS Code Copilot Chat, Codex, Gemini CLI, OpenCode, Trae, Kiro, Antigravity, and any other MCP host. No `pip install mcp` required — the protocol is hand-rolled stdlib-only.
-- **`--install-agents-md` flag** on `scan.py` — writes the capsule into `AGENTS.md` (or any custom path: `CLAUDE.md`, `GEMINI.md`, `.cursorrules`, etc.) using the idempotent `<!-- projectlens-begin -->` / `<!-- projectlens-end -->` markers. Any tool that reads project-root context files gets the capsule for free.
-- **CLI entry point** finalised — `pyproject.toml` already exposed `projectlens = "scripts.scan:main"`; works once published to PyPI.
+- **`mcp_server/`** — pure-stdlib MCP stdio server (JSON-RPC 2.0, ~250 LOC). Exposes three tools: `lensify_scan`, `lensify_compact`, `lensify_stats`. Compatible with Cursor, VS Code Copilot Chat, Codex, Gemini CLI, OpenCode, Trae, Kiro, Antigravity, and any other MCP host. No `pip install mcp` required — the protocol is hand-rolled stdlib-only.
+- **`--install-agents-md` flag** on `scan.py` — writes the capsule into `AGENTS.md` (or any custom path: `CLAUDE.md`, `GEMINI.md`, `.cursorrules`, etc.) using the idempotent `<!-- lensify-begin -->` / `<!-- lensify-end -->` markers. Any tool that reads project-root context files gets the capsule for free.
+- **CLI entry point** finalised — `pyproject.toml` already exposed `lensify = "scripts.scan:main"`; works once published to PyPI.
 - **`docs/integrations/`** — per-tool recipes for Cursor, VS Code Copilot Chat, Codex, Gemini CLI, Aider, generic MCP, and AGENTS.md mode.
 - **11 new tests** in `test_layered_distribution.py` covering CLI invocation, AGENTS.md install + idempotency + custom paths, MCP initialize/tools/list/tools/call/error-handling/notification-ignore/malformed-input.
 
@@ -21,10 +21,10 @@ The four channels share one engine — adding a framework adapter benefits all f
 
 | Channel | Tools | Setup |
 |---|---|---|
-| Native plugin | Claude Code, Cowork | Drop in `projectlens.plugin` |
+| Native plugin | Claude Code, Cowork | Drop in `lensify.plugin` |
 | MCP server | Cursor, VS Code Copilot Chat, Codex, Gemini CLI, OpenCode, Trae, Kiro, Antigravity | `python -m mcp_server` in MCP config |
-| CLI | Aider, GitHub Copilot CLI, scripts, CI | `pip install projectlens && projectlens <path>` |
-| `AGENTS.md` context | Any tool that auto-reads project context | `projectlens . --install-agents-md` |
+| CLI | Aider, GitHub Copilot CLI, scripts, CI | `pip install lensify && lensify <path>` |
+| `AGENTS.md` context | Any tool that auto-reads project context | `lensify . --install-agents-md` |
 
 ### Stats
 - 527 unit tests pass (was 516; +11 for layered distribution)
@@ -44,8 +44,8 @@ The four channels share one engine — adding a framework adapter benefits all f
   - `test_user_adapter_loader_is_opt_in` — proves the user-adapter loader stays gated
 
 ### Changed (BREAKING for power users)
-- **User-defined adapters are now opt-in.** Previously `<project>/.projectlens/frameworks/*.py` was auto-loaded per scan — meaning scanning a malicious repo could execute arbitrary Python in the agent's environment. Now off by default; set `PROJECTLENS_USER_ADAPTERS=1` in your shell rc to enable.
-- **Per-file read cap of 1 MB** for all framework adapter file reads (configurable via `PROJECTLENS_MAX_READ_BYTES`). Prevents resource-exhaustion DoS from huge generated/vendored files.
+- **User-defined adapters are now opt-in.** Previously `<project>/.lensify/frameworks/*.py` was auto-loaded per scan — meaning scanning a malicious repo could execute arbitrary Python in the agent's environment. Now off by default; set `LENSIFY_USER_ADAPTERS=1` in your shell rc to enable.
+- **Per-file read cap of 1 MB** for all framework adapter file reads (configurable via `LENSIFY_MAX_READ_BYTES`). Prevents resource-exhaustion DoS from huge generated/vendored files.
 
 ### Stats
 - 17 perf/security budgets pass (was 14)
@@ -152,7 +152,7 @@ The four channels share one engine — adding a framework adapter benefits all f
 - **Phase 9 — Framework Adapter SDK**
   - `FrameworkAdapter` base class + `FrameworkInfo`/`FrameworkEntry` records
   - Manifest-driven lazy loading (only matched adapters import)
-  - User-extensible slot at `<project>/.projectlens/frameworks/`
+  - User-extensible slot at `<project>/.lensify/frameworks/`
   - Reference adapter: FastAPI
 - **`_notebooks` pack** — Jupyter (`.ipynb` parsing without external deps: TOC, imports, defines, executed/not-run status, cell counts)
 - **Performance harness** — 14 enforced perf budgets covering hook startup, scan time, capsule build, R1 (hooks framework-free), R3 (detect never opens files), SKILL.md size, locked tier budgets
@@ -162,7 +162,7 @@ The four channels share one engine — adding a framework adapter benefits all f
 ## v0.6.0
 
 ### Added
-- **Phase 8 — Statusline + Telemetry** — lifetime stats JSON at `~/.projectlens/stats.json`, statusline command, CLI tool
+- **Phase 8 — Statusline + Telemetry** — lifetime stats JSON at `~/.lensify/stats.json`, statusline command, CLI tool
 
 ---
 
@@ -184,7 +184,7 @@ The four channels share one engine — adding a framework adapter benefits all f
 ## v0.3.0
 
 ### Added
-- **Phase 4 — Conversation compactor** — `/projectlens compact` generates `WORKING_CONTEXT.md` to reclaim 8-25k tokens via `/clear` with continuity. Stdlib-only Anthropic API client for optional LLM-enhanced summaries
+- **Phase 4 — Conversation compactor** — `/lensify compact` generates `WORKING_CONTEXT.md` to reclaim 8-25k tokens via `/clear` with continuity. Stdlib-only Anthropic API client for optional LLM-enhanced summaries
 
 ---
 

@@ -1,11 +1,11 @@
-"""ProjectLens MCP server (pure stdlib).
+"""Lensify MCP server (pure stdlib).
 
 Implements the Model Context Protocol over JSON-RPC 2.0 stdio. Exposes
 three tools:
 
-    projectlens_scan      — one-shot lens + capsule for a project
-    projectlens_compact   — generate WORKING_CONTEXT.md from session state
-    projectlens_stats     — lifetime savings report
+    lensify_scan      — one-shot lens + capsule for a project
+    lensify_compact   — generate WORKING_CONTEXT.md from session state
+    lensify_stats     — lifetime savings report
 
 Why pure stdlib (no `mcp` SDK dependency):
 
@@ -43,7 +43,7 @@ from typing import Any
 # This keeps the MCP server independent of how the package was installed —
 # works whether via PyPI, a git clone, or running from the repo root.
 _REPO_ROOT = Path(__file__).resolve().parent.parent
-_SCRIPTS = _REPO_ROOT / "skills" / "projectlens" / "scripts"
+_SCRIPTS = _REPO_ROOT / "skills" / "lensify" / "scripts"
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
@@ -70,7 +70,7 @@ def _tool_scan(args: dict) -> dict:
     )
     out_dir = (Path(args["output_dir"])
                if args.get("output_dir")
-               else Path(path) / "projectlens-out")
+               else Path(path) / "lensify-out")
     capsule = out_dir / "LENS.capsule.md"
     lens_json = out_dir / "lens.json"
     payload = {
@@ -113,7 +113,7 @@ def _tool_stats(args: dict) -> dict:
 
 
 TOOLS: dict[str, dict] = {
-    "projectlens_scan": {
+    "lensify_scan": {
         "description": "Generate a one-page project lens + token-optimized "
                        "context capsule. Returns the capsule text plus paths "
                        "to LENS.html and LENS.capsule.md. Auto-detects tier "
@@ -132,7 +132,7 @@ TOOLS: dict[str, dict] = {
         },
         "handler": _tool_scan,
     },
-    "projectlens_compact": {
+    "lensify_compact": {
         "description": "Generate WORKING_CONTEXT.md from the current session's "
                        "tracked activity. Used mid-session to reclaim 8-25k "
                        "tokens by /clear-with-continuity.",
@@ -147,8 +147,8 @@ TOOLS: dict[str, dict] = {
         },
         "handler": _tool_compact,
     },
-    "projectlens_stats": {
-        "description": "Lifetime ProjectLens stats: scans run, tokens saved, "
+    "lensify_stats": {
+        "description": "Lifetime Lensify stats: scans run, tokens saved, "
                        "dedup hits, edits tracked, compaction reclaim totals.",
         "inputSchema": {"type": "object", "properties": {}},
         "handler": _tool_stats,
@@ -159,7 +159,7 @@ TOOLS: dict[str, dict] = {
 # ---- JSON-RPC 2.0 protocol ----
 
 PROTOCOL_VERSION = "2024-11-05"  # MCP spec version we target
-SERVER_INFO = {"name": "projectlens-mcp", "version": "0.15.0"}
+SERVER_INFO = {"name": "lensify-mcp", "version": "0.15.0"}
 
 
 def _ok(rid: Any, result: Any) -> str:

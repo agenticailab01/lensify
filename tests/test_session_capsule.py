@@ -40,8 +40,8 @@ def populated_state(tmp_path):
 def test_session_capsule_has_markers(populated_state):
     state, _ = populated_state
     capsule = build_session_capsule(state)
-    assert "<!-- projectlens-session-begin -->" in capsule
-    assert "<!-- projectlens-session-end -->" in capsule
+    assert "<!-- lensify-session-begin -->" in capsule
+    assert "<!-- lensify-session-end -->" in capsule
 
 
 def test_session_capsule_within_budget(populated_state):
@@ -84,7 +84,7 @@ def test_session_capsule_empty_state(tmp_path):
     capsule = build_session_capsule(state)
     # Should still produce something with header
     assert "SESSION ACTIVITY" in capsule
-    assert "<!-- projectlens-session-begin -->" in capsule
+    assert "<!-- lensify-session-begin -->" in capsule
 
 
 def test_write_session_capsule_writes_file(populated_state):

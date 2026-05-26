@@ -1,15 +1,15 @@
-# Contributing to ProjectLens
+# Contributing to Lensify
 
-Thanks for thinking about contributing. ProjectLens is a small, opinionated tool — the contribution surface is deliberately narrow so we can keep it fast, secure, and predictable.
+Thanks for thinking about contributing. Lensify is a small, opinionated tool — the contribution surface is deliberately narrow so we can keep it fast, secure, and predictable.
 
 ## Quick start
 
 ```bash
-git clone https://github.com/agenticailab01/projectlens
-cd projectlens
+git clone https://github.com/agenticailab01/lensify
+cd lensify
 python3 -m pytest tests/ -q                  # 527 tests
 python3 -m pytest tests/benchmark_perf.py -q # 17 perf + security budgets
-python3 skills/projectlens/scripts/scan.py . --no-git
+python3 skills/lensify/scripts/scan.py . --no-git
 ```
 
 Everything should be green before you start editing.
@@ -18,7 +18,7 @@ Everything should be green before you start editing.
 
 | Category | Examples |
 |---|---|
-| **New framework adapters** | Next.js, Astro, NestJS, Django, Spring Boot — see `skills/projectlens/references/adapter-sdk.md` |
+| **New framework adapters** | Next.js, Astro, NestJS, Django, Spring Boot — see `skills/lensify/references/adapter-sdk.md` |
 | **Bug fixes** | Anything correctness or perf-related in shipped adapters or hooks |
 | **Documentation** | README clarifications, integration recipes, FAQ additions |
 | **Performance work** | Anything that keeps the perf budgets green while doing more |
@@ -44,13 +44,13 @@ See `GOVERNANCE.md` for the full list. The non-negotiables:
 
 ## Adapter contributions in detail
 
-The fastest way to contribute is a new framework adapter. The SDK is documented at `skills/projectlens/references/adapter-sdk.md` with a template at `skills/projectlens/scripts/frameworks/_template/`.
+The fastest way to contribute is a new framework adapter. The SDK is documented at `skills/lensify/references/adapter-sdk.md` with a template at `skills/lensify/scripts/frameworks/_template/`.
 
 A complete adapter PR looks like:
 
 ```
-skills/projectlens/scripts/frameworks/_yourpack/yourframework.py  (~80-120 LOC)
-skills/projectlens/scripts/frameworks/manifest.json               (1 entry added)
+skills/lensify/scripts/frameworks/_yourpack/yourframework.py  (~80-120 LOC)
+skills/lensify/scripts/frameworks/manifest.json               (1 entry added)
 tests/test_yourpack_adapters.py                                   (~5-10 tests)
 CHANGELOG.md                                                       (new entry)
 ```

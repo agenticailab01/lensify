@@ -1,6 +1,6 @@
 # Medium Project Fixture
 
-Multi-module FastAPI-style stub for testing ProjectLens T2 tier detection.
+Multi-module FastAPI-style stub for testing Lensify T2 tier detection.
 
 Modules:
 - `api/` — HTTP routes and middleware

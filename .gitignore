@@ -47,11 +47,11 @@ dmypy.json
 Thumbs.db
 *.lnk
 
-# ProjectLens runtime data (must never be committed)
-projectlens-out/
-.projectlens-memory/
-.projectlens-state/
-.projectlens-cache/
+# Lensify runtime data (must never be committed)
+lensify-out/
+.lensify-memory/
+.lensify-state/
+.lensify-cache/
 
 # Local secrets / configs
 .env.local
@@ -62,7 +62,7 @@ secrets/
 
 # Package artefacts (built locally, distributed via releases instead)
 *.plugin
-projectlens-*.zip
+lensify-*.zip
 
 # Logs
 *.log

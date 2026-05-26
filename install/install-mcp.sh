@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# ProjectLens — one-command MCP installer.
+# Lensify — one-command MCP installer.
 #
 # Usage:
-#   bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-mcp.sh)
+#   bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-mcp.sh)
 #
 # Or after cloning:
 #   bash install/install-mcp.sh
 #
 # Auto-detects which AI coding tools you have installed (Cursor, VS Code,
-# Claude Code, Gemini CLI, Codex) and offers to register ProjectLens as
+# Claude Code, Gemini CLI, Codex) and offers to register Lensify as
 # an MCP server in each one — no manual JSON editing.
 
 set -euo pipefail
@@ -19,21 +19,23 @@ WARN(){ printf "${YELLOW}⚠${NC} %s\n" "$*"; }
 ERR() { printf "${RED}✗${NC} %s\n" "$*"; }
 
 # ---------- locate or clone the repo ----------
-REPO_URL="https://github.com/agenticailab01/projectlens"
-if [[ -d "${PROJECTLENS_DIR:-}" ]]; then
-  PL_DIR="$PROJECTLENS_DIR"
-elif [[ -d "$HOME/projectlens" ]]; then
-  PL_DIR="$HOME/projectlens"
+REPO_URL="https://github.com/agenticailab01/lensify"
+if [[ -d "${LENSIFY_DIR:-}" ]]; then
+  PL_DIR="$LENSIFY_DIR"
+elif [[ -d "$HOME/lensify" ]]; then
+  PL_DIR="$HOME/lensify"
+elif [[ -d "$HOME/Documents/GitHub/Claude/Lensify" ]]; then
+  PL_DIR="$HOME/Documents/GitHub/Claude/Lensify"
 else
-  SAY "Cloning ProjectLens to $HOME/projectlens"
-  git clone --depth 1 "$REPO_URL" "$HOME/projectlens"
-  PL_DIR="$HOME/projectlens"
+  SAY "Cloning Lensify to $HOME/lensify"
+  git clone --depth 1 "$REPO_URL" "$HOME/lensify"
+  PL_DIR="$HOME/lensify"
 fi
-OK "ProjectLens repo at: $PL_DIR"
+OK "Lensify repo at: $PL_DIR"
 
 # Quick sanity check — does mcp_server/__main__.py exist?
 if [[ ! -f "$PL_DIR/mcp_server/__main__.py" ]]; then
-  ERR "$PL_DIR doesn't look like a ProjectLens checkout (no mcp_server/__main__.py)"
+  ERR "$PL_DIR doesn't look like a Lensify checkout (no mcp_server/__main__.py)"
   exit 1
 fi
 
@@ -56,7 +58,7 @@ has codex    && AVAILABLE+=("codex")
 
 if [[ ${#AVAILABLE[@]} -eq 0 ]]; then
   WARN "No supported tools detected on PATH (cursor / code / claude / gemini / codex)"
-  WARN "Install ProjectLens as a plugin instead — see docs/integrations/ in the repo"
+  WARN "Install Lensify as a plugin instead — see USER-INSTALL.md"
   exit 0
 fi
 
@@ -96,7 +98,7 @@ fi
 install_cursor() {
   SAY "Configuring Cursor..."
   # Cursor 0.42+ exposes: cursor mcp add <name> <command> [args...] [--cwd path]
-  if cursor mcp add projectlens "$PYTHON_BIN" "-m" "mcp_server" --cwd "$PL_DIR" 2>/dev/null; then
+  if cursor mcp add lensify "$PYTHON_BIN" "-m" "mcp_server" --cwd "$PL_DIR" 2>/dev/null; then
     OK "Cursor configured."
     return
   fi
@@ -108,7 +110,7 @@ import json, sys, os
 cfg_path, py, cwd = sys.argv[1], sys.argv[2], sys.argv[3]
 try: cfg = json.load(open(cfg_path))
 except Exception: cfg = {}
-cfg.setdefault("mcpServers", {})["projectlens"] = {"command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
+cfg.setdefault("mcpServers", {})["lensify"] = {"command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
 open(cfg_path, "w").write(json.dumps(cfg, indent=2))
 print(f"  wrote {cfg_path}")
 PY
@@ -119,7 +121,7 @@ install_vscode() {
   SAY "Configuring VS Code..."
   # code --add-mcp '{...}'  (VS Code 1.93+)
   CFG_JSON=$(cat <<JSON
-{"name":"projectlens","type":"stdio","command":"$PYTHON_BIN","args":["-m","mcp_server"],"cwd":"$PL_DIR"}
+{"name":"lensify","type":"stdio","command":"$PYTHON_BIN","args":["-m","mcp_server"],"cwd":"$PL_DIR"}
 JSON
 )
   if code --add-mcp "$CFG_JSON" 2>/dev/null; then
@@ -134,7 +136,7 @@ import json, sys
 cfg_path, py, cwd = sys.argv[1], sys.argv[2], sys.argv[3]
 try: cfg = json.load(open(cfg_path))
 except Exception: cfg = {}
-cfg.setdefault("servers", {})["projectlens"] = {"type": "stdio", "command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
+cfg.setdefault("servers", {})["lensify"] = {"type": "stdio", "command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
 open(cfg_path, "w").write(json.dumps(cfg, indent=2))
 print(f"  wrote {cfg_path}")
 PY
@@ -144,7 +146,7 @@ PY
 install_claude() {
   SAY "Configuring Claude Code (MCP)..."
   # claude mcp add <name> -- <command> [args...]
-  if claude mcp add projectlens --scope user --cwd "$PL_DIR" -- "$PYTHON_BIN" -m mcp_server 2>/dev/null; then
+  if claude mcp add lensify --scope user --cwd "$PL_DIR" -- "$PYTHON_BIN" -m mcp_server 2>/dev/null; then
     OK "Claude Code MCP configured."
     return
   fi
@@ -155,7 +157,7 @@ import json, sys, os
 cfg_path, py, cwd = sys.argv[1], sys.argv[2], sys.argv[3]
 try: cfg = json.load(open(cfg_path))
 except Exception: cfg = {}
-cfg.setdefault("mcpServers", {})["projectlens"] = {"command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
+cfg.setdefault("mcpServers", {})["lensify"] = {"command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
 open(cfg_path, "w").write(json.dumps(cfg, indent=2))
 print(f"  wrote {cfg_path}")
 PY
@@ -164,7 +166,7 @@ PY
 
 install_gemini() {
   SAY "Configuring Gemini CLI..."
-  if gemini mcp add projectlens "$PYTHON_BIN" -m mcp_server --cwd "$PL_DIR" 2>/dev/null; then
+  if gemini mcp add lensify "$PYTHON_BIN" -m mcp_server --cwd "$PL_DIR" 2>/dev/null; then
     OK "Gemini CLI configured."
     return
   fi
@@ -175,7 +177,7 @@ import json, sys
 cfg_path, py, cwd = sys.argv[1], sys.argv[2], sys.argv[3]
 try: cfg = json.load(open(cfg_path))
 except Exception: cfg = {}
-cfg.setdefault("mcpServers", {})["projectlens"] = {"command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
+cfg.setdefault("mcpServers", {})["lensify"] = {"command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
 open(cfg_path, "w").write(json.dumps(cfg, indent=2))
 print(f"  wrote {cfg_path}")
 PY
@@ -186,13 +188,9 @@ install_codex() {
   SAY "Configuring OpenAI Codex CLI..."
   CFG="$HOME/.codex/config.toml"
   mkdir -p "$(dirname "$CFG")"
-  if grep -q '\[mcp_servers.projectlens\]' "$CFG" 2>/dev/null; then
-    OK "Codex already configured (skipping duplicate). Restart Codex."
-    return
-  fi
   cat >> "$CFG" <<TOML
 
-[mcp_servers.projectlens]
+[mcp_servers.lensify]
 command = "$PYTHON_BIN"
 args    = ["-m", "mcp_server"]
 cwd     = "$PL_DIR"
@@ -213,4 +211,4 @@ for t in "${TARGETS[@]}"; do
 done
 
 echo
-OK "Done. Restart the configured tools and ask your agent: \"scan this project with ProjectLens\""
+OK "Done. Restart the configured tools and ask your agent: \"scan this project with Lensify\""

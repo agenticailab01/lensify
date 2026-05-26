@@ -26,7 +26,7 @@ If the bug is in an adapter, include a tiny project that triggers it (5-10 lines
 
 ## Environment
 
-- ProjectLens version: (run `projectlens --version` or check `.claude-plugin/plugin.json`)
+- Lensify version: (run `lensify --version` or check `.claude-plugin/plugin.json`)
 - Channel: (plugin / MCP server / CLI / AGENTS.md mode)
 - Python: (output of `python3 --version`)
 - OS: (macOS / Linux / Windows)

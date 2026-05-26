@@ -22,7 +22,7 @@ from scripts.llm_client import LLMResult
 
 COMPACT_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "projectlens" / "scripts" / "compact.py"
+    / "skills" / "lensify" / "scripts" / "compact.py"
 )
 
 
@@ -78,7 +78,7 @@ def test_build_working_context_includes_dedup_stats(busy_state):
 def test_run_compact_writes_file(busy_state):
     state, project = busy_state
     meta = run_compact(project)
-    target = project / "projectlens-out" / "WORKING_CONTEXT.md"
+    target = project / "lensify-out" / "WORKING_CONTEXT.md"
     assert target.exists()
     assert meta["path"] == str(target)
     assert meta["size_bytes"] > 100
@@ -164,7 +164,7 @@ def test_cli_runs_deterministically(busy_state, tmp_path):
     banner = json.loads(proc.stdout)
     assert "path" in banner
     assert banner["llm_enhanced"] is False
-    assert (project / "projectlens-out" / "WORKING_CONTEXT.md").exists()
+    assert (project / "lensify-out" / "WORKING_CONTEXT.md").exists()
 
 
 def test_cli_emits_json_with_flag(busy_state):
@@ -195,5 +195,5 @@ def test_compact_includes_session_id(busy_state):
     state.session_id = "my-test-session-id"
     save_state(state, project)
     meta = run_compact(project)
-    body = (project / "projectlens-out" / "WORKING_CONTEXT.md").read_text()
+    body = (project / "lensify-out" / "WORKING_CONTEXT.md").read_text()
     assert "my-test-session-id" in body

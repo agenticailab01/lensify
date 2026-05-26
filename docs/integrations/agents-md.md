@@ -4,10 +4,10 @@ The simplest integration — works with **any** tool that reads a project-root c
 
 ## What it does
 
-`projectlens . --install-agents-md` runs a scan and writes the capsule into a file at your project root, wrapped in idempotent markers:
+`lensify . --install-agents-md` runs a scan and writes the capsule into a file at your project root, wrapped in idempotent markers:
 
 ```markdown
-<!-- projectlens-begin -->
+<!-- lensify-begin -->
 
 # SUMMARY
 
@@ -18,7 +18,7 @@ Python web API in Python; 312 files, 18,450 LOC.
 - `POST /users`  (api.py:23)
 ...
 
-<!-- projectlens-end -->
+<!-- lensify-end -->
 ```
 
 Tools that read this file get the capsule for free, no plugin install needed.
@@ -39,30 +39,30 @@ Different tools read different filenames by convention:
 Default if you don't specify:
 
 ```bash
-projectlens . --install-agents-md          # writes AGENTS.md
+lensify . --install-agents-md          # writes AGENTS.md
 ```
 
 Pick a different file:
 
 ```bash
-projectlens . --install-agents-md GEMINI.md
-projectlens . --install-agents-md CLAUDE.md
-projectlens . --install-agents-md docs/CONTEXT.md
+lensify . --install-agents-md GEMINI.md
+lensify . --install-agents-md CLAUDE.md
+lensify . --install-agents-md docs/CONTEXT.md
 ```
 
 ## Idempotency
 
-Re-running the command replaces only the content between `<!-- projectlens-begin -->` and `<!-- projectlens-end -->`. Anything else you've written into the file (your own instructions, project conventions, contributor notes) is preserved.
+Re-running the command replaces only the content between `<!-- lensify-begin -->` and `<!-- lensify-end -->`. Anything else you've written into the file (your own instructions, project conventions, contributor notes) is preserved.
 
 ## Suggested workflow
 
 1. Maintain your own per-project instructions outside the markers
-2. Refresh the projectlens block via a one-liner whenever the codebase changes meaningfully:
+2. Refresh the lensify block via a one-liner whenever the codebase changes meaningfully:
 
 ```bash
 # Add to a Makefile or pre-commit hook
-projectlens-refresh:
-	projectlens . --install-agents-md
+lensify-refresh:
+	lensify . --install-agents-md
 ```
 
 3. Tools that read the file get the latest capsule with zero plugin install

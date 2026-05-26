@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "projectlens"
+SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "lensify"
 sys.path.insert(0, str(SCRIPTS))
 
 from scripts.walker import walk  # noqa: E402

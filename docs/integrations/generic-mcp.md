@@ -1,6 +1,6 @@
 # Generic MCP host
 
-Any MCP-compatible tool can use ProjectLens via the stdio server. This recipe is the generic baseline — adapt to your tool's specific config format.
+Any MCP-compatible tool can use Lensify via the stdio server. This recipe is the generic baseline — adapt to your tool's specific config format.
 
 ## Server invocation
 
@@ -14,20 +14,20 @@ Reads JSON-RPC 2.0 requests from stdin, writes responses to stdout (newline-deli
 
 | Tool | Description | Required args |
 |---|---|---|
-| `projectlens_scan` | Generate lens + capsule for a project | `path` |
-| `projectlens_compact` | Generate WORKING_CONTEXT.md from session state | `path` |
-| `projectlens_stats` | Lifetime savings report | (none) |
+| `lensify_scan` | Generate lens + capsule for a project | `path` |
+| `lensify_compact` | Generate WORKING_CONTEXT.md from session state | `path` |
+| `lensify_stats` | Lifetime savings report | (none) |
 
 ## Optional args
 
-For `projectlens_scan`:
+For `lensify_scan`:
 - `tier`: `"auto"` (default) / `"T1"` / `"T2"` / `"T3"`
 - `capsule_only`: skip HTML, write only the Markdown capsule
 - `ast_only`: deterministic mode — no LLM enrichment of narrative
 - `no_git`: skip git hotspot analysis (faster)
-- `output_dir`: override default `<project>/projectlens-out/`
+- `output_dir`: override default `<project>/lensify-out/`
 
-For `projectlens_compact`:
+For `lensify_compact`:
 - `llm`: enable Haiku-enhanced narrative (requires `ANTHROPIC_API_KEY`)
 - `output_dir`
 
@@ -38,10 +38,10 @@ Most MCP hosts accept some variant of:
 ```json
 {
   "mcpServers": {
-    "projectlens": {
+    "lensify": {
       "command": "python3",
       "args": ["-m", "mcp_server"],
-      "cwd": "/absolute/path/to/projectlens"
+      "cwd": "~/lensify"
     }
   }
 }
@@ -75,4 +75,4 @@ You should see well-formed JSON-RPC responses on stdout.
 
 ## Disabling
 
-Remove the `projectlens` entry from your tool's MCP config. The ProjectLens server is stateless across hosts.
+Remove the `lensify` entry from your tool's MCP config. The Lensify server is stateless across hosts.

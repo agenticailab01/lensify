@@ -5,11 +5,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/projectlens/scripts/dedup_hook.py --session-start"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/lensify/scripts/dedup_hook.py --session-start"
           },
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/projectlens/scripts/memory_loader.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/lensify/scripts/memory_loader.py"
           }
         ]
       }
@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/projectlens/scripts/dedup_hook.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/lensify/scripts/dedup_hook.py"
           }
         ]
       }
@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/projectlens/scripts/activity_hook.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/lensify/scripts/activity_hook.py"
           }
         ]
       },
@@ -40,7 +40,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/projectlens/scripts/compress_hook.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/lensify/scripts/compress_hook.py"
           }
         ]
       }
@@ -50,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/projectlens/scripts/inject_hook.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/skills/lensify/scripts/inject_hook.py"
           }
         ]
       }

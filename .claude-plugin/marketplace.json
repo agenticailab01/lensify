@@ -1,5 +1,5 @@
 {
-  "name": "projectlens",
+  "name": "lensify",
   "owner": {
     "name": "Sachin Patil",
     "email": "agenticailab01@gmail.com",
@@ -11,16 +11,16 @@
   },
   "plugins": [
     {
-      "name": "projectlens",
-      "source": "../",
+      "name": "lensify",
+      "source": "./",
       "description": "Single-scan adaptive project lens + token-optimized context capsule for AI coding agents. 30 framework adapters across 8 packs. Pure stdlib.",
       "version": "0.15.0",
       "author": {
         "name": "Sachin Patil",
         "email": "agenticailab01@gmail.com"
       },
-      "homepage": "https://github.com/agenticailab01/projectlens",
-      "repository": "https://github.com/agenticailab01/projectlens",
+      "homepage": "https://github.com/agenticailab01/lensify",
+      "repository": "https://github.com/agenticailab01/lensify",
       "license": "MIT",
       "category": ["productivity", "developer-tools"],
       "tags": [

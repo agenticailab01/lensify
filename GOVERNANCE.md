@@ -2,7 +2,7 @@
 
 ## Purpose + scope
 
-ProjectLens exists to **reduce orientation tokens** and **summarise project structure** for AI coding agents. Everything in the codebase serves that purpose. We don't accept changes that go beyond it.
+Lensify exists to **reduce orientation tokens** and **summarise project structure** for AI coding agents. Everything in the codebase serves that purpose. We don't accept changes that go beyond it.
 
 In particular, the project explicitly does **not** intend to be:
 
@@ -48,32 +48,32 @@ Per-event safeguards built into the codebase:
 | Capsule output bloats the prompt | Per-tier total token budgets enforced by `test_capsule_token_budget_unchanged` |
 | Adapter floods capsule with entries | `ABSOLUTE_MAX_ENTRIES = 50` per adapter, capped by base class |
 | Repeated reads burn tokens | Dedup hook collapses re-reads to a single flag |
-| Huge files block scans | 1 MB per-file read cap (`PROJECTLENS_MAX_READ_BYTES`), 5 MB notebook cap |
+| Huge files block scans | 1 MB per-file read cap (`LENSIFY_MAX_READ_BYTES`), 5 MB notebook cap |
 | Long git history blocks scans | 30-second subprocess timeout |
 | Adapter exception kills scan | Every adapter call is wrapped in `try/except` — a broken adapter never breaks the scan |
-| Untrusted user adapters auto-run | Off by default; requires `PROJECTLENS_USER_ADAPTERS=1` in user's shell |
+| Untrusted user adapters auto-run | Off by default; requires `LENSIFY_USER_ADAPTERS=1` in user's shell |
 
 ## User rights + transparency
 
 Every persistent surface has a documented opt-out env var:
 
 ```bash
-PROJECTLENS_DEDUP=0          # turn off ALL hooks
-PROJECTLENS_STATS=0          # turn off lifetime stats
-PROJECTLENS_MEMORY=0         # turn off cross-session memory
-PROJECTLENS_COMPRESS_OUTPUT=0 # turn off output compression
-PROJECTLENS_USER_ADAPTERS=1  # opt IN to user-defined adapters (off by default)
-PROJECTLENS_MAX_READ_BYTES=N # change per-file read cap
-PROJECTLENS_STATS_HOME=path  # change where stats live (tests / power users)
+LENSIFY_DEDUP=0          # turn off ALL hooks
+LENSIFY_STATS=0          # turn off lifetime stats
+LENSIFY_MEMORY=0         # turn off cross-session memory
+LENSIFY_COMPRESS_OUTPUT=0 # turn off output compression
+LENSIFY_USER_ADAPTERS=1  # opt IN to user-defined adapters (off by default)
+LENSIFY_MAX_READ_BYTES=N # change per-file read cap
+LENSIFY_STATS_HOME=path  # change where stats live (tests / power users)
 ```
 
 All persistent files are plain JSON / Markdown — auditable, deletable, no databases or binary formats.
 
-`/projectlens stats` shows what's accumulated locally. Delete `~/.projectlens/` and `<project>/.projectlens-memory/` to wipe everything.
+`/lensify stats` shows what's accumulated locally. Delete `~/.lensify/` and `<project>/.lensify-memory/` to wipe everything.
 
 ## Legal + ethical use
 
-ProjectLens is intended for use on code its operator has the right to view. Don't use it to:
+Lensify is intended for use on code its operator has the right to view. Don't use it to:
 
 - Survey code you obtained without authorisation
 - Reverse-engineer products in violation of their licenses

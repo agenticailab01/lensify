@@ -64,8 +64,8 @@ def test_capsule_contains_summary_always():
 
 def test_capsule_has_markers():
     capsule = build_capsule(SAMPLE_LENS, "T2")
-    assert "<!-- projectlens-begin -->" in capsule
-    assert "<!-- projectlens-end -->" in capsule
+    assert "<!-- lensify-begin -->" in capsule
+    assert "<!-- lensify-end -->" in capsule
 
 
 def test_capsule_includes_all_sections_when_room():
@@ -97,14 +97,14 @@ def test_install_into_creates_file(tmp_path):
     inserted, msg = install_into(capsule, str(target))
     assert inserted
     assert target.exists()
-    assert "<!-- projectlens-begin -->" in target.read_text()
+    assert "<!-- lensify-begin -->" in target.read_text()
 
 
 def test_install_into_replaces_existing(tmp_path):
     target = tmp_path / "CLAUDE.md"
     target.write_text(
         "# Project notes\n\n"
-        "<!-- projectlens-begin -->\nold content\n<!-- projectlens-end -->\n\n"
+        "<!-- lensify-begin -->\nold content\n<!-- lensify-end -->\n\n"
         "After block\n"
     )
     new_capsule = build_capsule(SAMPLE_LENS, "T1")
@@ -122,7 +122,7 @@ def test_install_into_appends_when_no_existing_block(tmp_path):
     inserted, msg = install_into(capsule, str(target))
     content = target.read_text()
     assert "Existing notes" in content
-    assert "<!-- projectlens-begin -->" in content
+    assert "<!-- lensify-begin -->" in content
 
 
 def test_unknown_tier_rejected():

@@ -182,17 +182,17 @@ def test_format_memories_empty():
 
 
 def test_is_disabled_default_false(monkeypatch):
-    monkeypatch.delenv("PROJECTLENS_MEMORY", raising=False)
+    monkeypatch.delenv("LENSIFY_MEMORY", raising=False)
     assert is_disabled() is False
 
 
 def test_is_disabled_via_env(monkeypatch):
-    monkeypatch.setenv("PROJECTLENS_MEMORY", "0")
+    monkeypatch.setenv("LENSIFY_MEMORY", "0")
     assert is_disabled() is True
 
 
 def test_save_no_op_when_disabled(project, monkeypatch):
-    monkeypatch.setenv("PROJECTLENS_MEMORY", "0")
+    monkeypatch.setenv("LENSIFY_MEMORY", "0")
     result = save_memory(_make_memory("blocked"), project)
     assert result is None
     assert not (project / MEMORY_DIRNAME).exists()

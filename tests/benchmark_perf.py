@@ -31,7 +31,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = ROOT / "skills" / "projectlens" / "scripts"
+SCRIPTS = ROOT / "skills" / "lensify" / "scripts"
 FRAMEWORKS = SCRIPTS / "frameworks"
 
 # ---- Hard caps (CI fails if exceeded) ----
@@ -129,7 +129,7 @@ def test_capsule_build_under_200ms():
     t0 = time.perf_counter()
     out = build_capsule(lens_data, "T3")
     elapsed_ms = (time.perf_counter() - t0) * 1000
-    assert "<!-- projectlens-begin -->" in out
+    assert "<!-- lensify-begin -->" in out
     assert elapsed_ms < CAPSULE_BUILD_HARD_MS, (
         f"capsule build took {elapsed_ms:.0f}ms, hard cap is {CAPSULE_BUILD_HARD_MS}ms"
     )
@@ -139,7 +139,7 @@ def test_capsule_build_under_200ms():
 
 def test_stats_record_event_under_100ms(tmp_path, monkeypatch):
     """record_event() must stay fast — it runs after every hook event."""
-    monkeypatch.setenv("PROJECTLENS_STATS_HOME", str(tmp_path))
+    monkeypatch.setenv("LENSIFY_STATS_HOME", str(tmp_path))
     sys.path.insert(0, str(SCRIPTS))
     from stats import record_event  # type: ignore
 
@@ -293,25 +293,25 @@ def test_outbound_network_only_anthropic_api():
 
 
 def test_user_adapter_loader_is_opt_in(monkeypatch, tmp_path):
-    """Confirms _load_user_adapters is gated behind PROJECTLENS_USER_ADAPTERS=1.
+    """Confirms _load_user_adapters is gated behind LENSIFY_USER_ADAPTERS=1.
 
-    Without the env var, scanning a repo with a `.projectlens/frameworks/`
+    Without the env var, scanning a repo with a `.lensify/frameworks/`
     directory must NOT import its Python modules.
     """
-    monkeypatch.delenv("PROJECTLENS_USER_ADAPTERS", raising=False)
+    monkeypatch.delenv("LENSIFY_USER_ADAPTERS", raising=False)
     sys.path.insert(0, str(SCRIPTS))
     from frameworks.registry import _load_user_adapters  # type: ignore
-    fw_dir = tmp_path / ".projectlens" / "frameworks"
+    fw_dir = tmp_path / ".lensify" / "frameworks"
     fw_dir.mkdir(parents=True)
     # This file would do something destructive if imported
     (fw_dir / "evil.py").write_text("raise RuntimeError('user adapter ran')\n")
     result = _load_user_adapters(fw_dir)
-    assert result == [], "User adapter loader fired without PROJECTLENS_USER_ADAPTERS=1"
+    assert result == [], "User adapter loader fired without LENSIFY_USER_ADAPTERS=1"
 
 
 def test_skill_md_under_3kb_target():
     """SKILL.md must stay lean; references hold the bulk."""
-    skill = ROOT / "skills" / "projectlens" / "SKILL.md"
+    skill = ROOT / "skills" / "lensify" / "SKILL.md"
     size = skill.stat().st_size
     # 8KB is the hard cap (current is ~6KB)
     assert size < 8_000, f"SKILL.md is {size}B; hard cap 8000B"

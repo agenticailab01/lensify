@@ -20,7 +20,7 @@ import time
 from pathlib import Path
 
 # Make scripts importable
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "projectlens"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "lensify"))
 
 from scripts.scan import scan  # noqa: E402
 from scripts.walker import walk  # noqa: E402
@@ -61,7 +61,7 @@ def run_benchmark(target: str) -> dict:
     lens_data = scan(
         str(target_path),
         no_git=False,
-        output_dir=str(target_path / "projectlens-out"),
+        output_dir=str(target_path / "lensify-out"),
     )
     build_time = time.time() - t0
     capsule_tokens = lens_data.get("capsule_tokens", 0)
@@ -115,7 +115,7 @@ def run_benchmark(target: str) -> dict:
 
 def print_report(b: dict) -> None:
     print("=" * 72)
-    print(f"ProjectLens benchmark for: {b['project']}")
+    print(f"Lensify benchmark for: {b['project']}")
     print(f"Tier: {b['tier']}  |  Files: {b['files_scanned']}  |  LOC: {b['loc']:,}")
     print(f"Lens build time: {b['build_seconds']}s   Capsule size: {b['capsule_tokens']} tok")
     print("=" * 72)
@@ -136,7 +136,7 @@ def print_report(b: dict) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="ProjectLens token-savings benchmark.")
+    parser = argparse.ArgumentParser(description="Lensify token-savings benchmark.")
     parser.add_argument("target", help="Path to project to benchmark")
     parser.add_argument("--json", action="store_true", help="Emit JSON only")
     args = parser.parse_args(argv)

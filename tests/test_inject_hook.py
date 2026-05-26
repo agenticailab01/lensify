@@ -11,7 +11,7 @@ import pytest
 
 HOOK_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "projectlens" / "scripts" / "inject_hook.py"
+    / "skills" / "lensify" / "scripts" / "inject_hook.py"
 )
 
 SAMPLE_SECTIONS = {
@@ -52,7 +52,7 @@ def run_hook(payload: dict, env_extra: dict | None = None) -> dict:
 
 @pytest.fixture
 def project_with_sections(tmp_path) -> Path:
-    out = tmp_path / "projectlens-out"
+    out = tmp_path / "lensify-out"
     out.mkdir()
     (out / "lens.sections.json").write_text(json.dumps(SAMPLE_SECTIONS))
     return tmp_path
@@ -87,14 +87,14 @@ def test_hook_injects_modules_when_module_named(project_with_sections):
 
 
 def test_hook_appends_session_when_session_intent(tmp_path):
-    out_dir = tmp_path / "projectlens-out"
+    out_dir = tmp_path / "lensify-out"
     out_dir.mkdir()
     (out_dir / "lens.sections.json").write_text(json.dumps(SAMPLE_SECTIONS))
     # Provide a session capsule on disk too
     (out_dir / "SESSION.capsule.md").write_text(
-        "<!-- projectlens-session-begin -->\n"
+        "<!-- lensify-session-begin -->\n"
         "# SESSION ACTIVITY\n\nTurn 5 · 3 files seen.\n"
-        "<!-- projectlens-session-end -->\n"
+        "<!-- lensify-session-end -->\n"
     )
     out = run_hook({
         "cwd": str(tmp_path),
@@ -106,7 +106,7 @@ def test_hook_appends_session_when_session_intent(tmp_path):
 
 
 def test_hook_handles_malformed_sections_json(tmp_path):
-    out_dir = tmp_path / "projectlens-out"
+    out_dir = tmp_path / "lensify-out"
     out_dir.mkdir()
     (out_dir / "lens.sections.json").write_text("not valid json {{")
     out = run_hook({"cwd": str(tmp_path), "prompt": "what is this project?"})
@@ -116,7 +116,7 @@ def test_hook_handles_malformed_sections_json(tmp_path):
 def test_hook_disabled_by_env(project_with_sections):
     out = run_hook(
         {"cwd": str(project_with_sections), "prompt": "what is this?"},
-        env_extra={"PROJECTLENS_DEDUP": "0"},
+        env_extra={"LENSIFY_DEDUP": "0"},
     )
     assert "hookSpecificOutput" not in out
 

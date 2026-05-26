@@ -8,7 +8,7 @@ import pytest
 
 # Make the scripts package importable from tests.
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "skills" / "projectlens"))
+sys.path.insert(0, str(ROOT / "skills" / "lensify"))
 
 
 @pytest.fixture

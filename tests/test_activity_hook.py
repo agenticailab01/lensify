@@ -13,7 +13,7 @@ from scripts.session_state import load_state
 
 HOOK_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "projectlens" / "scripts" / "activity_hook.py"
+    / "skills" / "lensify" / "scripts" / "activity_hook.py"
 )
 
 
@@ -113,7 +113,7 @@ def test_hook_disabled_by_env(project):
         "tool_input": {"file_path": str(project / "src" / "main.py")},
         "tool_response": {},
     }
-    run_hook(payload, env_extra={"PROJECTLENS_DEDUP": "0"})
+    run_hook(payload, env_extra={"LENSIFY_DEDUP": "0"})
     state = load_state(project)
     # No activity recorded since hook bailed
     assert len(state.edits) == 0

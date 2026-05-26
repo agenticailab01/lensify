@@ -5,10 +5,10 @@ Cursor supports MCP servers via `.cursor/mcp.json` at the project root, or in `~
 ## Install
 
 ```bash
-git clone https://github.com/agenticailab01/projectlens ~/projectlens
+git clone https://github.com/agenticailab01/lensify ~/lensify
 ```
 
-(Or `pip install projectlens` once published.)
+(Or `pip install lensify` once published.)
 
 ## Configure
 
@@ -17,12 +17,12 @@ Create `.cursor/mcp.json` in your project:
 ```json
 {
   "mcpServers": {
-    "projectlens": {
+    "lensify": {
       "command": "python3",
       "args": ["-m", "mcp_server"],
-      "cwd": "/Users/you/projectlens",
+      "cwd": "~/lensify",
       "env": {
-        "PYTHONPATH": "/Users/you/projectlens"
+        "PYTHONPATH": "/Users/you/lensify"
       }
     }
   }
@@ -36,19 +36,19 @@ Restart Cursor's MCP servers (Settings → MCP → reload).
 In the Cursor chat:
 
 ```
-@projectlens scan this project
-@projectlens compact
-@projectlens stats
+@lensify scan this project
+@lensify compact
+@lensify stats
 ```
 
-Cursor will call the three exposed tools (`projectlens_scan`, `projectlens_compact`, `projectlens_stats`) and ingest the returned capsule directly into the chat context.
+Cursor will call the three exposed tools (`lensify_scan`, `lensify_compact`, `lensify_stats`) and ingest the returned capsule directly into the chat context.
 
 ## What you get
 
 - The Markdown capsule appears in the chat
-- `LENS.html` is written to `<project>/projectlens-out/` — open in the browser
-- Cursor caches the result; re-run `@projectlens scan` to refresh
+- `LENS.html` is written to `<project>/lensify-out/` — open in the browser
+- Cursor caches the result; re-run `@lensify scan` to refresh
 
 ## Disable everything
 
-Remove the `projectlens` entry from `.cursor/mcp.json`. Cursor's other MCP servers are unaffected.
+Remove the `lensify` entry from `.cursor/mcp.json`. Cursor's other MCP servers are unaffected.

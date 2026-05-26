@@ -32,7 +32,7 @@ Link to a small open-source project that uses this framework, so we can validate
 
 ## Are you willing to write it
 
-The fastest path is a PR — see `skills/projectlens/references/adapter-sdk.md` for the SDK guide. Adapters are typically ~80-120 LOC plus tests.
+The fastest path is a PR — see `skills/lensify/references/adapter-sdk.md` for the SDK guide. Adapters are typically ~80-120 LOC plus tests.
 
 - [ ] I'd like to write this myself
 - [ ] I'd like someone else to write it

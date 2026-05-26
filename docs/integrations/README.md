@@ -1,13 +1,13 @@
 # Per-tool integration recipes
 
-ProjectLens ships in **four distribution channels** so it works with virtually any AI coding tool:
+Lensify ships in **four distribution channels** so it works with virtually any AI coding tool:
 
 | Channel | Tools | Setup |
 |---|---|---|
-| Native plugin | Claude Code, Cowork | Drop in `projectlens.plugin` |
+| Native plugin | Claude Code, Cowork | Drop in `lensify.plugin` |
 | MCP server | Cursor, VS Code Copilot Chat, Codex, Gemini CLI, OpenCode, Trae, Kiro, Antigravity | Add a `mcp.json` entry pointing at `python -m mcp_server` |
-| CLI | Aider, GitHub Copilot CLI, scripts, CI/CD | `pip install projectlens && projectlens <path>` |
-| `AGENTS.md` context file | Anything that auto-reads project context files | `projectlens <path> --install-agents-md` |
+| CLI | Aider, GitHub Copilot CLI, scripts, CI/CD | `pip install lensify && lensify <path>` |
+| `AGENTS.md` context file | Anything that auto-reads project context files | `lensify <path> --install-agents-md` |
 
 Pick the channel matching your tool. Recipes below:
 

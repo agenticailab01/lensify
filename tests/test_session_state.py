@@ -158,13 +158,13 @@ def test_increment_turn_advances():
 
 
 def test_is_disabled_default_false(monkeypatch):
-    monkeypatch.delenv("PROJECTLENS_DEDUP", raising=False)
+    monkeypatch.delenv("LENSIFY_DEDUP", raising=False)
     assert is_disabled() is False
 
 
 @pytest.mark.parametrize("value", ["0", "false", "no", "off"])
 def test_is_disabled_recognises_falsy(monkeypatch, value):
-    monkeypatch.setenv("PROJECTLENS_DEDUP", value)
+    monkeypatch.setenv("LENSIFY_DEDUP", value)
     assert is_disabled() is True
 
 

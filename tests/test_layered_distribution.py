@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = REPO_ROOT / "skills" / "projectlens" / "scripts"
+SCRIPTS = REPO_ROOT / "skills" / "lensify" / "scripts"
 
 
 # ---- CLI entry point ----
@@ -47,7 +47,7 @@ def test_cli_version_flag():
         capture_output=True, text=True, timeout=5,
     )
     assert proc.returncode == 0
-    assert "projectlens" in proc.stdout
+    assert "lensify" in proc.stdout
     # Version should start with a digit
     assert any(c.isdigit() for c in proc.stdout)
 
@@ -64,8 +64,8 @@ def test_install_agents_md_writes_capsule(tiny_project):
     assert proc.returncode == 0, proc.stderr
     assert agents.exists()
     text = agents.read_text(encoding="utf-8")
-    assert "<!-- projectlens-begin -->" in text
-    assert "<!-- projectlens-end -->" in text
+    assert "<!-- lensify-begin -->" in text
+    assert "<!-- lensify-end -->" in text
 
 
 def test_install_agents_md_is_idempotent(tiny_project):
@@ -84,7 +84,7 @@ def test_install_agents_md_is_idempotent(tiny_project):
     )
     first = agents.read_text(encoding="utf-8")
     assert "Do not run tests in production" in first
-    assert "<!-- projectlens-begin -->" in first
+    assert "<!-- lensify-begin -->" in first
     # Run again
     subprocess.run(
         [sys.executable, str(SCRIPTS / "scan.py"), str(tiny_project),
@@ -95,7 +95,7 @@ def test_install_agents_md_is_idempotent(tiny_project):
     # Custom content still there
     assert "Do not run tests in production" in second
     # Only one capsule block (idempotent — not duplicated)
-    assert second.count("<!-- projectlens-begin -->") == 1
+    assert second.count("<!-- lensify-begin -->") == 1
 
 
 def test_install_agents_md_custom_path(tiny_project):
@@ -108,7 +108,7 @@ def test_install_agents_md_custom_path(tiny_project):
     assert proc.returncode == 0, proc.stderr
     gemini = tiny_project / "GEMINI.md"
     assert gemini.exists()
-    assert "<!-- projectlens-begin -->" in gemini.read_text(encoding="utf-8")
+    assert "<!-- lensify-begin -->" in gemini.read_text(encoding="utf-8")
 
 
 # ---- MCP server (stdio JSON-RPC) ----
@@ -144,7 +144,7 @@ def test_mcp_initialize():
     assert r["id"] == 1
     assert "result" in r
     assert "serverInfo" in r["result"]
-    assert r["result"]["serverInfo"]["name"] == "projectlens-mcp"
+    assert r["result"]["serverInfo"]["name"] == "lensify-mcp"
 
 
 def test_mcp_tools_list():
@@ -154,13 +154,13 @@ def test_mcp_tools_list():
     r = responses[0]
     assert "result" in r
     names = {t["name"] for t in r["result"]["tools"]}
-    assert names == {"projectlens_scan", "projectlens_compact", "projectlens_stats"}
+    assert names == {"lensify_scan", "lensify_compact", "lensify_stats"}
 
 
 def test_mcp_call_scan(tiny_project):
     responses = _send_mcp(
         {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {
-            "name": "projectlens_scan",
+            "name": "lensify_scan",
             "arguments": {"path": str(tiny_project), "no_git": True},
         }},
         timeout=20,

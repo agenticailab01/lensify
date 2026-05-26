@@ -1,6 +1,6 @@
-# ProjectLens
+# Lensify
 
-[![CI](https://github.com/agenticailab01/projectlens/actions/workflows/ci.yml/badge.svg)](https://github.com/agenticailab01/projectlens/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/) [![Version](https://img.shields.io/badge/version-0.15.0-brightgreen.svg)](CHANGELOG.md) [![Tests](https://img.shields.io/badge/tests-527%20passing-brightgreen.svg)](#tests--performance) [![Adapters](https://img.shields.io/badge/adapters-30%20across%208%20packs-blue.svg)](#framework-coverage)
+[![CI](https://github.com/agenticailab01/lensify/actions/workflows/ci.yml/badge.svg)](https://github.com/agenticailab01/lensify/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/) [![Version](https://img.shields.io/badge/version-0.15.0-brightgreen.svg)](CHANGELOG.md) [![Tests](https://img.shields.io/badge/tests-527%20passing-brightgreen.svg)](#tests--performance) [![Adapters](https://img.shields.io/badge/adapters-30%20across%208%20packs-blue.svg)](#framework-coverage)
 
 > **Single-scan adaptive project lens + token-optimized context capsule for AI coding agents.** Cuts orientation tokens by 70–90%. Framework-aware across the full AI development lifecycle. Pure stdlib. MIT-licensed.
 
@@ -10,7 +10,7 @@
 
 ## Table of contents
 
-1. [Why ProjectLens](#why-projectlens)
+1. [Why Lensify](#why-lensify)
 2. [At a glance](#at-a-glance)
 3. [Quick start](#quick-start)
 4. [How it works](#how-it-works)
@@ -24,7 +24,7 @@
 12. [Security & governance](#security--governance)
 13. [Configuration env vars](#configuration)
 14. [Project structure](#project-structure)
-15. [Extend it — write your own adapter](#extending-projectlens)
+15. [Extend it — write your own adapter](#extending-lensify)
 16. [Comparison vs alternatives](#comparison)
 17. [FAQ](#faq)
 18. [Roadmap](#roadmap)
@@ -32,13 +32,13 @@
 
 ---
 
-## Why ProjectLens
+## Why Lensify
 
 Modern AI coding agents have a context-window problem: the bigger the project, the more tokens they burn just **orienting themselves**. A typical onboarding flow reads 20–40 files before the agent can do useful work — that's 10–30k tokens spent on understanding, not solving the user's actual problem.
 
-ProjectLens replaces that orientation phase with a **single scan** (sub-100 ms) that produces a token-bounded, framework-aware context block. The agent reads **one capsule** instead of dozens of files. Token usage drops 70–90% just from orientation savings — and the 5 session hooks stack additional savings on top.
+Lensify replaces that orientation phase with a **single scan** (sub-100 ms) that produces a token-bounded, framework-aware context block. The agent reads **one capsule** instead of dozens of files. Token usage drops 70–90% just from orientation savings — and the 5 session hooks stack additional savings on top.
 
-**The trade-off it makes:** deterministic structural extraction (fast, free, framework-aware) instead of semantic vector search (slower, embedding cost, generic). ProjectLens works alongside semantic tools like Cursor's `@codebase` and Sourcegraph Cody — not against them. Use ProjectLens for instant orientation; reach for semantic search when the agent needs to find something specific by meaning rather than structure.
+**The trade-off it makes:** deterministic structural extraction (fast, free, framework-aware) instead of semantic vector search (slower, embedding cost, generic). Lensify works alongside semantic tools like Cursor's `@codebase` and Sourcegraph Cody — not against them. Use Lensify for instant orientation; reach for semantic search when the agent needs to find something specific by meaning rather than structure.
 
 ---
 
@@ -63,20 +63,20 @@ ProjectLens replaces that orientation phase with a **single scan** (sub-100 ms) 
 
 ## Quick start
 
-ProjectLens has **three install paths**. Pick the one that matches your tool — every path takes under a minute.
+Lensify has **three install paths**. Pick the one that matches your tool — every path takes under a minute.
 
 ### 👉 Claude Code (terminal) — one command in chat
 
 ```
-/plugin marketplace add agenticailab01/projectlens
-/plugin install projectlens@projectlens
+/plugin marketplace add agenticailab01/lensify
+/plugin install lensify@lensify
 ```
 
-Then in any project: `/projectlens` to scan, `/projectlens compact` to recover tokens, `/projectlens stats` for savings.
+Then in any project: `/lensify` to scan, `/lensify compact` to recover tokens, `/lensify stats` for savings.
 
 ### 👉 Cowork (desktop app) — drag and drop
 
-1. Download `projectlens.plugin` from the [Releases page](https://github.com/agenticailab01/projectlens/releases).
+1. Download `lensify.plugin` from the [Releases page](https://github.com/agenticailab01/lensify/releases).
 2. Drag the file into the Cowork chat window.
 3. Click **Save plugin** on the preview card. Restart the conversation.
 
@@ -86,28 +86,28 @@ Pick the line that matches your tool:
 
 ```bash
 # Cursor
-bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-cursor.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-cursor.sh)
 
 # VS Code
-bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-vscode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-vscode.sh)
 
 # Gemini CLI
-bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-gemini.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-gemini.sh)
 
 # Codex
-bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-codex.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-codex.sh)
 
 # Or — auto-detect all installed tools and pick interactively
-bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-mcp.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-mcp.sh)
 ```
 
-Each script clones the repo if needed, then runs your tool's native MCP-add command. No JSON editing. Fully restart the tool after running — three new tools appear: `projectlens_scan`, `projectlens_compact`, `projectlens_stats`.
+Each script clones the repo if needed, then runs your tool's native MCP-add command. No JSON editing. Fully restart the tool after running — three new tools appear: `lensify_scan`, `lensify_compact`, `lensify_stats`.
 
 Prefer a one-click button or native CLI command? See [Installation by tool](#installation-by-tool).
 
-📖 Full step-by-step instructions are in **[`docs/integrations/`](docs/integrations/)** — per-tool recipes for every supported platform.
+📖 Full step-by-step instructions are in **[`USER-INSTALL.md`](USER-INSTALL.md)** — written for users who've never installed a plugin before.
 
-ProjectLens auto-picks the tier (T1 Sketch / T2 Atlas / T3 Compass) based on project size and complexity. A 12-file script and a 4,000-file monorepo each get the right depth — the user reads **one page** either way.
+Lensify auto-picks the tier (T1 Sketch / T2 Atlas / T3 Compass) based on project size and complexity. A 12-file script and a 4,000-file monorepo each get the right depth — the user reads **one page** either way.
 
 ---
 
@@ -145,22 +145,22 @@ The full experience: all 5 hooks fire, slash commands, statusline, memory loader
 Type these two lines **inside the Claude Code chat** (not in your shell):
 
 ```
-/plugin marketplace add agenticailab01/projectlens
-/plugin install projectlens@projectlens
+/plugin marketplace add agenticailab01/lensify
+/plugin install lensify@lensify
 ```
 
-The first line registers this GitHub repo as a plugin marketplace (it works because the repo has a `.claude-plugin/marketplace.json` file). The second installs the plugin from it. To uninstall later: `/plugin uninstall projectlens@projectlens`.
+The first line registers this GitHub repo as a plugin marketplace (it works because the repo has a `.claude-plugin/marketplace.json` file). The second installs the plugin from it. To uninstall later: `/plugin uninstall lensify@lensify`.
 
 **Cowork (desktop chat):**
-1. Download `projectlens.plugin` from the [Releases page](https://github.com/agenticailab01/projectlens/releases)
+1. Download `lensify.plugin` from the [Releases page](https://github.com/agenticailab01/lensify/releases)
 2. Drag-and-drop the file into the Cowork chat
 3. Click **Save plugin** on the preview card
-4. Restart the conversation — you'll see `ProjectLens dedup is active` confirming installation
+4. Restart the conversation — you'll see `Lensify dedup is active` confirming installation
 
 After install, the plugin files land at:
-- macOS: `~/.claude/plugins/projectlens/`
-- Linux: `~/.claude/plugins/projectlens/`
-- Windows: `%USERPROFILE%\.claude\plugins\projectlens\`
+- macOS: `~/.claude/plugins/lensify/`
+- Linux: `~/.claude/plugins/lensify/`
+- Windows: `%USERPROFILE%\.claude\plugins\lensify\`
 
 > **Note:** the CLI does not support `claude plugin install <url>` — it works through the marketplace mechanism above. The two-line `/plugin marketplace add` + `/plugin install` flow is the supported path.
 
@@ -172,42 +172,42 @@ After install, the plugin files land at:
 
 | Tool | One-line install |
 |---|---|
-| **Cursor** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-cursor.sh)` |
-| **VS Code** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-vscode.sh)` |
-| **Claude Code MCP** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-claude-mcp.sh)` |
-| **Gemini CLI** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-gemini.sh)` |
-| **OpenAI Codex** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-codex.sh)` |
-| **Auto-detect everything** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/projectlens/main/install/install-mcp.sh)` |
+| **Cursor** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-cursor.sh)` |
+| **VS Code** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-vscode.sh)` |
+| **Claude Code MCP** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-claude-mcp.sh)` |
+| **Gemini CLI** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-gemini.sh)` |
+| **OpenAI Codex** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-codex.sh)` |
+| **Auto-detect everything** | `bash <(curl -fsSL https://raw.githubusercontent.com/agenticailab01/lensify/main/install/install-mcp.sh)` |
 
 Each script:
-1. Clones the repo to `~/projectlens` if not already present (~200 KB, pure Python).
+1. Clones the repo to `~/lensify` if not already present (~200 KB, pure Python).
 2. Runs the tool's native MCP-add command (`cursor mcp add`, `code --add-mcp`, `claude mcp add`, `gemini mcp add`, etc.).
 3. Falls back to direct config file write if the CLI isn't available.
 
-After install, fully restart the tool. Three new tools appear: `projectlens_scan`, `projectlens_compact`, `projectlens_stats`.
+After install, fully restart the tool. Three new tools appear: `lensify_scan`, `lensify_compact`, `lensify_stats`.
 
 #### 🖱️ One-click install buttons (Cursor / VS Code)
 
 If you'd rather click a button than run a script, these deeplinks open your editor and prompt you to confirm the MCP server install:
 
-[![Install in Cursor](https://img.shields.io/badge/Install%20in-Cursor-000000?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=projectlens&config=eyJjb21tYW5kIjogInB5dGhvbjMiLCAiYXJncyI6IFsiLW0iLCAibWNwX3NlcnZlciJdLCAiY3dkIjogIiRIT01FL3Byb2plY3RsZW5zIn0)
-[![Install in VS Code](https://img.shields.io/badge/Install%20in-VS%20Code-007ACC?style=for-the-badge&logo=visualstudiocode)](vscode:mcp/install?%7B%22name%22%3A%22projectlens%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22python3%22%2C%22args%22%3A%5B%22-m%22%2C%22mcp_server%22%5D%2C%22cwd%22%3A%22%24HOME%2Fprojectlens%22%7D)
-[![Install in VS Code Insiders](https://img.shields.io/badge/Install%20in-VS%20Code%20Insiders-24bfa5?style=for-the-badge&logo=visualstudiocode)](vscode-insiders:mcp/install?%7B%22name%22%3A%22projectlens%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22python3%22%2C%22args%22%3A%5B%22-m%22%2C%22mcp_server%22%5D%2C%22cwd%22%3A%22%24HOME%2Fprojectlens%22%7D)
+[![Install in Cursor](https://img.shields.io/badge/Install%20in-Cursor-000000?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=lensify&config=eyJjb21tYW5kIjogInB5dGhvbjMiLCAiYXJncyI6IFsiLW0iLCAibWNwX3NlcnZlciJdLCAiY3dkIjogIiRIT01FL2xlbnNpZnkifQ)
+[![Install in VS Code](https://img.shields.io/badge/Install%20in-VS%20Code-007ACC?style=for-the-badge&logo=visualstudiocode)](vscode:mcp/install?%7B%22name%22%3A%20%22lensify%22%2C%20%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22python3%22%2C%20%22args%22%3A%20%5B%22-m%22%2C%20%22mcp_server%22%5D%2C%20%22cwd%22%3A%20%22%24HOME/lensify%22%7D)
+[![Install in VS Code Insiders](https://img.shields.io/badge/Install%20in-VS%20Code%20Insiders-24bfa5?style=for-the-badge&logo=visualstudiocode)](vscode-insiders:mcp/install?%7B%22name%22%3A%20%22lensify%22%2C%20%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22python3%22%2C%20%22args%22%3A%20%5B%22-m%22%2C%20%22mcp_server%22%5D%2C%20%22cwd%22%3A%20%22%24HOME/lensify%22%7D)
 
 You'll still need the repo cloned locally — the buttons handle the config registration, not the file checkout:
 
 ```bash
-git clone https://github.com/agenticailab01/projectlens ~/projectlens
+git clone https://github.com/agenticailab01/lensify ~/lensify
 ```
 
 #### 🛠️ Native CLI commands (if you prefer typing them yourself)
 
 | Tool | Command |
 |---|---|
-| Cursor | `cursor mcp add projectlens python3 -m mcp_server --cwd ~/projectlens` |
-| VS Code | `code --add-mcp '{"name":"projectlens","type":"stdio","command":"python3","args":["-m","mcp_server"],"cwd":"~/projectlens"}'` |
-| Claude Code | `claude mcp add projectlens --scope user --cwd ~/projectlens -- python3 -m mcp_server` |
-| Gemini CLI | `gemini mcp add projectlens python3 -m mcp_server --cwd ~/projectlens` |
+| Cursor | `cursor mcp add lensify python3 -m mcp_server --cwd ~/lensify` |
+| VS Code | `code --add-mcp '{"name":"lensify","type":"stdio","command":"python3","args":["-m","mcp_server"],"cwd":"~/lensify"}'` |
+| Claude Code | `claude mcp add lensify --scope user --cwd ~/lensify -- python3 -m mcp_server` |
+| Gemini CLI | `gemini mcp add lensify python3 -m mcp_server --cwd ~/lensify` |
 
 #### 📝 Manual config (last resort)
 
@@ -216,10 +216,10 @@ Only needed if your tool isn't covered above. Add this to the relevant MCP confi
 ```json
 {
   "mcpServers": {
-    "projectlens": {
+    "lensify": {
       "command": "python3",
       "args": ["-m", "mcp_server"],
-      "cwd": "/Users/you/projectlens"
+      "cwd": "/Users/you/lensify"
     }
   }
 }
@@ -239,17 +239,17 @@ Per-tool config file locations:
 
 | Tool name | Arguments | What it does |
 |---|---|---|
-| `projectlens_scan` | `path` (str, optional), `tier` ("T1"\|"T2"\|"T3"\|"auto"), `no_git` (bool) | Runs a full scan and returns the capsule + `LENS.html` path. |
-| `projectlens_compact` | `project_path` (str, optional), `llm` (bool) | Generates `WORKING_CONTEXT.md` from session state. |
-| `projectlens_stats` | (none) | Returns lifetime token-savings counters. |
+| `lensify_scan` | `path` (str, optional), `tier` ("T1"\|"T2"\|"T3"\|"auto"), `no_git` (bool) | Runs a full scan and returns the capsule + `LENS.html` path. |
+| `lensify_compact` | `project_path` (str, optional), `llm` (bool) | Generates `WORKING_CONTEXT.md` from session state. |
+| `lensify_stats` | (none) | Returns lifetime token-savings counters. |
 
 #### How the MCP channel differs from the Plugin channel
 
 | Capability | Plugin (Claude Code/Cowork) | MCP server (any tool) |
 |---|:---:|:---:|
-| `/projectlens` scan | ✓ | ✓ (via `projectlens_scan`) |
-| `/projectlens compact` | ✓ | ✓ (via `projectlens_compact`) |
-| `/projectlens stats` | ✓ | ✓ (via `projectlens_stats`) |
+| `/lensify` scan | ✓ | ✓ (via `lensify_scan`) |
+| `/lensify compact` | ✓ | ✓ (via `lensify_compact`) |
+| `/lensify stats` | ✓ | ✓ (via `lensify_stats`) |
 | 5 session hooks (dedup/inject/compress/memory/activity) | ✓ | ✗ (no hook surface in MCP spec) |
 
 Scan/compact/stats are identical across both channels — same Python code under the hood. What you lose in MCP is the **passive** hook savings; what you gain is **broad tool support**.
@@ -267,9 +267,9 @@ Scan/compact/stats are identical across both channels — same Python code under
 ### Channel 3 — Standalone CLI (Aider, Copilot CLI, scripts, CI)
 
 ```bash
-pip install projectlens
-projectlens --version
-projectlens . --no-git
+pip install lensify
+lensify --version
+lensify . --no-git
 ```
 
 Available flags:
@@ -277,26 +277,26 @@ Available flags:
 - `--capsule-only` — skip HTML, write only the Markdown capsule
 - `--ast-only` — deterministic mode, no LLM enrichment of narrative
 - `--no-git` — skip git hotspot analysis (faster)
-- `--output <dir>` — override output directory (default: `<target>/projectlens-out`)
+- `--output <dir>` — override output directory (default: `<target>/lensify-out`)
 - `--install-agents-md [FILE]` — append/update capsule inside a context file (default: `AGENTS.md`)
 - `--version` — print version and exit
 
 ### Channel 4 — AGENTS.md write mode (any tool that reads context files)
 
 ```bash
-projectlens . --install-agents-md              # writes AGENTS.md
-projectlens . --install-agents-md CLAUDE.md
-projectlens . --install-agents-md GEMINI.md
-projectlens . --install-agents-md .cursorrules
+lensify . --install-agents-md              # writes AGENTS.md
+lensify . --install-agents-md CLAUDE.md
+lensify . --install-agents-md GEMINI.md
+lensify . --install-agents-md .cursorrules
 ```
 
-The capsule lands inside the target file wrapped in idempotent `<!-- projectlens-begin -->` / `<!-- projectlens-end -->` markers. Re-running replaces only the marked block; any other content you've added is preserved.
+The capsule lands inside the target file wrapped in idempotent `<!-- lensify-begin -->` / `<!-- lensify-end -->` markers. Re-running replaces only the marked block; any other content you've added is preserved.
 
 ---
 
 ## Adaptive tiers
 
-ProjectLens picks the right depth automatically. Override with `--tier T1|T2|T3` only when you have a strong reason.
+Lensify picks the right depth automatically. Override with `--tier T1|T2|T3` only when you have a strong reason.
 
 | Tier | Trigger | Capsule budget | Use case |
 |---|---|---:|---|
@@ -304,7 +304,7 @@ ProjectLens picks the right depth automatically. Override with `--tier T1|T2|T3`
 | **T2 Atlas** | 50–1,000 files · 5k–100k LOC · multi-module | 2,100 tok | Most real projects (the sweet spot) |
 | **T3 Compass** | > 1,000 files · monorepo markers · 5+ top-level dirs | 3,600 tok | Monorepos, platforms, enterprise systems |
 
-Override hints in chat — ProjectLens reads intent:
+Override hints in chat — Lensify reads intent:
 
 | Signal | Resulting tier |
 |---|---|
@@ -380,7 +380,7 @@ Override hints in chat — ProjectLens reads intent:
 | **Tailwind** | `tailwind.config.{js,ts}` parsing — custom colors, fonts, theme.extend categories, plugins, content globs |
 | **Docker Compose** | `docker-compose.yml` parsing (no PyYAML dep) — services, image/build, ports, volumes, **depends_on graph** |
 
-A single ProjectLens scan on an AI-dev project surfaces every link in the chain: from raw notebooks through training, modeling, embeddings, agentic orchestration, UI components, and production deployments — all in **one capsule**, under budget.
+A single Lensify scan on an AI-dev project surfaces every link in the chain: from raw notebooks through training, modeling, embeddings, agentic orchestration, UI components, and production deployments — all in **one capsule**, under budget.
 
 ---
 
@@ -396,7 +396,7 @@ A single ProjectLens scan on an AI-dev project surfaces every link in the chain:
 | `compress_hook.py` | PostToolUse:Bash \| WebFetch | Deterministic compression of long tool outputs (HTML/JSON/log/trace/diff/pytest) | Variable, often 80%+ |
 | `memory_loader.py` | SessionStart | Loads cross-session memory of overlapping work | Carries context across `/clear` boundaries |
 
-**Cowork limitation:** only SessionStart fires in Cowork's hook surface. The scan engine, capsule generation, and `/projectlens compact` still work — but the 5 hook-driven optimizations only activate in Claude Code's terminal CLI.
+**Cowork limitation:** only SessionStart fires in Cowork's hook surface. The scan engine, capsule generation, and `/lensify compact` still work — but the 5 hook-driven optimizations only activate in Claude Code's terminal CLI.
 
 ---
 
@@ -405,7 +405,7 @@ A single ProjectLens scan on an AI-dev project surfaces every link in the chain:
 Long sessions eat context. The compactor reclaims 8–25k tokens in seconds.
 
 ```bash
-/projectlens compact          # generate WORKING_CONTEXT.md
+/lensify compact          # generate WORKING_CONTEXT.md
 /clear                        # flush the conversation buffer
 # then paste WORKING_CONTEXT.md at the top of the new session
 ```
@@ -426,7 +426,7 @@ Empty state warning: if no PostToolUse hooks fired (typical in Cowork), the comp
 
 Where the savings come from — concrete numbers from production usage:
 
-| Stage | Before ProjectLens | With ProjectLens | Savings |
+| Stage | Before Lensify | With Lensify | Savings |
 |---|---|---|---:|
 | Initial orientation | 8,000–20,000 tokens reading 20+ files | One capsule, 800–3,300 tokens | **70–90%** |
 | Repeat reads | Each re-read costs full file (≈400 tok / 100 LOC) | Dedup flag, ~0 tokens | **~25%** on long sessions |
@@ -470,12 +470,12 @@ Adding adapters can't regress any of these. Pull requests that violate a budget 
 
 ## Security & governance
 
-ProjectLens is the most security-hardened tool in its category. See [`SECURITY.md`](SECURITY.md) for the full threat model.
+Lensify is the most security-hardened tool in its category. See [`SECURITY.md`](SECURITY.md) for the full threat model.
 
 **CI-enforced safety:**
 - `exec()`, `eval()`, `__import__()`, `pickle.loads()`, `marshal.loads()`, `shell=True`, `os.system()` are **statically banned** in shipped code
 - Outbound HTTP confined to a single allowlisted endpoint (`api.anthropic.com`) inside `llm_client.py`
-- User-defined adapter loader is **opt-in** via `PROJECTLENS_USER_ADAPTERS=1` (off by default — scanning a malicious repo cannot execute arbitrary Python without explicit user opt-in)
+- User-defined adapter loader is **opt-in** via `LENSIFY_USER_ADAPTERS=1` (off by default — scanning a malicious repo cannot execute arbitrary Python without explicit user opt-in)
 - 1 MB per-file read cap prevents DoS via huge files
 - 30-second `git` subprocess timeout
 
@@ -483,12 +483,12 @@ ProjectLens is the most security-hardened tool in its category. See [`SECURITY.m
 
 | Data | Location | Lifetime | Opt-out |
 |---|---|---|---|
-| Lifetime stats counters | `~/.projectlens/stats.json` | Permanent | `PROJECTLENS_STATS=0` |
-| Cross-session memory | `<project>/.projectlens-memory/*.json` | Per-project, max 50 (LRU) | `PROJECTLENS_MEMORY=0` |
-| Session state | `<project>/projectlens-out/state.json` | Per-session | `PROJECTLENS_DEDUP=0` |
-| Capsule + lens artefacts | `<project>/projectlens-out/` | Regenerated each scan | n/a |
+| Lifetime stats counters | `~/.lensify/stats.json` | Permanent | `LENSIFY_STATS=0` |
+| Cross-session memory | `<project>/.lensify-memory/*.json` | Per-project, max 50 (LRU) | `LENSIFY_MEMORY=0` |
+| Session state | `<project>/lensify-out/state.json` | Per-session | `LENSIFY_DEDUP=0` |
+| Capsule + lens artefacts | `<project>/lensify-out/` | Regenerated each scan | n/a |
 
-**Nothing is sent off-device** unless you explicitly run `/projectlens compact --llm`. Stats and memory files are plain JSON — auditable, deletable, no PII.
+**Nothing is sent off-device** unless you explicitly run `/lensify compact --llm`. Stats and memory files are plain JSON — auditable, deletable, no PII.
 
 For governance — what contributions we accept and what we don't — see [`GOVERNANCE.md`](GOVERNANCE.md).
 
@@ -500,22 +500,22 @@ All persistent surfaces have documented env var opt-outs:
 
 ```bash
 # Hook control
-export PROJECTLENS_DEDUP=0              # disable ALL hooks (dedup/activity/inject/compress/memory)
-export PROJECTLENS_COMPRESS_OUTPUT=0    # disable just output compression
+export LENSIFY_DEDUP=0              # disable ALL hooks (dedup/activity/inject/compress/memory)
+export LENSIFY_COMPRESS_OUTPUT=0    # disable just output compression
 
 # Persistence control
-export PROJECTLENS_STATS=0              # disable lifetime stats counters
-export PROJECTLENS_STATS_HOME=/path     # change where stats live (default ~/.projectlens)
-export PROJECTLENS_MEMORY=0             # disable cross-session memory
+export LENSIFY_STATS=0              # disable lifetime stats counters
+export LENSIFY_STATS_HOME=/path     # change where stats live (default ~/.lensify)
+export LENSIFY_MEMORY=0             # disable cross-session memory
 
 # Resource limits
-export PROJECTLENS_MAX_READ_BYTES=N     # per-file read cap in bytes (default 1MB)
+export LENSIFY_MAX_READ_BYTES=N     # per-file read cap in bytes (default 1MB)
 
 # Trust gating (opt-in only)
-export PROJECTLENS_USER_ADAPTERS=1      # opt IN to user-defined adapters from <project>/.projectlens/frameworks/
+export LENSIFY_USER_ADAPTERS=1      # opt IN to user-defined adapters from <project>/.lensify/frameworks/
 
 # Optional LLM enhancement
-export ANTHROPIC_API_KEY=sk-...         # enables /projectlens compact --llm narrative
+export ANTHROPIC_API_KEY=sk-...         # enables /lensify compact --llm narrative
 ```
 
 Unset to re-enable. Nothing else changes — no plugin files moved, no data lost.
@@ -525,7 +525,7 @@ Unset to re-enable. Nothing else changes — no plugin files moved, no data lost
 ## Project structure
 
 ```
-projectlens/
+lensify/
 ├── .claude-plugin/
 │   └── plugin.json                     # Cowork / Claude Code manifest
 ├── .github/
@@ -538,7 +538,7 @@ projectlens/
 │   ├── __init__.py
 │   ├── __main__.py                     # python -m mcp_server entry
 │   └── server.py                       # pure-stdlib JSON-RPC 2.0 stdio implementation
-├── skills/projectlens/
+├── skills/lensify/
 │   ├── SKILL.md                        # Skill definition (lean — under 8KB)
 │   ├── references/                     # 13 deep-dive reference docs (lazy-loaded)
 │   │   ├── adapter-sdk.md              # Contributor guide
@@ -609,14 +609,14 @@ projectlens/
 
 ---
 
-## Extending ProjectLens
+## Extending Lensify
 
 The adapter SDK is intentionally small. Each adapter is ~80–120 LOC.
 
 ### Write a new framework adapter
 
 ```bash
-cd skills/projectlens/scripts/frameworks
+cd skills/lensify/scripts/frameworks
 cp -r _template _myframework
 mv _myframework/template.py _myframework/myframework.py
 $EDITOR _myframework/myframework.py     # rename class, update regexes
@@ -634,14 +634,14 @@ The contract every adapter must follow:
 | **R4** | `extract()` reads only files that match your framework's signature |
 | **R5** | `capsule_section()` respects `budget_tokens` |
 
-Full guide: [`skills/projectlens/references/adapter-sdk.md`](skills/projectlens/references/adapter-sdk.md).
+Full guide: [`skills/lensify/references/adapter-sdk.md`](skills/lensify/references/adapter-sdk.md).
 
 ### Per-project user adapters (no fork needed)
 
-Drop `.py` files into `<your-project>/.projectlens/frameworks/`. They're auto-discovered per scan once you opt in:
+Drop `.py` files into `<your-project>/.lensify/frameworks/`. They're auto-discovered per scan once you opt in:
 
 ```bash
-export PROJECTLENS_USER_ADAPTERS=1
+export LENSIFY_USER_ADAPTERS=1
 ```
 
 The trust decision happens in your shell, not in the code being scanned — protecting you from malicious adapters in untrusted repos.
@@ -650,9 +650,9 @@ The trust decision happens in your shell, not in the code being scanned — prot
 
 ## Comparison
 
-ProjectLens is **the lightweight, deterministic orientation layer** in the AI coding assistant space. It complements semantic-search tools rather than replacing them.
+Lensify is **the lightweight, deterministic orientation layer** in the AI coding assistant space. It complements semantic-search tools rather than replacing them.
 
-| Capability | Repomix | Aider repo-map | Cursor `@codebase` | Sourcegraph Cody | Graphify | Caveman | **ProjectLens** |
+| Capability | Repomix | Aider repo-map | Cursor `@codebase` | Sourcegraph Cody | Graphify | Caveman | **Lensify** |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Single-pass summary | ✓ | ✓ | ✓ (search) | ✓ (search) | ✓ | ✓ | **✓** |
 | Token-bounded output | ~ | ~ | ✗ | ✗ | ✗ | ~ | **✓ tier-locked** |
@@ -660,7 +660,7 @@ ProjectLens is **the lightweight, deterministic orientation layer** in the AI co
 | Framework-aware extraction | ✗ | ✗ | ~ | ~ | ✗ | ~ | **✓ 30 adapters** |
 | Confidence tags on output | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ EXTRACTED/INFERRED/AMBIGUOUS** |
 | In-session hooks | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ 5 hooks** |
-| Mid-session compaction | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ /projectlens compact** |
+| Mid-session compaction | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ /lensify compact** |
 | Multi-tool support | CLI | Aider | Cursor | Cody | CLI | CLI | **✓ 4 channels** |
 | Plugin size | ~80KB | bundled | bundled | hosted | n/a | ~10KB | **203 KB** |
 | Runtime deps | none | aider | Cursor | account | none | minimal | **stdlib only** |
@@ -681,28 +681,28 @@ A: The base scan (file walk, language detection, symbols) works on JS, TS, Go, J
 A: Hook subprocess startup is capped at 250 ms cold (typically 20–30 ms warm). Hook output is capped at 500 tokens per event. Both caps are CI-enforced. The scan itself runs on-demand, not per-prompt.
 
 **Q: Does it send my code anywhere?**
-A: No, unless you explicitly run `/projectlens compact --llm` AND have `ANTHROPIC_API_KEY` set. Even then, only the session activity summary (file paths, command names, test results) is sent — never file contents.
+A: No, unless you explicitly run `/lensify compact --llm` AND have `ANTHROPIC_API_KEY` set. Even then, only the session activity summary (file paths, command names, test results) is sent — never file contents.
 
 **Q: Is the capsule different from a README?**
 A: A README tells **humans** what the project does. The capsule tells your **agent** what the project contains: routes, models, training loops, vector indexes, deployments, etc. Different audience, different output, both have their place.
 
 **Q: What if my framework isn't covered by an adapter?**
-A: The base scan still produces a useful capsule (entry points, modules, symbols, hotspots, risks). You get less framework-specific noise. Add a custom adapter in ~100 LOC if you want richer output for that framework — see [the adapter SDK guide](skills/projectlens/references/adapter-sdk.md).
+A: The base scan still produces a useful capsule (entry points, modules, symbols, hotspots, risks). You get less framework-specific noise. Add a custom adapter in ~100 LOC if you want richer output for that framework — see [the adapter SDK guide](skills/lensify/references/adapter-sdk.md).
 
 **Q: Can I disable everything and just use the scan?**
-A: Yes — `export PROJECTLENS_DEDUP=0` disables all 5 hooks. The scan engine remains available for explicit `/projectlens` invocations.
+A: Yes — `export LENSIFY_DEDUP=0` disables all 5 hooks. The scan engine remains available for explicit `/lensify` invocations.
 
 **Q: Why not use Cursor's @codebase or Sourcegraph Cody instead?**
-A: They do **semantic** vector search — they need an embedding model, a vector store, and continuous indexing. ProjectLens does **structural** extraction — deterministic, fast (sub-second), cheap, and framework-aware. The two are complementary: ProjectLens for instant orientation, semantic tools for in-depth search.
+A: They do **semantic** vector search — they need an embedding model, a vector store, and continuous indexing. Lensify does **structural** extraction — deterministic, fast (sub-second), cheap, and framework-aware. The two are complementary: Lensify for instant orientation, semantic tools for in-depth search.
 
 **Q: How does compaction interact with `/clear`?**
-A: Run `/projectlens compact` first (generates `WORKING_CONTEXT.md`), then `/clear` to flush the conversation buffer, then paste the contents of `WORKING_CONTEXT.md` at the top of the next session. You resume with the same shoulder-context but a fresh token budget. Compaction typically reclaims 8–25k tokens.
+A: Run `/lensify compact` first (generates `WORKING_CONTEXT.md`), then `/clear` to flush the conversation buffer, then paste the contents of `WORKING_CONTEXT.md` at the top of the next session. You resume with the same shoulder-context but a fresh token budget. Compaction typically reclaims 8–25k tokens.
 
 **Q: Is it free?**
 A: Yes — MIT licensed. No subscription, no telemetry sent off-device, no required pip dependencies.
 
 **Q: How do I uninstall?**
-A: Claude Code CLI: `/plugin uninstall projectlens@projectlens` then `/plugin marketplace remove agenticailab01/projectlens`. Cowork: settings → Plugins → ProjectLens → Remove. MCP users: delete the `projectlens` entry from your MCP config and `rm -rf ~/projectlens`. Pip CLI users: `pip uninstall projectlens`. To wipe persisted data: `rm -rf ~/.claude/plugins/projectlens ~/.projectlens` and `<project>/.projectlens-memory`.
+A: Claude Code CLI: `/plugin uninstall lensify@lensify` then `/plugin marketplace remove agenticailab01/lensify`. Cowork: settings → Plugins → Lensify → Remove. MCP users: delete the `lensify` entry from your MCP config and `rm -rf ~/lensify`. Pip CLI users: `pip uninstall lensify`. To wipe persisted data: `rm -rf ~/.claude/plugins/lensify ~/.lensify` and `<project>/.lensify-memory`.
 
 ---
 
@@ -715,8 +715,8 @@ A: Claude Code CLI: `/plugin uninstall projectlens@projectlens` then `/plugin ma
 | `_serving` v2 — Modal, Replicate, Cog | Planned | |
 | `_enterprise` v2 — Django, Flask, Next.js, NestJS | Planned | JS/TS framework coverage |
 | Multi-modal lightweight — SQL schemas, shell scripts, Dockerfile, Markdown docs | Investigating | v0.16.0 candidate |
-| Optional graph mode — `projectlens graph .` + MCP graph queries | Investigating | v0.17.0 candidate |
-| `projectlens watch` daemon — auto-refresh AGENTS.md on file changes | Investigating | Cross-tool freshness |
+| Optional graph mode — `lensify graph .` + MCP graph queries | Investigating | v0.17.0 candidate |
+| `lensify watch` daemon — auto-refresh AGENTS.md on file changes | Investigating | Cross-tool freshness |
 
 Vote with GitHub issues — what should come first?
 
@@ -744,4 +744,4 @@ See [`GOVERNANCE.md`](GOVERNANCE.md) for the full policy.
 
 ---
 
-⭐ Star this repo if ProjectLens saves you tokens. Open an issue if a framework you use isn't covered — most adapters are ~100 LOC and we'll prioritize.
+⭐ Star this repo if Lensify saves you tokens. Open an issue if a framework you use isn't covered — most adapters are ~100 LOC and we'll prioritize.

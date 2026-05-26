@@ -18,7 +18,7 @@ from scripts.stats import (
 @pytest.fixture
 def stats_dir(tmp_path, monkeypatch):
     """Redirect stats to an isolated tmp dir per test."""
-    monkeypatch.setenv("PROJECTLENS_STATS_HOME", str(tmp_path))
+    monkeypatch.setenv("LENSIFY_STATS_HOME", str(tmp_path))
     return tmp_path
 
 
@@ -172,7 +172,7 @@ def test_usd_saved_default_rate():
 
 
 def test_usd_saved_env_override(monkeypatch):
-    monkeypatch.setenv("PROJECTLENS_USD_PER_MTOK", "0.80")
+    monkeypatch.setenv("LENSIFY_USD_PER_MTOK", "0.80")
     assert abs(usd_saved(1_000_000) - 0.80) < 0.001
 
 
@@ -226,12 +226,12 @@ def test_reset_wipes_file(stats_dir):
 # ----- Opt-out -----
 
 def test_is_disabled_default_false(monkeypatch):
-    monkeypatch.delenv("PROJECTLENS_STATS", raising=False)
+    monkeypatch.delenv("LENSIFY_STATS", raising=False)
     assert is_disabled() is False
 
 
 def test_is_disabled_via_env(monkeypatch):
-    monkeypatch.setenv("PROJECTLENS_STATS", "0")
+    monkeypatch.setenv("LENSIFY_STATS", "0")
     assert is_disabled() is True
 
 

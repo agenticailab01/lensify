@@ -1,9 +1,9 @@
-# ProjectLens
+# Lensify
 
 > 🌐 **Português** — Voltar ao inglês: [English](../../README.md)
 
 
-[![CI](https://github.com/agenticailab01/projectlens/actions/workflows/ci.yml/badge.svg)](https://github.com/agenticailab01/projectlens/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE) [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/) [![Version](https://img.shields.io/badge/version-0.15.0-brightgreen.svg)](../../CHANGELOG.md) [![Tests](https://img.shields.io/badge/tests-527%20passing-brightgreen.svg)](#tests--performance) [![Adapters](https://img.shields.io/badge/adapters-30%20across%208%20packs-blue.svg)](#framework-coverage)
+[![CI](https://github.com/agenticailab01/lensify/actions/workflows/ci.yml/badge.svg)](https://github.com/agenticailab01/lensify/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE) [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/) [![Version](https://img.shields.io/badge/version-0.15.0-brightgreen.svg)](../../CHANGELOG.md) [![Tests](https://img.shields.io/badge/tests-527%20passing-brightgreen.svg)](#tests--performance) [![Adapters](https://img.shields.io/badge/adapters-30%20across%208%20packs-blue.svg)](#framework-coverage)
 
 > **Lente de projeto adaptativa de varredura única + cápsula de contexto otimizada em tokens para agentes de codificação de IA.** Reduz tokens de orientação em 70–90%. Reconhecimento de frameworks em todo o ciclo de vida de desenvolvimento de IA. Biblioteca padrão pura. Licenciado MIT.
 
@@ -13,7 +13,7 @@
 
 ## Sumário
 
-1. [Por que ProjectLens](#why-projectlens)
+1. [Por que Lensify](#why-lensify)
 2. [Em resumo](#at-a-glance)
 3. [Início rápido](#quick-start)
 4. [Como funciona](#how-it-works)
@@ -27,7 +27,7 @@
 12. [Segurança e governança](#security--governance)
 13. [Variáveis de ambiente de configuração](#configuration)
 14. [Estrutura do projeto](#project-structure)
-15. [Estenda — escreva seu próprio adaptador](#extending-projectlens)
+15. [Estenda — escreva seu próprio adaptador](#extending-lensify)
 16. [Comparação com alternativas](#comparison)
 17. [FAQ](#faq)
 18. [Roteiro](#roadmap)
@@ -35,13 +35,13 @@
 
 ---
 
-## Por que ProjectLens
+## Por que Lensify
 
 Agentes de codificação de IA modernos têm um problema de janela de contexto: quanto maior o projeto, mais tokens eles queimam apenas para **se orientar**. Um fluxo típico de onboarding lê de 20 a 40 arquivos antes que o agente possa fazer trabalho útil — são 10 a 30k tokens gastos em entender, e não em resolver o problema real do usuário.
 
-ProjectLens substitui essa fase de orientação por uma **única varredura** (sub-100 ms) que produz um bloco de contexto delimitado por tokens e consciente de frameworks. O agente lê **uma cápsula** em vez de dezenas de arquivos. O uso de tokens cai 70–90% só com a economia de orientação — e os 5 hooks de sessão acumulam economias adicionais por cima.
+Lensify substitui essa fase de orientação por uma **única varredura** (sub-100 ms) que produz um bloco de contexto delimitado por tokens e consciente de frameworks. O agente lê **uma cápsula** em vez de dezenas de arquivos. O uso de tokens cai 70–90% só com a economia de orientação — e os 5 hooks de sessão acumulam economias adicionais por cima.
 
-**O trade-off que faz:** extração estrutural determinística (rápida, gratuita, consciente de frameworks) em vez de busca vetorial semântica (mais lenta, custo de embedding, genérica). ProjectLens trabalha ao lado de ferramentas semânticas como `@codebase` do Cursor e Sourcegraph Cody — não contra elas. Use ProjectLens para orientação instantânea; recorra à busca semântica quando o agente precisar encontrar algo específico por significado em vez de estrutura.
+**O trade-off que faz:** extração estrutural determinística (rápida, gratuita, consciente de frameworks) em vez de busca vetorial semântica (mais lenta, custo de embedding, genérica). Lensify trabalha ao lado de ferramentas semânticas como `@codebase` do Cursor e Sourcegraph Cody — não contra elas. Use Lensify para orientação instantânea; recorra à busca semântica quando o agente precisar encontrar algo específico por significado em vez de estrutura.
 
 ---
 
@@ -66,27 +66,27 @@ ProjectLens substitui essa fase de orientação por uma **única varredura** (su
 
 ## Início rápido
 
-ProjectLens has **three install paths**. Pick the one that matches your tool — every path takes under a minute.
+Lensify has **three install paths**. Pick the one that matches your tool — every path takes under a minute.
 
 ### 👉 Claude Code (terminal) — one command in chat
 
 ```
-/plugin marketplace add agenticailab01/projectlens
-/plugin install projectlens@projectlens
+/plugin marketplace add agenticailab01/lensify
+/plugin install lensify@lensify
 ```
 
-Then in any project: `/projectlens` to scan, `/projectlens compact` to recover tokens, `/projectlens stats` for savings.
+Then in any project: `/lensify` to scan, `/lensify compact` to recover tokens, `/lensify stats` for savings.
 
 ### 👉 Cowork (desktop app) — drag and drop
 
-1. Download `projectlens.plugin` from the [Releases page](https://github.com/agenticailab01/projectlens/releases).
+1. Download `lensify.plugin` from the [Releases page](https://github.com/agenticailab01/lensify/releases).
 2. Drag the file into the Cowork chat window.
 3. Click **Save plugin** on the preview card. Restart the conversation.
 
 ### 👉 Cursor / VS Code / Codex / Gemini CLI (MCP) — one config entry
 
 ```bash
-git clone https://github.com/agenticailab01/projectlens ~/projectlens
+git clone https://github.com/agenticailab01/lensify ~/lensify
 ```
 
 Then add this to your tool's MCP config (file path differs per tool — see the Installation by tool section below):
@@ -94,16 +94,16 @@ Then add this to your tool's MCP config (file path differs per tool — see the 
 ```json
 {
   "mcpServers": {
-    "projectlens": {
+    "lensify": {
       "command": "python3",
       "args": ["-m", "mcp_server"],
-      "cwd": "/Users/you/projectlens"
+      "cwd": "/Users/you/lensify"
     }
   }
 }
 ```
 
-Fully restart the tool. Three new tools appear: `projectlens_scan`, `projectlens_compact`, `projectlens_stats`.
+Fully restart the tool. Three new tools appear: `lensify_scan`, `lensify_compact`, `lensify_stats`.
 
 📖 Instruções completas passo a passo em **[`USER-INSTALL.md`](../../USER-INSTALL.md)**
 ---
@@ -138,20 +138,20 @@ Quatro canais de distribuição compartilham o mesmo motor de varredura. Escolha
 A experiência completa: todos os 5 hooks disparam, slash commands, statusline, memory loader.
 
 **Cowork:**
-1. Download `projectlens.plugin` from the [Releases page](https://github.com/agenticailab01/projectlens/releases)
+1. Download `lensify.plugin` from the [Releases page](https://github.com/agenticailab01/lensify/releases)
 2. Drag-and-drop the file into the Cowork chat
 3. Click **Save plugin** on the preview card
-4. Restart the conversation — you'll see `ProjectLens dedup is active` confirming installation
+4. Restart the conversation — you'll see `Lensify dedup is active` confirming installation
 
 **Claude Code (terminal CLI):**
 ```bash
-claude plugin install projectlens.plugin
+claude plugin install lensify.plugin
 ```
 
 Files land at:
-- macOS: `~/Library/Application Support/Claude/plugins/projectlens/`
-- Linux: `~/.local/share/claude/plugins/projectlens/`
-- Windows: `%APPDATA%\Claude\plugins\projectlens\`
+- macOS: `~/Library/Application Support/Claude/plugins/lensify/`
+- Linux: `~/.local/share/claude/plugins/lensify/`
+- Windows: `%APPDATA%\Claude\plugins\lensify\`
 
 ### Channel 2 — MCP server (Cursor, VS Code, Codex, Gemini CLI, Antigravity, …)
 
@@ -160,8 +160,8 @@ Servidor JSON-RPC 2.0 stdio em stdlib puro. Sem etapa de `pip install` para o pr
 #### Step 1 — Clone the repository
 
 ```bash
-git clone https://github.com/agenticailab01/projectlens ~/projectlens
-cd ~/projectlens
+git clone https://github.com/agenticailab01/lensify ~/lensify
+cd ~/lensify
 
 # Smoke-test the server (Ctrl-C to exit)
 python3 -m mcp_server
@@ -171,17 +171,17 @@ You should see no output and no errors — the server is now waiting for JSON-RP
 
 #### Step 2 — Register the server with your tool
 
-Replace `/Users/you/projectlens` with the absolute path to your clone.
+Replace `/Users/you/lensify` with the absolute path to your clone.
 
 **Cursor** — `.cursor/mcp.json` (project-local) or `~/.cursor/mcp.json` (global):
 
 ```json
 {
   "mcpServers": {
-    "projectlens": {
+    "lensify": {
       "command": "python3",
       "args": ["-m", "mcp_server"],
-      "cwd": "/Users/you/projectlens"
+      "cwd": "/Users/you/lensify"
     }
   }
 }
@@ -192,10 +192,10 @@ Replace `/Users/you/projectlens` with the absolute path to your clone.
 ```json
 {
   "mcpServers": {
-    "projectlens": {
+    "lensify": {
       "command": "python3",
       "args": ["-m", "mcp_server"],
-      "cwd": "/Users/you/projectlens",
+      "cwd": "/Users/you/lensify",
       "env": {}
     }
   }
@@ -207,11 +207,11 @@ Replace `/Users/you/projectlens` with the absolute path to your clone.
 ```json
 {
   "servers": {
-    "projectlens": {
+    "lensify": {
       "type": "stdio",
       "command": "python3",
       "args": ["-m", "mcp_server"],
-      "cwd": "/Users/you/projectlens"
+      "cwd": "/Users/you/lensify"
     }
   }
 }
@@ -231,15 +231,15 @@ Replace `/Users/you/projectlens` with the absolute path to your clone.
 
 #### Step 3 — Restart your tool
 
-After saving the config, **fully restart** the tool (not just reload the window). The 3 ProjectLens tools should appear in your tool's MCP tool picker.
+After saving the config, **fully restart** the tool (not just reload the window). The 3 Lensify tools should appear in your tool's MCP tool picker.
 
 #### The 3 MCP tools
 
 | Tool name | Arguments | What it does |
 |---|---|---|
-| `projectlens_scan` | `path` (str, optional — defaults to cwd), `tier` ("T1" \| "T2" \| "T3" \| "auto"), `no_git` (bool) | Runs a full scan and returns the capsule + path to the generated `LENS.html`. Same engine as `/projectlens` in Claude Code. |
-| `projectlens_compact` | `project_path` (str, optional), `llm` (bool — opt-in LLM narrative) | Generates `WORKING_CONTEXT.md` from current session state. Returns the summary text. |
-| `projectlens_stats` | (no arguments) | Returns lifetime token-savings counters (scans run, tokens saved, hooks fired). |
+| `lensify_scan` | `path` (str, optional — defaults to cwd), `tier` ("T1" \| "T2" \| "T3" \| "auto"), `no_git` (bool) | Runs a full scan and returns the capsule + path to the generated `LENS.html`. Same engine as `/lensify` in Claude Code. |
+| `lensify_compact` | `project_path` (str, optional), `llm` (bool — opt-in LLM narrative) | Generates `WORKING_CONTEXT.md` from current session state. Returns the summary text. |
+| `lensify_stats` | (no arguments) | Returns lifetime token-savings counters (scans run, tokens saved, hooks fired). |
 
 Tool descriptions, full parameter schemas, and return types are advertised via the standard MCP `tools/list` and `tools/call` methods — your tool will surface them automatically in its MCP UI.
 
@@ -248,26 +248,26 @@ Tool descriptions, full parameter schemas, and return types are advertised via t
 Once connected, just ask your agent in natural language:
 
 ```
-"scan this project with ProjectLens"
+"scan this project with Lensify"
 "compact this session"
-"show me my projectlens token savings"
+"show me my lensify token savings"
 ```
 
-Most tools will route those phrases to the matching MCP tool automatically. If the routing isn't picking up, name the tool explicitly: *"use projectlens_scan on the current directory."*
+Most tools will route those phrases to the matching MCP tool automatically. If the routing isn't picking up, name the tool explicitly: *"use lensify_scan on the current directory."*
 
 #### How the MCP channel differs from the Plugin channel
 
 | Capability | Plugin (Claude Code/Cowork) | MCP server (any tool) |
 |---|:---:|:---:|
-| `/projectlens` scan | ✓ | ✓ (via `projectlens_scan`) |
-| `/projectlens compact` | ✓ | ✓ (via `projectlens_compact`) |
-| `/projectlens stats` | ✓ | ✓ (via `projectlens_stats`) |
+| `/lensify` scan | ✓ | ✓ (via `lensify_scan`) |
+| `/lensify compact` | ✓ | ✓ (via `lensify_compact`) |
+| `/lensify stats` | ✓ | ✓ (via `lensify_stats`) |
 | Statusline | ✓ | ✗ (tool-specific UI) |
 | Skill / slash-commands | ✓ | ✗ (tools invoked by name) |
 | 5 session hooks (dedup/inject/compress/memory/activity) | ✓ | ✗ (no hook surface in MCP spec) |
 | Cross-session memory loader | ✓ | partial (only via explicit tool call) |
 
-The scan, compact, and stats functionality are identical across both channels — it's the **same Python code under the hood**. What you lose in MCP is the **passive** hook-driven savings (dedup, selective injection, output compression). What you gain is **broad tool support** — anything that speaks MCP can use ProjectLens.
+The scan, compact, and stats functionality are identical across both channels — it's the **same Python code under the hood**. What you lose in MCP is the **passive** hook-driven savings (dedup, selective injection, output compression). What you gain is **broad tool support** — anything that speaks MCP can use Lensify.
 
 #### Troubleshooting
 
@@ -282,9 +282,9 @@ The scan, compact, and stats functionality are identical across both channels �
 ### Channel 3 — Standalone CLI (Aider, Copilot CLI, scripts, CI)
 
 ```bash
-pip install projectlens
-projectlens --version
-projectlens . --no-git
+pip install lensify
+lensify --version
+lensify . --no-git
 ```
 
 Available flags:
@@ -292,26 +292,26 @@ Available flags:
 - `--capsule-only` — skip HTML, write only the Markdown capsule
 - `--ast-only` — deterministic mode, no LLM enrichment of narrative
 - `--no-git` — skip git hotspot analysis (faster)
-- `--output <dir>` — override output directory (default: `<target>/projectlens-out`)
+- `--output <dir>` — override output directory (default: `<target>/lensify-out`)
 - `--install-agents-md [FILE]` — append/update capsule inside a context file (default: `AGENTS.md`)
 - `--version` — print version and exit
 
 ### Channel 4 — AGENTS.md write mode (any tool that reads context files)
 
 ```bash
-projectlens . --install-agents-md              # writes AGENTS.md
-projectlens . --install-agents-md CLAUDE.md
-projectlens . --install-agents-md GEMINI.md
-projectlens . --install-agents-md .cursorrules
+lensify . --install-agents-md              # writes AGENTS.md
+lensify . --install-agents-md CLAUDE.md
+lensify . --install-agents-md GEMINI.md
+lensify . --install-agents-md .cursorrules
 ```
 
-The capsule lands inside the target file wrapped in idempotent `<!-- projectlens-begin -->` / `<!-- projectlens-end -->` markers. Re-running replaces only the marked block; any other content you've added is preserved.
+The capsule lands inside the target file wrapped in idempotent `<!-- lensify-begin -->` / `<!-- lensify-end -->` markers. Re-running replaces only the marked block; any other content you've added is preserved.
 
 ---
 
 ## Camadas adaptativas — T1 / T2 / T3
 
-ProjectLens escolhe automaticamente a profundidade certa. Sobrescreva com `--tier T1|T2|T3` apenas quando tiver uma boa razão.
+Lensify escolhe automaticamente a profundidade certa. Sobrescreva com `--tier T1|T2|T3` apenas quando tiver uma boa razão.
 
 | Tier | Trigger | Capsule budget | Use case |
 |---|---|---:|---|
@@ -319,7 +319,7 @@ ProjectLens escolhe automaticamente a profundidade certa. Sobrescreva com `--tie
 | **T2 Atlas** | 50–1,000 files · 5k–100k LOC · multi-module | 2,100 tok | Most real projects (the sweet spot) |
 | **T3 Compass** | > 1,000 files · monorepo markers · 5+ top-level dirs | 3,600 tok | Monorepos, platforms, enterprise systems |
 
-Dicas de sobrescrita no chat — ProjectLens lê intenção:
+Dicas de sobrescrita no chat — Lensify lê intenção:
 
 | Signal | Resulting tier |
 |---|---|
@@ -395,7 +395,7 @@ Dicas de sobrescrita no chat — ProjectLens lê intenção:
 | **Tailwind** | `tailwind.config.{js,ts}` parsing — custom colors, fonts, theme.extend categories, plugins, content globs |
 | **Docker Compose** | `docker-compose.yml` parsing (no PyYAML dep) — services, image/build, ports, volumes, **depends_on graph** |
 
-Uma única varredura do ProjectLens em um projeto de desenvolvimento de IA revela cada elo da cadeia: de notebooks brutos passando por treinamento, modelagem, embeddings, orquestração agêntica, componentes UI e deploys de produção — tudo em **uma cápsula**, dentro do orçamento.
+Uma única varredura do Lensify em um projeto de desenvolvimento de IA revela cada elo da cadeia: de notebooks brutos passando por treinamento, modelagem, embeddings, orquestração agêntica, componentes UI e deploys de produção — tudo em **uma cápsula**, dentro do orçamento.
 
 ---
 
@@ -411,7 +411,7 @@ Uma única varredura do ProjectLens em um projeto de desenvolvimento de IA revel
 | `compress_hook.py` | PostToolUse:Bash \| WebFetch | Deterministic compression of long tool outputs (HTML/JSON/log/trace/diff/pytest) | Variable, often 80%+ |
 | `memory_loader.py` | SessionStart | Loads cross-session memory of overlapping work | Carries context across `/clear` boundaries |
 
-**Limitação do Cowork:** apenas SessionStart dispara na superfície de hooks do Cowork. O motor de varredura, geração de cápsula e `/projectlens compact` continuam funcionando — mas as 5 otimizações orientadas a hooks só ativam no CLI de terminal do Claude Code.
+**Limitação do Cowork:** apenas SessionStart dispara na superfície de hooks do Cowork. O motor de varredura, geração de cápsula e `/lensify compact` continuam funcionando — mas as 5 otimizações orientadas a hooks só ativam no CLI de terminal do Claude Code.
 
 ---
 
@@ -420,7 +420,7 @@ Uma única varredura do ProjectLens em um projeto de desenvolvimento de IA revel
 Sessões longas consomem contexto. O compactador recupera 8–25k tokens em segundos.
 
 ```bash
-/projectlens compact          # generate WORKING_CONTEXT.md
+/lensify compact          # generate WORKING_CONTEXT.md
 /clear                        # flush the conversation buffer
 # then paste WORKING_CONTEXT.md at the top of the new session
 ```
@@ -441,7 +441,7 @@ Aviso de estado vazio: se nenhum hook PostToolUse disparou (típico no Cowork), 
 
 De onde vêm as economias — números concretos do uso em produção:
 
-| Stage | Before ProjectLens | With ProjectLens | Savings |
+| Stage | Before Lensify | With Lensify | Savings |
 |---|---|---|---:|
 | Initial orientation | 8,000–20,000 tokens reading 20+ files | One capsule, 800–3,300 tokens | **70–90%** |
 | Repeat reads | Each re-read costs full file (≈400 tok / 100 LOC) | Dedup flag, ~0 tokens | **~25%** on long sessions |
@@ -485,12 +485,12 @@ Adicionar adaptadores não pode regredir nenhum desses. Pull Requests que violam
 
 ## Segurança e governança
 
-ProjectLens is the most security-hardened tool in its category. See [`SECURITY.md`](../../SECURITY.md) for the full threat model.
+Lensify is the most security-hardened tool in its category. See [`SECURITY.md`](../../SECURITY.md) for the full threat model.
 
 **CI-enforced safety:**
 - `exec()`, `eval()`, `__import__()`, `pickle.loads()`, `marshal.loads()`, `shell=True`, `os.system()` are **statically banned** in shipped code
 - Outbound HTTP confined to a single allowlisted endpoint (`api.anthropic.com`) inside `llm_client.py`
-- User-defined adapter loader is **opt-in** via `PROJECTLENS_USER_ADAPTERS=1` (off by default — scanning a malicious repo cannot execute arbitrary Python without explicit user opt-in)
+- User-defined adapter loader is **opt-in** via `LENSIFY_USER_ADAPTERS=1` (off by default — scanning a malicious repo cannot execute arbitrary Python without explicit user opt-in)
 - 1 MB per-file read cap prevents DoS via huge files
 - 30-second `git` subprocess timeout
 
@@ -498,12 +498,12 @@ ProjectLens is the most security-hardened tool in its category. See [`SECURITY.m
 
 | Data | Location | Lifetime | Opt-out |
 |---|---|---|---|
-| Lifetime stats counters | `~/.projectlens/stats.json` | Permanent | `PROJECTLENS_STATS=0` |
-| Cross-session memory | `<project>/.projectlens-memory/*.json` | Per-project, max 50 (LRU) | `PROJECTLENS_MEMORY=0` |
-| Session state | `<project>/projectlens-out/state.json` | Per-session | `PROJECTLENS_DEDUP=0` |
-| Capsule + lens artefacts | `<project>/projectlens-out/` | Regenerated each scan | n/a |
+| Lifetime stats counters | `~/.lensify/stats.json` | Permanent | `LENSIFY_STATS=0` |
+| Cross-session memory | `<project>/.lensify-memory/*.json` | Per-project, max 50 (LRU) | `LENSIFY_MEMORY=0` |
+| Session state | `<project>/lensify-out/state.json` | Per-session | `LENSIFY_DEDUP=0` |
+| Capsule + lens artefacts | `<project>/lensify-out/` | Regenerated each scan | n/a |
 
-**Nada é enviado para fora do dispositivo** a menos que você execute explicitamente `/projectlens compact --llm`. Arquivos de stats e memória são JSON simples — auditáveis, deletáveis, sem PII.
+**Nada é enviado para fora do dispositivo** a menos que você execute explicitamente `/lensify compact --llm`. Arquivos de stats e memória são JSON simples — auditáveis, deletáveis, sem PII.
 
 For governance — what contributions we accept and what we don't — see [`GOVERNANCE.md`](../../GOVERNANCE.md).
 
@@ -515,22 +515,22 @@ Todas as superfícies persistentes têm opt-outs por variável de ambiente docum
 
 ```bash
 # Hook control
-export PROJECTLENS_DEDUP=0              # disable ALL hooks (dedup/activity/inject/compress/memory)
-export PROJECTLENS_COMPRESS_OUTPUT=0    # disable just output compression
+export LENSIFY_DEDUP=0              # disable ALL hooks (dedup/activity/inject/compress/memory)
+export LENSIFY_COMPRESS_OUTPUT=0    # disable just output compression
 
 # Persistence control
-export PROJECTLENS_STATS=0              # disable lifetime stats counters
-export PROJECTLENS_STATS_HOME=/path     # change where stats live (default ~/.projectlens)
-export PROJECTLENS_MEMORY=0             # disable cross-session memory
+export LENSIFY_STATS=0              # disable lifetime stats counters
+export LENSIFY_STATS_HOME=/path     # change where stats live (default ~/.lensify)
+export LENSIFY_MEMORY=0             # disable cross-session memory
 
 # Resource limits
-export PROJECTLENS_MAX_READ_BYTES=N     # per-file read cap in bytes (default 1MB)
+export LENSIFY_MAX_READ_BYTES=N     # per-file read cap in bytes (default 1MB)
 
 # Trust gating (opt-in only)
-export PROJECTLENS_USER_ADAPTERS=1      # opt IN to user-defined adapters from <project>/.projectlens/frameworks/
+export LENSIFY_USER_ADAPTERS=1      # opt IN to user-defined adapters from <project>/.lensify/frameworks/
 
 # Optional LLM enhancement
-export ANTHROPIC_API_KEY=sk-...         # enables /projectlens compact --llm narrative
+export ANTHROPIC_API_KEY=sk-...         # enables /lensify compact --llm narrative
 ```
 
 Remova a configuração para reativar. Nada mais muda — nenhum arquivo de plugin movido, nenhum dado perdido.
@@ -540,7 +540,7 @@ Remova a configuração para reativar. Nada mais muda — nenhum arquivo de plug
 ## Estrutura do projeto
 
 ```
-projectlens/
+lensify/
 ├── .claude-plugin/
 │   └── plugin.json                     # Cowork / Claude Code manifest
 ├── .github/
@@ -553,7 +553,7 @@ projectlens/
 │   ├── __init__.py
 │   ├── __main__.py                     # python -m mcp_server entry
 │   └── server.py                       # pure-stdlib JSON-RPC 2.0 stdio implementation
-├── skills/projectlens/
+├── skills/lensify/
 │   ├── SKILL.md                        # Skill definition (lean — under 8KB)
 │   ├── references/                     # 13 deep-dive reference docs (lazy-loaded)
 │   │   ├── adapter-sdk.md              # Contributor guide
@@ -631,7 +631,7 @@ O SDK do adaptador é intencionalmente pequeno. Cada adaptador tem ~80–120 LOC
 ### Write a new framework adapter
 
 ```bash
-cd skills/projectlens/scripts/frameworks
+cd skills/lensify/scripts/frameworks
 cp -r _template _myframework
 mv _myframework/template.py _myframework/myframework.py
 $EDITOR _myframework/myframework.py     # rename class, update regexes
@@ -649,14 +649,14 @@ O contrato que todo adaptador deve seguir:
 | **R4** | `extract()` reads only files that match your framework's signature |
 | **R5** | `capsule_section()` respects `budget_tokens` |
 
-Full guide: [`skills/projectlens/references/adapter-sdk.md`](../../skills/projectlens/references/adapter-sdk.md).
+Full guide: [`skills/lensify/references/adapter-sdk.md`](../../skills/lensify/references/adapter-sdk.md).
 
 ### Per-project user adapters (no fork needed)
 
-Coloque arquivos `.py` em `<your-project>/.projectlens/frameworks/`. Eles são auto-descobertos por varredura uma vez que você opta por participar:
+Coloque arquivos `.py` em `<your-project>/.lensify/frameworks/`. Eles são auto-descobertos por varredura uma vez que você opta por participar:
 
 ```bash
-export PROJECTLENS_USER_ADAPTERS=1
+export LENSIFY_USER_ADAPTERS=1
 ```
 
 A decisão de confiança acontece no seu shell, não no código sendo varrido — protegendo você de adaptadores maliciosos em repos não confiáveis.
@@ -665,9 +665,9 @@ A decisão de confiança acontece no seu shell, não no código sendo varrido �
 
 ## Comparação com alternativas
 
-ProjectLens é **a camada leve e determinística de orientação** no espaço de assistentes de codificação de IA. Complementa ferramentas de busca semântica em vez de substituí-las.
+Lensify é **a camada leve e determinística de orientação** no espaço de assistentes de codificação de IA. Complementa ferramentas de busca semântica em vez de substituí-las.
 
-| Capability | Repomix | Aider repo-map | Cursor `@codebase` | Sourcegraph Cody | Graphify | Caveman | **ProjectLens** |
+| Capability | Repomix | Aider repo-map | Cursor `@codebase` | Sourcegraph Cody | Graphify | Caveman | **Lensify** |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Single-pass summary | ✓ | ✓ | ✓ (search) | ✓ (search) | ✓ | ✓ | **✓** |
 | Token-bounded output | ~ | ~ | ✗ | ✗ | ✗ | ~ | **✓ tier-locked** |
@@ -675,7 +675,7 @@ ProjectLens é **a camada leve e determinística de orientação** no espaço de
 | Framework-aware extraction | ✗ | ✗ | ~ | ~ | ✗ | ~ | **✓ 30 adapters** |
 | Confidence tags on output | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ EXTRACTED/INFERRED/AMBIGUOUS** |
 | In-session hooks | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ 5 hooks** |
-| Mid-session compaction | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ /projectlens compact** |
+| Mid-session compaction | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ /lensify compact** |
 | Multi-tool support | CLI | Aider | Cursor | Cody | CLI | CLI | **✓ 4 channels** |
 | Plugin size | ~80KB | bundled | bundled | hosted | n/a | ~10KB | **203 KB** |
 | Runtime deps | none | aider | Cursor | account | none | minimal | **stdlib only** |
@@ -696,28 +696,28 @@ R: A varredura base (file walk, detecção de linguagem, símbolos) funciona em 
 R: O startup de subprocesso de hook é limitado a 250 ms a frio (tipicamente 20–30 ms a quente). A saída do hook é limitada a 500 tokens por evento. Ambos os limites são aplicados por CI. A varredura em si roda sob demanda, não por prompt.
 
 **Q: Does it send my code anywhere?**
-R: Não, a menos que você execute explicitamente `/projectlens compact --llm` E tenha `ANTHROPIC_API_KEY` definida. Mesmo assim, apenas o resumo de atividade da sessão (caminhos de arquivo, nomes de comando, resultados de testes) é enviado — nunca conteúdos de arquivos.
+R: Não, a menos que você execute explicitamente `/lensify compact --llm` E tenha `ANTHROPIC_API_KEY` definida. Mesmo assim, apenas o resumo de atividade da sessão (caminhos de arquivo, nomes de comando, resultados de testes) é enviado — nunca conteúdos de arquivos.
 
 **Q: Is the capsule different from a README?**
 R: Um README diz aos **humanos** o que o projeto faz. A cápsula diz ao seu **agente** o que o projeto contém: rotas, modelos, loops de treinamento, índices vetoriais, deploys etc. Audiência diferente, saída diferente, ambos têm seu lugar.
 
 **Q: What if my framework isn't covered by an adapter?**
-A: The base scan still produces a useful capsule (entry points, modules, symbols, hotspots, risks). You get less framework-specific noise. Add a custom adapter in ~100 LOC if you want richer output for that framework — see [the adapter SDK guide](../../skills/projectlens/references/adapter-sdk.md).
+A: The base scan still produces a useful capsule (entry points, modules, symbols, hotspots, risks). You get less framework-specific noise. Add a custom adapter in ~100 LOC if you want richer output for that framework — see [the adapter SDK guide](../../skills/lensify/references/adapter-sdk.md).
 
 **Q: Can I disable everything and just use the scan?**
-A: Yes — `export PROJECTLENS_DEDUP=0` disables all 5 hooks. The scan engine remains available for explicit `/projectlens` invocations.
+A: Yes — `export LENSIFY_DEDUP=0` disables all 5 hooks. The scan engine remains available for explicit `/lensify` invocations.
 
 **Q: Why not use Cursor's @codebase or Sourcegraph Cody instead?**
-A: They do **semantic** vector search — they need an embedding model, a vector store, and continuous indexing. ProjectLens does **structural** extraction — deterministic, fast (sub-second), cheap, and framework-aware. The two are complementary: ProjectLens for instant orientation, semantic tools for in-depth search.
+A: They do **semantic** vector search — they need an embedding model, a vector store, and continuous indexing. Lensify does **structural** extraction — deterministic, fast (sub-second), cheap, and framework-aware. The two are complementary: Lensify for instant orientation, semantic tools for in-depth search.
 
 **Q: How does compaction interact with `/clear`?**
-A: Run `/projectlens compact` first (generates `WORKING_CONTEXT.md`), then `/clear` to flush the conversation buffer, then paste the contents of `WORKING_CONTEXT.md` at the top of the next session. You resume with the same shoulder-context but a fresh token budget. Compaction typically reclaims 8–25k tokens.
+A: Run `/lensify compact` first (generates `WORKING_CONTEXT.md`), then `/clear` to flush the conversation buffer, then paste the contents of `WORKING_CONTEXT.md` at the top of the next session. You resume with the same shoulder-context but a fresh token budget. Compaction typically reclaims 8–25k tokens.
 
 **Q: Is it free?**
 R: Sim — licença MIT. Sem assinatura, sem telemetria fora do dispositivo, sem dependências pip obrigatórias.
 
 **Q: How do I uninstall?**
-A: Plugin: drag-remove from your tool's plugin manager. MCP: remove the `projectlens` entry from your MCP config. CLI: `pip uninstall projectlens`. Data: `rm -rf ~/.projectlens` and `<project>/.projectlens-memory` to wipe everything.
+A: Plugin: drag-remove from your tool's plugin manager. MCP: remove the `lensify` entry from your MCP config. CLI: `pip uninstall lensify`. Data: `rm -rf ~/.lensify` and `<project>/.lensify-memory` to wipe everything.
 
 ---
 
@@ -730,8 +730,8 @@ A: Plugin: drag-remove from your tool's plugin manager. MCP: remove the `project
 | `_serving` v2 — Modal, Replicate, Cog | Planned | |
 | `_enterprise` v2 — Django, Flask, Next.js, NestJS | Planned | JS/TS framework coverage |
 | Multi-modal lightweight — SQL schemas, shell scripts, Dockerfile, Markdown docs | Investigating | v0.16.0 candidate |
-| Optional graph mode — `projectlens graph .` + MCP graph queries | Investigating | v0.17.0 candidate |
-| `projectlens watch` daemon — auto-refresh AGENTS.md on file changes | Investigating | Cross-tool freshness |
+| Optional graph mode — `lensify graph .` + MCP graph queries | Investigating | v0.17.0 candidate |
+| `lensify watch` daemon — auto-refresh AGENTS.md on file changes | Investigating | Cross-tool freshness |
 
 Vote com issues no GitHub — o que deve vir primeiro?
 
@@ -759,4 +759,4 @@ See [`GOVERNANCE.md`](../../GOVERNANCE.md) for the full policy.
 
 ---
 
-⭐ Marque este repo com estrela se ProjectLens economiza tokens para você. Abra uma issue se um framework que você usa não estiver coberto — a maioria dos adaptadores tem ~100 LOC e priorizaremos.
+⭐ Marque este repo com estrela se Lensify economiza tokens para você. Abra uma issue se um framework que você usa não estiver coberto — a maioria dos adaptadores tem ~100 LOC e priorizaremos.

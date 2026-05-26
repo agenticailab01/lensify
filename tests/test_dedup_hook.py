@@ -15,7 +15,7 @@ import pytest
 
 HOOK_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "projectlens" / "scripts" / "dedup_hook.py"
+    / "skills" / "lensify" / "scripts" / "dedup_hook.py"
 )
 
 
@@ -163,8 +163,8 @@ def test_disabled_by_env(project):
         "tool_name": "Read",
         "tool_input": {"file_path": str(project / "src" / "main.py")},
     }
-    out1 = run_hook(payload, env_extra={"PROJECTLENS_DEDUP": "0"})
-    out2 = run_hook(payload, env_extra={"PROJECTLENS_DEDUP": "0"})
+    out1 = run_hook(payload, env_extra={"LENSIFY_DEDUP": "0"})
+    out2 = run_hook(payload, env_extra={"LENSIFY_DEDUP": "0"})
     # Both should be empty — dedup disabled
     assert "hookSpecificOutput" not in out1
     assert "hookSpecificOutput" not in out2

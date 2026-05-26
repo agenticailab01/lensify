@@ -13,11 +13,11 @@ from scripts.stats import LifetimeStats, save_stats, record_event
 
 STATUSLINE_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "projectlens" / "scripts" / "statusline.py"
+    / "skills" / "lensify" / "scripts" / "statusline.py"
 )
 CLI_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "projectlens" / "scripts" / "stats_cli.py"
+    / "skills" / "lensify" / "scripts" / "stats_cli.py"
 )
 
 
@@ -34,13 +34,13 @@ def run(script: Path, args: list[str], env_extra: dict | None = None,
 
 @pytest.fixture
 def stats_home(tmp_path, monkeypatch):
-    monkeypatch.setenv("PROJECTLENS_STATS_HOME", str(tmp_path))
+    monkeypatch.setenv("LENSIFY_STATS_HOME", str(tmp_path))
     return tmp_path
 
 
 def test_statusline_silent_on_fresh_install(stats_home):
     proc = run(STATUSLINE_SCRIPT, [],
-               env_extra={"PROJECTLENS_STATS_HOME": str(stats_home)})
+               env_extra={"LENSIFY_STATS_HOME": str(stats_home)})
     assert proc.returncode == 0
     # No events recorded → no badge displayed
     assert proc.stdout.strip() == ""
@@ -51,7 +51,7 @@ def test_statusline_emits_badge_after_events(stats_home):
     record_event("dedup")
     record_event("compactor", tokens_saved=12_000)
     proc = run(STATUSLINE_SCRIPT, [],
-               env_extra={"PROJECTLENS_STATS_HOME": str(stats_home)})
+               env_extra={"LENSIFY_STATS_HOME": str(stats_home)})
     assert proc.returncode == 0
     out = proc.stdout.strip()
     assert "[LENS]" in out
@@ -61,8 +61,8 @@ def test_statusline_emits_badge_after_events(stats_home):
 def test_statusline_disabled_by_env(stats_home):
     record_event("dedup")
     proc = run(STATUSLINE_SCRIPT, [], env_extra={
-        "PROJECTLENS_STATS_HOME": str(stats_home),
-        "PROJECTLENS_STATS": "0",
+        "LENSIFY_STATS_HOME": str(stats_home),
+        "LENSIFY_STATS": "0",
     })
     assert proc.returncode == 0
     assert proc.stdout.strip() == ""
@@ -71,7 +71,7 @@ def test_statusline_disabled_by_env(stats_home):
 def test_statusline_never_crashes_on_corrupted_stats(stats_home):
     (stats_home / "stats.json").write_text("garbage")
     proc = run(STATUSLINE_SCRIPT, [],
-               env_extra={"PROJECTLENS_STATS_HOME": str(stats_home)})
+               env_extra={"LENSIFY_STATS_HOME": str(stats_home)})
     assert proc.returncode == 0
 
 
@@ -82,9 +82,9 @@ def test_cli_full_report(stats_home):
     record_event("compression", bytes_saved=3500)
     record_event("compactor", tokens_saved=8_000, project_root="/x")
     proc = run(CLI_SCRIPT, [],
-               env_extra={"PROJECTLENS_STATS_HOME": str(stats_home)})
+               env_extra={"LENSIFY_STATS_HOME": str(stats_home)})
     assert proc.returncode == 0
-    assert "ProjectLens" in proc.stdout
+    assert "Lensify" in proc.stdout
     assert "Tokens saved" in proc.stdout
     assert "Dedup hooks" in proc.stdout
     assert "Compactor runs" in proc.stdout
@@ -93,7 +93,7 @@ def test_cli_full_report(stats_home):
 def test_cli_short_form(stats_home):
     record_event("dedup")
     proc = run(CLI_SCRIPT, ["--short"],
-               env_extra={"PROJECTLENS_STATS_HOME": str(stats_home)})
+               env_extra={"LENSIFY_STATS_HOME": str(stats_home)})
     assert proc.returncode == 0
     assert "[LENS]" in proc.stdout
 
@@ -102,7 +102,7 @@ def test_cli_json_form(stats_home):
     record_event("dedup")
     record_event("compactor", tokens_saved=5_000)
     proc = run(CLI_SCRIPT, ["--json"],
-               env_extra={"PROJECTLENS_STATS_HOME": str(stats_home)})
+               env_extra={"LENSIFY_STATS_HOME": str(stats_home)})
     assert proc.returncode == 0
     data = json.loads(proc.stdout)
     assert data["dedup_count"] == 1
@@ -114,7 +114,7 @@ def test_cli_json_form(stats_home):
 def test_cli_reset_with_yes(stats_home):
     record_event("dedup")
     proc = run(CLI_SCRIPT, ["--reset", "--yes"],
-               env_extra={"PROJECTLENS_STATS_HOME": str(stats_home)})
+               env_extra={"LENSIFY_STATS_HOME": str(stats_home)})
     assert proc.returncode == 0
     assert "Wiped" in proc.stdout
     assert not (stats_home / "stats.json").exists()
@@ -122,6 +122,6 @@ def test_cli_reset_with_yes(stats_home):
 
 def test_cli_path_prints_location(stats_home):
     proc = run(CLI_SCRIPT, ["--path"],
-               env_extra={"PROJECTLENS_STATS_HOME": str(stats_home)})
+               env_extra={"LENSIFY_STATS_HOME": str(stats_home)})
     assert proc.returncode == 0
     assert str(stats_home) in proc.stdout

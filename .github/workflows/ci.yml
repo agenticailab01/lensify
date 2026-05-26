@@ -35,7 +35,7 @@ jobs:
         run: python -m pytest tests/benchmark_perf.py -v
 
       - name: Smoke-test scan engine
-        run: python skills/projectlens/scripts/scan.py . --no-git --output /tmp/lens-out
+        run: python skills/lensify/scripts/scan.py . --no-git --output /tmp/lens-out
         shell: bash
 
       - name: Smoke-test MCP server

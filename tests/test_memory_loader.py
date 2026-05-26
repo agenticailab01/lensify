@@ -14,7 +14,7 @@ from scripts.memory import save_memory, MemoryEntry
 
 LOADER_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "projectlens" / "scripts" / "memory_loader.py"
+    / "skills" / "lensify" / "scripts" / "memory_loader.py"
 )
 
 
@@ -67,7 +67,7 @@ def test_loader_uses_module_overlap_when_lens_present(tmp_path):
     save_memory(_make_memory("api_session", modules=["api"]), tmp_path)
     save_memory(_make_memory("unrelated", modules=["billing"]), tmp_path)
     # Write a sections file that says current modules are api/, domain/
-    out_dir = tmp_path / "projectlens-out"
+    out_dir = tmp_path / "lensify-out"
     out_dir.mkdir()
     (out_dir / "lens.sections.json").write_text(json.dumps({
         "module_paths": ["api", "domain"],
@@ -83,20 +83,20 @@ def test_loader_uses_module_overlap_when_lens_present(tmp_path):
 def test_loader_disabled_by_env(tmp_path):
     save_memory(_make_memory("past", modules=["api"]), tmp_path)
     out = run_loader({"cwd": str(tmp_path), "session_id": "new"},
-                     env_extra={"PROJECTLENS_MEMORY": "0"})
+                     env_extra={"LENSIFY_MEMORY": "0"})
     assert "hookSpecificOutput" not in out
 
 
 def test_loader_disabled_by_global_dedup_env(tmp_path):
     save_memory(_make_memory("past", modules=["api"]), tmp_path)
     out = run_loader({"cwd": str(tmp_path), "session_id": "new"},
-                     env_extra={"PROJECTLENS_DEDUP": "0"})
+                     env_extra={"LENSIFY_DEDUP": "0"})
     assert "hookSpecificOutput" not in out
 
 
 def test_loader_handles_corrupted_sections_file(tmp_path):
     save_memory(_make_memory("past", modules=["api"]), tmp_path)
-    out_dir = tmp_path / "projectlens-out"
+    out_dir = tmp_path / "lensify-out"
     out_dir.mkdir()
     (out_dir / "lens.sections.json").write_text("not json {{{")
     # Should still inject memory (uses pure recency since modules can't be loaded)

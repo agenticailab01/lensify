@@ -2,7 +2,7 @@
 
 These confirm Phase 8 wiring across the existing Phase 1-7 hooks. Each test
 runs the hook as a subprocess, then loads lifetime stats from an isolated
-PROJECTLENS_STATS_HOME and checks that the right counters incremented.
+LENSIFY_STATS_HOME and checks that the right counters incremented.
 """
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ import pytest
 from scripts.stats import load_stats
 
 SCRIPTS = (
-    Path(__file__).resolve().parent.parent / "skills" / "projectlens" / "scripts"
+    Path(__file__).resolve().parent.parent / "skills" / "lensify" / "scripts"
 )
 
 
@@ -32,8 +32,8 @@ def run_hook(script_name: str, payload: dict, env_extra: dict) -> subprocess.Com
 @pytest.fixture
 def env(tmp_path, monkeypatch):
     home = tmp_path / "stats_home"
-    monkeypatch.setenv("PROJECTLENS_STATS_HOME", str(home))
-    return {"PROJECTLENS_STATS_HOME": str(home)}, home
+    monkeypatch.setenv("LENSIFY_STATS_HOME", str(home))
+    return {"LENSIFY_STATS_HOME": str(home)}, home
 
 
 def test_dedup_hook_bumps_dedup_count(env, tmp_path):
@@ -49,7 +49,7 @@ def test_dedup_hook_bumps_dedup_count(env, tmp_path):
     # Second read — should bump dedup
     run_hook("dedup_hook.py", payload, env_extra)
     # Stats home is set via the monkeypatch; load_stats picks it up
-    os.environ["PROJECTLENS_STATS_HOME"] = str(stats_home)
+    os.environ["LENSIFY_STATS_HOME"] = str(stats_home)
     s = load_stats()
     assert s.dedup_count >= 1
     assert s.tokens_saved > 0
@@ -65,7 +65,7 @@ def test_compress_hook_bumps_compression_count(env, tmp_path):
         "tool_response": {"stdout": big, "exit_code": 0},
     }
     run_hook("compress_hook.py", payload, env_extra)
-    os.environ["PROJECTLENS_STATS_HOME"] = str(stats_home)
+    os.environ["LENSIFY_STATS_HOME"] = str(stats_home)
     s = load_stats()
     assert s.compressions == 1
     assert s.tokens_saved > 0
@@ -74,7 +74,7 @@ def test_compress_hook_bumps_compression_count(env, tmp_path):
 
 def test_inject_hook_bumps_selective_injections(env, tmp_path):
     env_extra, stats_home = env
-    out_dir = tmp_path / "projectlens-out"
+    out_dir = tmp_path / "lensify-out"
     out_dir.mkdir()
     (out_dir / "lens.sections.json").write_text(json.dumps({
         "module_paths": ["api"], "symbol_names": [],
@@ -82,7 +82,7 @@ def test_inject_hook_bumps_selective_injections(env, tmp_path):
     }))
     payload = {"cwd": str(tmp_path), "prompt": "what is this project?"}
     run_hook("inject_hook.py", payload, env_extra)
-    os.environ["PROJECTLENS_STATS_HOME"] = str(stats_home)
+    os.environ["LENSIFY_STATS_HOME"] = str(stats_home)
     s = load_stats()
     assert s.selective_injections == 1
 
@@ -101,7 +101,7 @@ def test_memory_loader_bumps_memory_recalls(env, tmp_path):
     ), tmp_path)
     payload = {"cwd": str(tmp_path), "session_id": "new"}
     run_hook("memory_loader.py", payload, env_extra)
-    os.environ["PROJECTLENS_STATS_HOME"] = str(stats_home)
+    os.environ["LENSIFY_STATS_HOME"] = str(stats_home)
     s = load_stats()
     assert s.memory_recalls == 1
 
@@ -116,7 +116,7 @@ def test_dedup_no_count_on_first_read(env, tmp_path):
         "tool_input": {"file_path": str(tmp_path / "z.py")},
     }
     run_hook("dedup_hook.py", payload, env_extra)
-    os.environ["PROJECTLENS_STATS_HOME"] = str(stats_home)
+    os.environ["LENSIFY_STATS_HOME"] = str(stats_home)
     s = load_stats()
     assert s.dedup_count == 0
 
@@ -130,20 +130,20 @@ def test_compress_skipped_for_small_output(env, tmp_path):
         "tool_response": {"stdout": "hi\n", "exit_code": 0},
     }
     run_hook("compress_hook.py", payload, env_extra)
-    os.environ["PROJECTLENS_STATS_HOME"] = str(stats_home)
+    os.environ["LENSIFY_STATS_HOME"] = str(stats_home)
     s = load_stats()
     assert s.compressions == 0
 
 
 def test_stats_disabled_by_env_blocks_writes(env, tmp_path):
-    """With PROJECTLENS_STATS=0 the hook should still run but not write stats.
+    """With LENSIFY_STATS=0 the hook should still run but not write stats.
 
     Note: the dedup hook still writes session state — only the stats file
-    is suppressed. We verify by checking ~/.projectlens/stats.json never
+    is suppressed. We verify by checking ~/.lensify/stats.json never
     appears.
     """
     env_extra, stats_home = env
-    env_extra = {**env_extra, "PROJECTLENS_STATS": "0"}
+    env_extra = {**env_extra, "LENSIFY_STATS": "0"}
     (tmp_path / "f.py").write_text("def x(): pass\n")
     payload = {
         "cwd": str(tmp_path),

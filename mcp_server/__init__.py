@@ -1,4 +1,4 @@
-"""ProjectLens MCP server — exposes the scan/compact/stats engine to any
+"""Lensify MCP server — exposes the scan/compact/stats engine to any
 MCP-compatible host (Cursor, VS Code Copilot Chat, Codex, Gemini CLI,
 OpenCode, Trae, Kiro, Antigravity, ...).
 

@@ -1,5 +1,5 @@
 {
-  "name": "projectlens",
+  "name": "lensify",
   "version": "0.15.0",
   "description": "Single-scan adaptive project lens plus token-optimized context capsule for any codebase. Cuts orientation tokens by 70-90%.",
   "author": {

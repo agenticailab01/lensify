@@ -13,7 +13,7 @@ from scripts.session_state import load_state
 
 HOOK_SCRIPT = (
     Path(__file__).resolve().parent.parent
-    / "skills" / "projectlens" / "scripts" / "compress_hook.py"
+    / "skills" / "lensify" / "scripts" / "compress_hook.py"
 )
 
 
@@ -64,7 +64,7 @@ def test_hook_compresses_large_bash_output(tmp_path):
     out = run_hook(payload)
     assert "hookSpecificOutput" in out
     text = out["hookSpecificOutput"]["additionalContext"]
-    assert "ProjectLens" in text
+    assert "Lensify" in text
     assert "json" in text
     assert "ratio" in text.lower()
 
@@ -78,7 +78,7 @@ def test_hook_stores_raw_output_to_disk(tmp_path):
         "tool_response": {"content": big},
     }
     run_hook(payload)
-    cache_dir = tmp_path / ".projectlens-outputs"
+    cache_dir = tmp_path / ".lensify-outputs"
     assert cache_dir.exists()
     files = list(cache_dir.glob("*.txt"))
     assert len(files) >= 1
@@ -110,7 +110,7 @@ def test_hook_disabled_by_env(tmp_path):
         "tool_input": {"command": "x"},
         "tool_response": {"stdout": big, "exit_code": 0},
     }
-    out = run_hook(payload, env_extra={"PROJECTLENS_COMPRESS_OUTPUT": "0"})
+    out = run_hook(payload, env_extra={"LENSIFY_COMPRESS_OUTPUT": "0"})
     assert "hookSpecificOutput" not in out
 
 
