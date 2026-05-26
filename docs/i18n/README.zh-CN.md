@@ -1,54 +1,762 @@
 # ProjectLens
 
-> 适用于任何代码库的单次扫描自适应项目透镜 + 令牌优化上下文胶囊。为 AI 编码助手节省 70-90% 的方向定位令牌。
+> 🌐 **简体中文** — 返回英文版: [English](../../README.md)
 
-[English](../../README.md) · **简体中文** · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-## 是什么
+[![CI](https://github.com/agenticailab01/projectlens/actions/workflows/ci.yml/badge.svg)](https://github.com/agenticailab01/projectlens/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE) [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/) [![Version](https://img.shields.io/badge/version-0.15.0-brightgreen.svg)](../../CHANGELOG.md) [![Tests](https://img.shields.io/badge/tests-527%20passing-brightgreen.svg)](#tests--performance) [![Adapters](https://img.shields.io/badge/adapters-30%20across%208%20packs-blue.svg)](#framework-coverage)
 
-ProjectLens 是一个插件,通过 **一次扫描**(50-150 毫秒)将任何代码库转换为:
+> **面向 AI 编程代理的单次扫描自适应项目透镜 + Token 优化上下文胶囊。** 将定位 Token 削减 70–90%。覆盖整个 AI 开发生命周期的框架感知。纯标准库。MIT 许可。
 
-1. **`LENS.html`** — 单页摘要,人类 30 秒可读
-2. **`LENS.capsule.md`** — 800-3,600 个令牌的上下文块,AI 代理可摄取此块,**而非** 阅读 30 多个原始文件
-3. **30 个框架适配器** — 涵盖 8 个生态系统包:AI 应用、AI UI、ML 核心、推理服务、向量数据库、实验追踪、企业级、笔记本
+**📖 用您的语言阅读:** 🇬🇧 [← 返回英文版](../../README.md) · 🇹🇼 [繁體中文](README.zh-TW.md) · 🇯🇵 [日本語](README.ja.md) · 🇰🇷 [한국어](README.ko.md) · 🇩🇪 [Deutsch](README.de.md) · 🇫🇷 [Français](README.fr.md) · 🇪🇸 [Español](README.es.md) · 🇮🇳 [हिन्दी](README.hi.md) · 🇧🇷 [Português](README.pt.md) · 🇷🇺 [Русский](README.ru.md) · 🇸🇦 [العربية](README.ar.md) · 🇮🇹 [Italiano](README.it.md) · 🇵🇱 [Polski](README.pl.md) · 🇳🇱 [Nederlands](README.nl.md) · 🇹🇷 [Türkçe](README.tr.md) · 🇺🇦 [Українська](README.uk.md) · 🇻🇳 [Tiếng Việt](README.vi.md) · 🇮🇩 [Bahasa Indonesia](README.id.md) · 🇸🇪 [Svenska](README.sv.md) · 🇬🇷 [Ελληνικά](README.el.md) · 🇷🇴 [Română](README.ro.md) · 🇨🇿 [Čeština](README.cs.md) · 🇫🇮 [Suomi](README.fi.md) · 🇩🇰 [Dansk](README.da.md) · 🇳🇴 [Norsk](README.no.md) · 🇭🇺 [Magyar](README.hu.md) · 🇹🇭 [ภาษาไทย](README.th.md) · 🇺🇿 [O'zbekcha](README.uz.md)
 
-## 安装
+---
 
-四个分发渠道,选择适合您工具的:
+## 目录
 
-```bash
-# Claude Code / Cowork —— 拖放 projectlens.plugin 到聊天中
-# Cursor / VS Code Copilot / Codex / Gemini CLI —— MCP 服务器
-git clone https://github.com/agenticailab01/projectlens ~/projectlens
-# Aider / 脚本 / CI —— CLI
-pip install projectlens
-# 任何读取上下文文件的工具 —— AGENTS.md 模式
-projectlens . --install-agents-md
+1. [为什么选择 ProjectLens](#why-projectlens)
+2. [一览](#at-a-glance)
+3. [快速开始](#quick-start)
+4. [工作原理](#how-it-works)
+5. [按工具安装(4 个分发渠道)](#installation-by-tool)
+6. [自适应层级 — T1 / T2 / T3](#adaptive-tiers)
+7. [框架覆盖 — 8 个包中的 30 个适配器](#framework-coverage)
+8. [会话钩子 — 5 个生产级钩子](#session-hooks)
+9. [对话压缩器](#conversation-compactor)
+10. [Token 经济学 — 具体数字](#token-economics)
+11. [测试与性能预算](#tests--performance)
+12. [安全与治理](#security--governance)
+13. [配置环境变量](#configuration)
+14. [项目结构](#project-structure)
+15. [扩展 — 编写您自己的适配器](#extending-projectlens)
+16. [与替代方案比较](#comparison)
+17. [常见问题](#faq)
+18. [路线图](#roadmap)
+19. [贡献与许可证](#contributing--license)
+
+---
+
+## 为什么选择 ProjectLens
+
+现代 AI 编程代理存在上下文窗口问题:项目越大,仅用于**自我定位**所消耗的 Token 就越多。典型的入职流程需要读取 20–40 个文件,代理才能开始有用的工作 — 这意味着 10–30k Token 花费在理解上,而不是解决用户的实际问题。
+
+ProjectLens 用**单次扫描**(亚 100 毫秒)替换该定位阶段,生成 Token 有界、框架感知的上下文块。代理读取**一个胶囊**而不是数十个文件。仅定位节省就使 Token 使用量减少 70–90% — 5 个会话钩子在此基础上进一步叠加节省。
+
+**它做出的权衡:**确定性结构提取(快速、免费、框架感知)而不是语义向量搜索(更慢、嵌入成本、通用)。ProjectLens 与 Cursor 的 `@codebase` 和 Sourcegraph Cody 等语义工具协同工作 — 而不是对立。使用 ProjectLens 进行即时定位;当代理需要按含义而非结构查找特定内容时使用语义搜索。
+
+---
+
+## 一览
+
+| Metric | Value |
+|---|---|
+| Framework adapters | **30** across 8 packs |
+| Distribution channels | **4** (Plugin · MCP · CLI · AGENTS.md) |
+| Session hooks (Claude Code) | **5** (dedup, activity, injection, compression, memory) |
+| Tier budgets | T1 500 tok · T2 2,100 tok · T3 3,600 tok |
+| Scan time (500 files) | **113 ms** |
+| Hook subprocess startup | **< 250 ms** cold, ~30 ms warm |
+| Plugin size | **203 KB** (Claude Code/Cowork bundle) |
+| Runtime dependencies | **None** (pure Python stdlib) |
+| Unit tests | **527 passing** |
+| CI-enforced budgets | **17 performance + security** |
+| License | MIT |
+| Token savings | **70–90%** orientation · ~25% repeat-read · ~60% per-prompt re-injection · 8–25k per compaction |
+
+---
+
+## 快速开始
+
+ProjectLens has **three install paths**. Pick the one that matches your tool — every path takes under a minute.
+
+### 👉 Claude Code (terminal) — one command in chat
+
+```
+/plugin marketplace add agenticailab01/projectlens
+/plugin install projectlens@projectlens
 ```
 
-详细安装步骤请见 [完整 README](../../README.md#quick-start)。
+Then in any project: `/projectlens` to scan, `/projectlens compact` to recover tokens, `/projectlens stats` for savings.
 
-## 主要功能
+### 👉 Cowork (desktop app) — drag and drop
 
-- **自适应深度** — 自动选择 T1 (简略) / T2 (地图) / T3 (罗盘)
-- **30 个框架适配器** — PyTorch、Transformers、LangChain、Pinecone、FastAPI、SQLAlchemy、Vue SFC、Docker Compose 等
-- **5 个会话钩子**(Claude Code) — 读取去重、活动跟踪、选择性注入、输出压缩、跨会话内存
-- **对话压缩器** — `/projectlens compact` 在会话中期回收 8-25k 令牌
-- **纯标准库** — 零运行时依赖
+1. Download `projectlens.plugin` from the [Releases page](https://github.com/agenticailab01/projectlens/releases).
+2. Drag the file into the Cowork chat window.
+3. Click **Save plugin** on the preview card. Restart the conversation.
 
-## 令牌经济学
+### 👉 Cursor / VS Code / Codex / Gemini CLI (MCP) — one config entry
 
-| 阶段 | 节省 |
+```bash
+git clone https://github.com/agenticailab01/projectlens ~/projectlens
+```
+
+Then add this to your tool's MCP config (file path differs per tool — see the Installation by tool section below):
+
+```json
+{
+  "mcpServers": {
+    "projectlens": {
+      "command": "python3",
+      "args": ["-m", "mcp_server"],
+      "cwd": "/Users/you/projectlens"
+    }
+  }
+}
+```
+
+Fully restart the tool. Three new tools appear: `projectlens_scan`, `projectlens_compact`, `projectlens_stats`.
+
+📖 完整步骤说明请参见 **[`USER-INSTALL.md`](../../USER-INSTALL.md)**
+---
+
+## 工作原理
+
+扫描引擎每次调用运行五个阶段:
+
+| Phase | What it does | Output |
+|---|---|---|
+| **1. Walk** | Respects `.gitignore` + vendor exclusions. Categorises every file as code / doc / meta. | File inventory |
+| **2. Parse** | Python via stdlib `ast`. JS/TS/Go/Java via regex. Captures imports + public symbols. | Per-file metadata |
+| **3. Tier** | Picks T1/T2/T3 from file count, LOC, top-level dirs, monorepo markers. | Token budget |
+| **4. Adapt** | Lazy-loads matching framework adapters via manifest. Each emits a typed section. | Framework records |
+| **5. Render** | Composes the capsule under tier budget. Writes HTML lens. Caches the result. | Capsule + HTML |
+
+典型运行时:中型项目**30 毫秒**,500 文件项目**113 毫秒**。扫描在各阶段之间从不重新读取文件。
+
+**每次扫描产生两个工件:**
+
+1. **`LENS.html`** — single self-contained HTML page (five panels: what this is, the picture, day-1 narrative, hotspots, risks & unknowns). For humans — 30-second read.
+2. **`LENS.capsule.md`** — Markdown context block, 800–3,600 tokens, framework-aware. For your AI agent — ingested instead of reading 30+ raw files.
+
+---
+
+## 按工具安装(4 个分发渠道)
+
+四个分发渠道共享相同的扫描引擎。选择与您工具匹配的渠道即可。
+
+### Channel 1 — Claude Code / Cowork plugin (recommended)
+
+完整体验:所有 5 个钩子触发、斜杠命令、状态栏、内存加载器。
+
+**Cowork:**
+1. Download `projectlens.plugin` from the [Releases page](https://github.com/agenticailab01/projectlens/releases)
+2. Drag-and-drop the file into the Cowork chat
+3. Click **Save plugin** on the preview card
+4. Restart the conversation — you'll see `ProjectLens dedup is active` confirming installation
+
+**Claude Code (terminal CLI):**
+```bash
+claude plugin install projectlens.plugin
+```
+
+Files land at:
+- macOS: `~/Library/Application Support/Claude/plugins/projectlens/`
+- Linux: `~/.local/share/claude/plugins/projectlens/`
+- Windows: `%APPDATA%\Claude\plugins\projectlens\`
+
+### Channel 2 — MCP server (Cursor, VS Code, Codex, Gemini CLI, Antigravity, …)
+
+纯标准库 JSON-RPC 2.0 stdio 服务器。服务器本身无需 `pip install` 步骤 — 直接从克隆的仓库使用 Python 标准库即可运行。
+
+#### Step 1 — Clone the repository
+
+```bash
+git clone https://github.com/agenticailab01/projectlens ~/projectlens
+cd ~/projectlens
+
+# Smoke-test the server (Ctrl-C to exit)
+python3 -m mcp_server
+```
+
+You should see no output and no errors — the server is now waiting for JSON-RPC requests on stdin. If you see `ModuleNotFoundError`, your Python is older than 3.9; upgrade and retry.
+
+#### Step 2 — Register the server with your tool
+
+Replace `/Users/you/projectlens` with the absolute path to your clone.
+
+**Cursor** — `.cursor/mcp.json` (project-local) or `~/.cursor/mcp.json` (global):
+
+```json
+{
+  "mcpServers": {
+    "projectlens": {
+      "command": "python3",
+      "args": ["-m", "mcp_server"],
+      "cwd": "/Users/you/projectlens"
+    }
+  }
+}
+```
+
+**Claude Desktop** — `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS), `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "projectlens": {
+      "command": "python3",
+      "args": ["-m", "mcp_server"],
+      "cwd": "/Users/you/projectlens",
+      "env": {}
+    }
+  }
+}
+```
+
+**VS Code Copilot Chat** — `.vscode/mcp.json` (workspace) or User Settings → `chat.mcp.servers`:
+
+```json
+{
+  "servers": {
+    "projectlens": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["-m", "mcp_server"],
+      "cwd": "/Users/you/projectlens"
+    }
+  }
+}
+```
+
+**Gemini CLI / Codex / Antigravity** — each tool's MCP config file (same JSON shape as Cursor):
+
+| Tool | Config file |
 |---|---|
-| 方向定位 | **70-90%** |
-| 重复读取 | **~25%** (长会话) |
-| 每提示重新注入 | **~60%** |
-| 中期压缩 | **8-25k** 令牌 |
+| Cursor | `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global) |
+| VS Code Copilot Chat | `.vscode/mcp.json` or workspace settings → `chat.mcp.servers` |
+| Claude Desktop | `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) / `%APPDATA%\Claude\claude_desktop_config.json` (Win) |
+| Gemini CLI | `~/.config/gemini-cli/mcp.json` |
+| Codex | `~/.config/codex/mcp.json` |
+| Antigravity | Project `.antigravity/mcp.json` or workspace settings |
+| OpenCode / Aider with MCP | `~/.config/<tool>/mcp.json` (stdio entry, same shape) |
 
-## 测试 + 性能
+#### Step 3 — Restart your tool
 
-527 单元测试 + 17 个性能/安全预算在 CI 中强制执行。500 个文件扫描:**113 毫秒**。
+After saving the config, **fully restart** the tool (not just reload the window). The 3 ProjectLens tools should appear in your tool's MCP tool picker.
 
-## 许可证
+#### The 3 MCP tools
 
-MIT。详情请见 [LICENSE](../../LICENSE)。
+| Tool name | Arguments | What it does |
+|---|---|---|
+| `projectlens_scan` | `path` (str, optional — defaults to cwd), `tier` ("T1" \| "T2" \| "T3" \| "auto"), `no_git` (bool) | Runs a full scan and returns the capsule + path to the generated `LENS.html`. Same engine as `/projectlens` in Claude Code. |
+| `projectlens_compact` | `project_path` (str, optional), `llm` (bool — opt-in LLM narrative) | Generates `WORKING_CONTEXT.md` from current session state. Returns the summary text. |
+| `projectlens_stats` | (no arguments) | Returns lifetime token-savings counters (scans run, tokens saved, hooks fired). |
+
+Tool descriptions, full parameter schemas, and return types are advertised via the standard MCP `tools/list` and `tools/call` methods — your tool will surface them automatically in its MCP UI.
+
+#### Step 4 — Use it in chat
+
+Once connected, just ask your agent in natural language:
+
+```
+"scan this project with ProjectLens"
+"compact this session"
+"show me my projectlens token savings"
+```
+
+Most tools will route those phrases to the matching MCP tool automatically. If the routing isn't picking up, name the tool explicitly: *"use projectlens_scan on the current directory."*
+
+#### How the MCP channel differs from the Plugin channel
+
+| Capability | Plugin (Claude Code/Cowork) | MCP server (any tool) |
+|---|:---:|:---:|
+| `/projectlens` scan | ✓ | ✓ (via `projectlens_scan`) |
+| `/projectlens compact` | ✓ | ✓ (via `projectlens_compact`) |
+| `/projectlens stats` | ✓ | ✓ (via `projectlens_stats`) |
+| Statusline | ✓ | ✗ (tool-specific UI) |
+| Skill / slash-commands | ✓ | ✗ (tools invoked by name) |
+| 5 session hooks (dedup/inject/compress/memory/activity) | ✓ | ✗ (no hook surface in MCP spec) |
+| Cross-session memory loader | ✓ | partial (only via explicit tool call) |
+
+The scan, compact, and stats functionality are identical across both channels — it's the **same Python code under the hood**. What you lose in MCP is the **passive** hook-driven savings (dedup, selective injection, output compression). What you gain is **broad tool support** — anything that speaks MCP can use ProjectLens.
+
+#### Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| Tool doesn't appear in picker | Verify `cwd` is the absolute path to your repo clone. Restart the tool (don't just reload). Check tool's MCP logs (Cursor: View → Output → MCP). |
+| `python3: command not found` | Use the full path: `"command": "/usr/bin/python3"` or `"command": "/opt/homebrew/bin/python3"`. |
+| Server starts but tools fail | Run `python3 -m mcp_server` manually from `cwd` — if it errors there, fix that error first. |
+| JSON-RPC parse errors in logs | A stdout-polluting `print()` snuck into a tool. Re-clone from a clean release tag. |
+| Slow first call | Cold-start scan can take 100–250 ms on large repos. Subsequent calls are warm-cached. |
+
+### Channel 3 — Standalone CLI (Aider, Copilot CLI, scripts, CI)
+
+```bash
+pip install projectlens
+projectlens --version
+projectlens . --no-git
+```
+
+Available flags:
+- `--tier T1|T2|T3|auto` — force a complexity tier (default: auto)
+- `--capsule-only` — skip HTML, write only the Markdown capsule
+- `--ast-only` — deterministic mode, no LLM enrichment of narrative
+- `--no-git` — skip git hotspot analysis (faster)
+- `--output <dir>` — override output directory (default: `<target>/projectlens-out`)
+- `--install-agents-md [FILE]` — append/update capsule inside a context file (default: `AGENTS.md`)
+- `--version` — print version and exit
+
+### Channel 4 — AGENTS.md write mode (any tool that reads context files)
+
+```bash
+projectlens . --install-agents-md              # writes AGENTS.md
+projectlens . --install-agents-md CLAUDE.md
+projectlens . --install-agents-md GEMINI.md
+projectlens . --install-agents-md .cursorrules
+```
+
+The capsule lands inside the target file wrapped in idempotent `<!-- projectlens-begin -->` / `<!-- projectlens-end -->` markers. Re-running replaces only the marked block; any other content you've added is preserved.
+
+---
+
+## 自适应层级 — T1 / T2 / T3
+
+ProjectLens 自动选择正确的深度。只有在有充分理由时才使用 `--tier T1|T2|T3` 覆盖。
+
+| Tier | Trigger | Capsule budget | Use case |
+|---|---|---:|---|
+| **T1 Sketch** | < 50 files · < 5k LOC · single language | 500 tok | Quick scripts, demos, single-file tools |
+| **T2 Atlas** | 50–1,000 files · 5k–100k LOC · multi-module | 2,100 tok | Most real projects (the sweet spot) |
+| **T3 Compass** | > 1,000 files · monorepo markers · 5+ top-level dirs | 3,600 tok | Monorepos, platforms, enterprise systems |
+
+聊天中的覆盖提示 — ProjectLens 读取意图:
+
+| Signal | Resulting tier |
+|---|---|
+| "quick summary" / "gist" / "tldr" | T1 |
+| "onboard me" / "explain the project" / default | T2 |
+| "monorepo" / "all services" / "full picture" | T3 |
+
+---
+
+## 框架覆盖 — 8 个包中的 30 个适配器
+
+8 个包中的 30 个适配器。每个适配器约 80–120 行代码,仅当其框架签名与项目匹配时才延迟加载。
+
+### `_notebooks` — Exploration
+| Adapter | What it surfaces |
+|---|---|
+| **Jupyter** | `.ipynb` structure: TOC headings, imports, defined functions/classes, execution status, cell counts |
+
+### `_ml_core` — Modeling + training
+| Adapter | What it surfaces |
+|---|---|
+| **PyTorch** | `nn.Module` subclasses, optimizers (Adam/SGD/AdamW), loss functions, DataLoaders, training-loop detection |
+| **Transformers** | Auto* model loads with **checkpoint capture** (e.g. `distilbert-base-uncased`), tokenizers, pipeline tasks, Trainer + TrainingArguments |
+| **scikit-learn** | Estimator instantiations (LogisticRegression, RandomForestClassifier, etc.), Pipeline, GridSearchCV, train_test_split, cross_val_score |
+| **HF Datasets** | `load_dataset("name")` calls with **dataset name capture**, `.map`/`.filter` usage, DatasetDict |
+
+### `_experiment` — Tracking + observability
+| Adapter | What it surfaces |
+|---|---|
+| **Weights & Biases** | `wandb.init(project=, entity=, name=)`, Artifacts with type tags, sweeps + agents, watch calls |
+| **MLflow** | `set_experiment`, `set_tracking_uri`, `start_run`, **model flavors** (sklearn/pytorch/tensorflow), log_param/metric/artifact counts |
+| **Comet** | Experiment / OfflineExperiment / ExistingExperiment, project + workspace capture, log call counts |
+
+### `_vector_db` — Embedding stores
+| Adapter | What it surfaces |
+|---|---|
+| **Pinecone** | v2 + v3 clients, `Index("name")` references, `create_index` dimension + metric, upsert/query op counts |
+| **Weaviate** | v3 + v4 clients, collection creates/gets, query primitives (near_vector/near_text/hybrid/bm25) |
+| **Qdrant** | `QdrantClient`, `create_collection` with `VectorParams(size=, distance=)`, op counts |
+| **Chroma** | All client variants (Persistent/Http/Ephemeral/Cloud), collection ops, embedding functions, op counts |
+
+### `_ai_apps` — RAG + agentic
+| Adapter | What it surfaces |
+|---|---|
+| **LangChain** | ChatPromptTemplate / PromptTemplate, LLMChain etc., LCEL pipe expressions (tagged INFERRED), agent constructors, `@tool` decorators |
+| **LlamaIndex** | VectorStoreIndex / SummaryIndex / etc., query/chat/retriever engines, document readers, Settings assignments |
+| **LangGraph** | `StateGraph` / `MessageGraph` topology — nodes + edges + entry/finish + conditional routes + checkpointer |
+| **Pydantic AI** | `Agent(model)` constructors with model capture, `@agent.tool` / `tool_plain` / `system_prompt` / `result_validator` |
+| **DSPy** | `Signature` subclasses, `Module` subclasses, `Predict`/`ChainOfThought`/`ReAct` predictors, optimizers, `settings.configure` |
+
+### `_ai_uis` — LLM frontends
+| Adapter | What it surfaces |
+|---|---|
+| **Streamlit** | Pages (via `set_page_config` / `pages/` dir / canonical names), widget mix, forms, cached fns, session_state usage |
+| **Gradio** | `Interface` / `Blocks` / `ChatInterface` with title extraction, component counts, `.launch()` entry points |
+| **Chainlit** | Lifecycle decorators (`@cl.on_message` / `on_chat_start` / `action_callback`), UI primitive counts (Message/Step/Action) |
+
+### `_serving` — Production inference
+| Adapter | What it surfaces |
+|---|---|
+| **vLLM** | `LLM(model=)` constructors with **checkpoint capture**, SamplingParams, async engines, OpenAI-compatible server entrypoints |
+| **Triton (client)** | `InferenceServerClient` (http/grpc), InferInput/Output, **model names** from `.infer(model_name=)` calls |
+| **BentoML** | `@bentoml.service` classes, `@bentoml.api/task/async_task` endpoints, Runners, IO schemas |
+| **Ray Serve** | `@serve.deployment` + `@serve.ingress` (stacked decorators handled), `.bind()` bindings, `serve.run()` entrypoints |
+
+### `_enterprise` — Full-stack backend
+| Adapter | What it surfaces |
+|---|---|
+| **FastAPI** | Route decorators (GET/POST/PUT/DELETE/PATCH), path + method capture, `api_route(methods=[...])` expansion |
+| **SQLAlchemy** | Declarative models, `__tablename__`, Column counts, `relationship()` declarations, `create_engine()` with **password redaction** |
+| **Pydantic** | `BaseModel` / `RootModel` subclasses, field counts, `@field_validator` / `@model_validator`, `ConfigDict` flag |
+| **Vue SFC** | `.vue` files; Composition API (`<script setup>`) vs Options API, `defineProps`/`defineEmits`/`defineExpose`, composables |
+| **Tailwind** | `tailwind.config.{js,ts}` parsing — custom colors, fonts, theme.extend categories, plugins, content globs |
+| **Docker Compose** | `docker-compose.yml` parsing (no PyYAML dep) — services, image/build, ports, volumes, **depends_on graph** |
+
+对 AI 开发项目的单次 ProjectLens 扫描会浮现链条中的每个环节:从原始笔记本到训练、建模、嵌入、代理编排、UI 组件和生产部署 — 全部在**一个胶囊**中,且在预算之内。
+
+---
+
+## 会话钩子 — 5 个生产级钩子
+
+5 个钩子在 Claude Code 会话中复合作用。Token 节省在整个会话生命周期内不断叠加。
+
+| Hook | Event | Effect | Approximate savings |
+|---|---|---|---|
+| `dedup_hook.py` | PreToolUse:Read | Flags repeated reads of same file — agent gets a "you already saw this at turn N" hint | **~25%** on long sessions |
+| `activity_hook.py` | PostToolUse:Edit \| Write \| Bash | Tracks session state; refreshes session capsule every 5 turns | Enables compactor |
+| `inject_hook.py` | UserPromptSubmit | Injects only the **relevant** capsule sections per prompt (not the whole capsule) | **~60%** per-prompt savings |
+| `compress_hook.py` | PostToolUse:Bash \| WebFetch | Deterministic compression of long tool outputs (HTML/JSON/log/trace/diff/pytest) | Variable, often 80%+ |
+| `memory_loader.py` | SessionStart | Loads cross-session memory of overlapping work | Carries context across `/clear` boundaries |
+
+**Cowork 限制:**Cowork 的钩子表面只触发 SessionStart。扫描引擎、胶囊生成和 `/projectlens compact` 仍然有效 — 但 5 个钩子驱动的优化仅在 Claude Code 终端 CLI 中激活。
+
+---
+
+## 对话压缩器
+
+长会话消耗上下文。压缩器在几秒钟内回收 8–25k Token。
+
+```bash
+/projectlens compact          # generate WORKING_CONTEXT.md
+/clear                        # flush the conversation buffer
+# then paste WORKING_CONTEXT.md at the top of the new session
+```
+
+压缩器读取 `activity_hook` 记录的会话状态,并生成总结以下内容的 `WORKING_CONTEXT.md`:
+
+- Files you touched (with line counts and last operation)
+- Bash commands run and their outcomes
+- Tests that passed / failed
+- Decisions made, open threads
+- Optional LLM-enhanced one-paragraph summary if `ANTHROPIC_API_KEY` is set (one Haiku call, ~$0.001)
+
+空状态警告:如果没有 PostToolUse 钩子触发(在 Cowork 中很典型),压缩器会输出清晰的诊断,而不是假装捕获了工作。
+
+---
+
+## Token 经济学 — 具体数字
+
+节省的来源 — 来自生产使用的具体数字:
+
+| Stage | Before ProjectLens | With ProjectLens | Savings |
+|---|---|---|---:|
+| Initial orientation | 8,000–20,000 tokens reading 20+ files | One capsule, 800–3,300 tokens | **70–90%** |
+| Repeat reads | Each re-read costs full file (≈400 tok / 100 LOC) | Dedup flag, ~0 tokens | **~25%** on long sessions |
+| Per-prompt re-injection | Full capsule (2,100 tok) every prompt | Only relevant sections (~800 tok) | **~60%** |
+| Long tool outputs | Raw 50 KB Bash output → 12k tokens | Compressed summary + retrieval handle | **80%+** variable |
+| Mid-session compaction | `/clear` loses everything | `WORKING_CONTEXT.md` preserves continuity | **8–25k** reclaimable |
+
+**成本示例(Opus 定价,15 美元/百万输入 Token):**之前消耗约 3 美元输入 Token 的 4 小时编程会话,在所有钩子激活时降至约 0.45–0.90 美元。
+
+---
+
+## 测试与性能预算
+
+**527 个单元测试** + **17 个 CI 强制的性能与安全预算**在每次提交时跨 macOS / Linux / Windows × Python 3.9–3.12 运行。
+
+在合成项目大小上测量的性能:
+
+| Project size | Files | Scan time | Capsule size | Sections rendered |
+|---|---:|---:|---:|---:|
+| Tiny | 20 | **41 ms** | 402 tok | 5 |
+| Medium | 100 | **29 ms** | 529 tok | 5 |
+| Large | 500 | **113 ms** | 529 tok | 5 |
+
+胶囊大小**无论项目大小都受层级预算限制** — 线性扫描时间,恒定输出。这是架构护城河。
+
+CI 中强制的硬上限:
+
+| Operation | Hard cap |
+|---|---|
+| Hook subprocess startup | < 250 ms |
+| Scan on 100-file fixture | < 2.5 s |
+| Capsule build | < 200 ms |
+| Hook output envelope | ≤ 500 tokens per event |
+| `SKILL.md` size | < 8 KB |
+| Rule R1 — hooks framework-free | static-analysis enforced |
+| Rule R3 — `detect()` never opens files | static-analysis enforced |
+
+添加适配器不能使其中任何一项回退。违反预算的 Pull Request 会使 CI 失败。
+
+---
+
+## 安全与治理
+
+ProjectLens is the most security-hardened tool in its category. See [`SECURITY.md`](../../SECURITY.md) for the full threat model.
+
+**CI-enforced safety:**
+- `exec()`, `eval()`, `__import__()`, `pickle.loads()`, `marshal.loads()`, `shell=True`, `os.system()` are **statically banned** in shipped code
+- Outbound HTTP confined to a single allowlisted endpoint (`api.anthropic.com`) inside `llm_client.py`
+- User-defined adapter loader is **opt-in** via `PROJECTLENS_USER_ADAPTERS=1` (off by default — scanning a malicious repo cannot execute arbitrary Python without explicit user opt-in)
+- 1 MB per-file read cap prevents DoS via huge files
+- 30-second `git` subprocess timeout
+
+**What's persisted locally:**
+
+| Data | Location | Lifetime | Opt-out |
+|---|---|---|---|
+| Lifetime stats counters | `~/.projectlens/stats.json` | Permanent | `PROJECTLENS_STATS=0` |
+| Cross-session memory | `<project>/.projectlens-memory/*.json` | Per-project, max 50 (LRU) | `PROJECTLENS_MEMORY=0` |
+| Session state | `<project>/projectlens-out/state.json` | Per-session | `PROJECTLENS_DEDUP=0` |
+| Capsule + lens artefacts | `<project>/projectlens-out/` | Regenerated each scan | n/a |
+
+**任何内容都不会发送到设备外**,除非您明确运行 `/projectlens compact --llm`。统计和内存文件是纯 JSON — 可审计、可删除、无 PII。
+
+For governance — what contributions we accept and what we don't — see [`GOVERNANCE.md`](../../GOVERNANCE.md).
+
+---
+
+## 配置环境变量
+
+所有持久化表面都有记录的环境变量退出选项:
+
+```bash
+# Hook control
+export PROJECTLENS_DEDUP=0              # disable ALL hooks (dedup/activity/inject/compress/memory)
+export PROJECTLENS_COMPRESS_OUTPUT=0    # disable just output compression
+
+# Persistence control
+export PROJECTLENS_STATS=0              # disable lifetime stats counters
+export PROJECTLENS_STATS_HOME=/path     # change where stats live (default ~/.projectlens)
+export PROJECTLENS_MEMORY=0             # disable cross-session memory
+
+# Resource limits
+export PROJECTLENS_MAX_READ_BYTES=N     # per-file read cap in bytes (default 1MB)
+
+# Trust gating (opt-in only)
+export PROJECTLENS_USER_ADAPTERS=1      # opt IN to user-defined adapters from <project>/.projectlens/frameworks/
+
+# Optional LLM enhancement
+export ANTHROPIC_API_KEY=sk-...         # enables /projectlens compact --llm narrative
+```
+
+取消设置即可重新启用。其他一切不变 — 没有插件文件移动,没有数据丢失。
+
+---
+
+## 项目结构
+
+```
+projectlens/
+├── .claude-plugin/
+│   └── plugin.json                     # Cowork / Claude Code manifest
+├── .github/
+│   ├── workflows/ci.yml                # GitHub Actions: tests + perf budgets
+│   ├── ISSUE_TEMPLATE/                 # bug / adapter request / feature templates
+│   └── PULL_REQUEST_TEMPLATE.md
+├── hooks/
+│   └── hooks.json                      # SessionStart + 4 PostToolUse hook registrations
+├── mcp_server/
+│   ├── __init__.py
+│   ├── __main__.py                     # python -m mcp_server entry
+│   └── server.py                       # pure-stdlib JSON-RPC 2.0 stdio implementation
+├── skills/projectlens/
+│   ├── SKILL.md                        # Skill definition (lean — under 8KB)
+│   ├── references/                     # 13 deep-dive reference docs (lazy-loaded)
+│   │   ├── adapter-sdk.md              # Contributor guide
+│   │   ├── capsule-format.md
+│   │   ├── conversation-compactor.md
+│   │   ├── cross-session-memory.md
+│   │   ├── dedup-hook.md
+│   │   ├── output-compression.md
+│   │   ├── selective-injection.md
+│   │   ├── session-capsule.md
+│   │   ├── symbol-snippets.md
+│   │   ├── telemetry.md
+│   │   ├── complexity-tiers.md
+│   │   ├── diagram-selection.md
+│   │   └── narrative-prompts.md
+│   └── scripts/
+│       ├── scan.py                     # Main entry point — the scan engine
+│       ├── walker.py                   # Filesystem walker, .gitignore-aware
+│       ├── ast_parser.py               # AST + regex parsing
+│       ├── complexity.py               # Tier detection + token budgets
+│       ├── capsule.py                  # Capsule composer
+│       ├── compact.py                  # Conversation compactor
+│       ├── llm_client.py               # Optional Anthropic API (single allowlisted endpoint)
+│       ├── session_state.py            # Per-session activity tracking
+│       ├── memory.py                   # Cross-session memory store
+│       ├── stats.py                    # Lifetime stats + statusline
+│       ├── output_compressor.py        # 9 deterministic compressors
+│       ├── symbols.py                  # Public symbol ranker
+│       ├── git_analyzer.py             # Git hotspot detection
+│       ├── section_matcher.py          # Per-prompt section relevance
+│       ├── narrative.py                # LENS.html narrative panel
+│       ├── frameworks/                 # 30 adapters across 8 packs
+│       │   ├── base.py                 # FrameworkAdapter SDK contract
+│       │   ├── registry.py             # Manifest-driven lazy loading
+│       │   ├── manifest.json           # 30 entries — sig → module
+│       │   ├── _util.py                # Shared file-read helper
+│       │   ├── _template/              # SDK starter (copy to begin)
+│       │   ├── _ai_apps/               # LangChain, LlamaIndex, LangGraph, Pydantic AI, DSPy
+│       │   ├── _ai_uis/                # Streamlit, Gradio, Chainlit
+│       │   ├── _ml_core/               # PyTorch, Transformers, sklearn, Datasets
+│       │   ├── _serving/               # vLLM, Triton, BentoML, Ray Serve
+│       │   ├── _vector_db/             # Pinecone, Weaviate, Qdrant, Chroma
+│       │   ├── _experiment/            # W&B, MLflow, Comet
+│       │   ├── _enterprise/            # FastAPI, SQLAlchemy, Pydantic, Vue, Tailwind, Compose
+│       │   └── _notebooks/             # Jupyter parser + adapter
+│       ├── dedup_hook.py               # PreToolUse:Read
+│       ├── activity_hook.py            # PostToolUse:Edit|Write|Bash
+│       ├── inject_hook.py              # UserPromptSubmit
+│       ├── compress_hook.py            # PostToolUse:Bash|WebFetch
+│       ├── memory_loader.py            # SessionStart
+│       └── statusline.py               # Token-usage statusline
+├── tests/                              # 527 unit tests + 17 perf/security budgets
+├── docs/
+│   ├── i18n/                           # 29 translated READMEs
+│   ├── integrations/                   # Per-tool recipes (Cursor, VS Code, Codex, etc.)
+│   └── screenshots/                    # Visual mockups
+├── pyproject.toml                      # CLI entry point + Python metadata
+├── README.md                           # This file
+├── CHANGELOG.md                        # v0.1 → v0.15 release notes
+├── CONTRIBUTING.md                     # How to contribute
+├── CODE_OF_CONDUCT.md
+├── SECURITY.md                         # Threat model + vulnerability reporting
+├── GOVERNANCE.md                       # Scope of project + abuse mitigations
+├── BENCHMARK.md                        # Competitive matrix + measured numbers
+├── LICENSE                             # MIT
+└── .gitignore
+```
+
+---
+
+## 扩展 — 编写您自己的适配器
+
+适配器 SDK 故意做得很小。每个适配器约 80–120 行代码。
+
+### Write a new framework adapter
+
+```bash
+cd skills/projectlens/scripts/frameworks
+cp -r _template _myframework
+mv _myframework/template.py _myframework/myframework.py
+$EDITOR _myframework/myframework.py     # rename class, update regexes
+$EDITOR manifest.json                    # register entry
+$EDITOR ../../../../tests/test_myframework.py   # add tests
+```
+
+每个适配器必须遵循的契约:
+
+| Rule | What |
+|---|---|
+| **R1** | Hook scripts never import from `frameworks/*` (CI-enforced) |
+| **R2** | Adapter modules stay small — ~80–120 LOC |
+| **R3** | `detect()` is O(1) — never opens files (CI-enforced) |
+| **R4** | `extract()` reads only files that match your framework's signature |
+| **R5** | `capsule_section()` respects `budget_tokens` |
+
+Full guide: [`skills/projectlens/references/adapter-sdk.md`](../../skills/projectlens/references/adapter-sdk.md).
+
+### Per-project user adapters (no fork needed)
+
+将 `.py` 文件放入 `<your-project>/.projectlens/frameworks/`。一旦您选择加入,它们在每次扫描时会被自动发现:
+
+```bash
+export PROJECTLENS_USER_ADAPTERS=1
+```
+
+信任决定发生在您的 shell 中,而不是在被扫描的代码中 — 保护您免受不可信仓库中的恶意适配器影响。
+
+---
+
+## 与替代方案比较
+
+ProjectLens 是 AI 编程助手领域中**轻量级、确定性的定位层**。它补充而非替换语义搜索工具。
+
+| Capability | Repomix | Aider repo-map | Cursor `@codebase` | Sourcegraph Cody | Graphify | Caveman | **ProjectLens** |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Single-pass summary | ✓ | ✓ | ✓ (search) | ✓ (search) | ✓ | ✓ | **✓** |
+| Token-bounded output | ~ | ~ | ✗ | ✗ | ✗ | ~ | **✓ tier-locked** |
+| Adaptive depth (auto-tier) | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ T1/T2/T3** |
+| Framework-aware extraction | ✗ | ✗ | ~ | ~ | ✗ | ~ | **✓ 30 adapters** |
+| Confidence tags on output | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ EXTRACTED/INFERRED/AMBIGUOUS** |
+| In-session hooks | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ 5 hooks** |
+| Mid-session compaction | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓ /projectlens compact** |
+| Multi-tool support | CLI | Aider | Cursor | Cody | CLI | CLI | **✓ 4 channels** |
+| Plugin size | ~80KB | bundled | bundled | hosted | n/a | ~10KB | **203 KB** |
+| Runtime deps | none | aider | Cursor | account | none | minimal | **stdlib only** |
+| CI-enforced security audit | ✗ | ✗ | hosted | hosted | ✗ | ✗ | **✓ 3 static checks** |
+| Open source | ✓ | ✓ | ✗ | ~ | ✓ | ✓ | **✓ MIT** |
+| Semantic / vector search | ✗ | ~ | ✓ | ✓ | ✗ | ✗ | **✗** (out of scope) |
+
+See [`BENCHMARK.md`](../../BENCHMARK.md) for the full competitive analysis.
+
+---
+
+## 常见问题
+
+**Q: Does it work on my JS/TS / Go / Rust project?**
+答:基础扫描(文件遍历、语言检测、符号)适用于 JS、TS、Go、Java、Rust、Ruby、PHP、C/C++ 和约 20 种其他语言。目前 30 个框架特定适配器主要专注于 Python,其中 Vue SFC + Tailwind + Docker Compose 覆盖 JS/Web 端。JS/TS 框架适配器(Next.js、Astro、SvelteKit、NestJS)在路线图上。
+
+**Q: Will it slow down my Claude Code session?**
+答:钩子子进程启动冷启动上限为 250 毫秒(通常热启动 20–30 毫秒)。钩子输出每事件上限 500 Token。两个上限都受 CI 强制。扫描本身按需运行,而不是每个提示运行一次。
+
+**Q: Does it send my code anywhere?**
+答:不会,除非您明确运行 `/projectlens compact --llm` **并且**设置了 `ANTHROPIC_API_KEY`。即使如此,也只发送会话活动摘要(文件路径、命令名、测试结果)— 永远不会发送文件内容。
+
+**Q: Is the capsule different from a README?**
+答:README 告诉**人类**项目做什么。胶囊告诉您的**代理**项目包含什么:路由、模型、训练循环、向量索引、部署等。不同的受众、不同的输出,各有其用武之地。
+
+**Q: What if my framework isn't covered by an adapter?**
+A: The base scan still produces a useful capsule (entry points, modules, symbols, hotspots, risks). You get less framework-specific noise. Add a custom adapter in ~100 LOC if you want richer output for that framework — see [the adapter SDK guide](../../skills/projectlens/references/adapter-sdk.md).
+
+**Q: Can I disable everything and just use the scan?**
+A: Yes — `export PROJECTLENS_DEDUP=0` disables all 5 hooks. The scan engine remains available for explicit `/projectlens` invocations.
+
+**Q: Why not use Cursor's @codebase or Sourcegraph Cody instead?**
+A: They do **semantic** vector search — they need an embedding model, a vector store, and continuous indexing. ProjectLens does **structural** extraction — deterministic, fast (sub-second), cheap, and framework-aware. The two are complementary: ProjectLens for instant orientation, semantic tools for in-depth search.
+
+**Q: How does compaction interact with `/clear`?**
+A: Run `/projectlens compact` first (generates `WORKING_CONTEXT.md`), then `/clear` to flush the conversation buffer, then paste the contents of `WORKING_CONTEXT.md` at the top of the next session. You resume with the same shoulder-context but a fresh token budget. Compaction typically reclaims 8–25k tokens.
+
+**Q: Is it free?**
+答:是的 — MIT 许可。无订阅,无设备外遥测,无必需的 pip 依赖。
+
+**Q: How do I uninstall?**
+A: Plugin: drag-remove from your tool's plugin manager. MCP: remove the `projectlens` entry from your MCP config. CLI: `pip uninstall projectlens`. Data: `rm -rf ~/.projectlens` and `<project>/.projectlens-memory` to wipe everything.
+
+---
+
+## 路线图
+
+| Pack | Status | Notes |
+|---|---|---|
+| `_ai_apps` v2 — LiteLLM, Instructor, AutoGen | Planned | Next AI-dev sprint |
+| `_ml_core` v2 — JAX, Flax, MLX, fastai | Planned | After v2 ai_apps |
+| `_serving` v2 — Modal, Replicate, Cog | Planned | |
+| `_enterprise` v2 — Django, Flask, Next.js, NestJS | Planned | JS/TS framework coverage |
+| Multi-modal lightweight — SQL schemas, shell scripts, Dockerfile, Markdown docs | Investigating | v0.16.0 candidate |
+| Optional graph mode — `projectlens graph .` + MCP graph queries | Investigating | v0.17.0 candidate |
+| `projectlens watch` daemon — auto-refresh AGENTS.md on file changes | Investigating | Cross-tool freshness |
+
+用 GitHub Issues 投票 — 哪个应该优先?
+
+---
+
+## 贡献与许可证
+
+我们欢迎:
+- New framework adapters (see [`CONTRIBUTING.md`](../../CONTRIBUTING.md))
+- Bug fixes with regression tests
+- Doc improvements + new integration recipes
+- Performance work that keeps the perf budgets green
+
+我们不接受:
+- `exec`, `eval`, `pickle.loads`, `shell=True`, `os.system` (CI-enforced)
+- New outbound HTTP endpoints
+- Telemetry or analytics sent off-device
+- Adapters with hardcoded credentials or scraping behavior
+
+See [`GOVERNANCE.md`](../../GOVERNANCE.md) for the full policy.
+
+**License:** MIT. © Sachin Patil. See [`LICENSE`](../../LICENSE).
+
+**Maintainer:** Sachin Patil — `agenticailab01@gmail.com`. For security reports, see [`SECURITY.md`](../../SECURITY.md).
+
+---
+
+⭐ 如果 ProjectLens 为您节省 Token,请给此仓库加星。如果您使用的框架未覆盖,请提交 Issue — 大多数适配器约 100 行代码,我们会优先考虑。

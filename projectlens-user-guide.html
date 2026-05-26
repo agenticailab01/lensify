@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProjectLens — User Guide</title>
+<style>
+  :root {
+    --fg: #1a1a1a;
+    --fg-muted: #555;
+    --fg-subtle: #888;
+    --bg: #fdfdfd;
+    --bg-panel: #f6f7f9;
+    --bg-code: #f1f2f4;
+    --accent: #0d5d8a;
+    --accent-soft: #e9f1f7;
+    --border: #e1e4e8;
+    --border-strong: #c9cdd2;
+    --green: #1f7a3d;
+    --orange: #b86200;
+    --red: #b32d2d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
+    color: var(--fg);
+    background: var(--bg);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  aside {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding: 32px 24px;
+    background: var(--bg-panel);
+  }
+  aside h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--fg-subtle);
+    margin: 24px 0 8px;
+  }
+  aside h2:first-child { margin-top: 0; }
+  aside ol { list-style: none; padding: 0; margin: 0; }
+  aside li { margin: 6px 0; }
+  aside a {
+    color: var(--fg-muted);
+    text-decoration: none;
+    font-size: 14px;
+    display: block;
+    padding: 2px 0;
+  }
+  aside a:hover { color: var(--accent); }
+  main {
+    padding: 48px 56px;
+    max-width: 900px;
+  }
+  .hero {
+    margin: 0 0 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 {
+    font-size: 40px;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+  .hero .tag {
+    display: inline-block;
+    font-size: 12px;
+    padding: 3px 10px;
+    background: var(--accent);
+    color: white;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .hero .lead {
+    font-size: 19px;
+    color: var(--fg-muted);
+    max-width: 720px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .stat {
+    background: var(--bg-panel);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .stat .num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat .label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--fg-subtle);
+  }
+  h2 {
+    font-size: 28px;
+    margin: 56px 0 16px;
+    letter-spacing: -0.01em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    font-size: 20px;
+    margin: 32px 0 12px;
+    color: var(--fg);
+  }
+  h4 {
+    font-size: 16px;
+    margin: 20px 0 8px;
+    color: var(--fg);
+  }
+  p { margin: 12px 0; }
+  code {
+    background: var(--bg-code);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, monospace;
+    font-size: 14px;
+  }
+  pre {
+    background: var(--bg-code);
+    padding: 14px 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    margin: 12px 0;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--bg-panel);
+    font-weight: 600;
+    color: var(--fg);
+  }
+  td code { font-size: 13px; }
+  .callout {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    border-radius: 4px;
+    margin: 20px 0;
+  }
+  .callout strong { color: var(--accent); }
+  .callout.warn {
+    background: #fff8e6;
+    border-left-color: var(--orange);
+  }
+  .callout.warn strong { color: var(--orange); }
+  .callout.note {
+    background: #f0f5ed;
+    border-left-color: var(--green);
+  }
+  .callout.note strong { color: var(--green); }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    background: var(--bg);
+  }
+  .card h4 { margin-top: 0; color: var(--accent); }
+  .card .meta {
+    font-size: 12px;
+    color: var(--fg-subtle);
+    margin-bottom: 8px;
+  }
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--accent-soft);
+    color: var(--accent);
+    margin-right: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .pill.green { background: #e6f4ea; color: var(--green); }
+  .pill.orange { background: #fdf0e0; color: var(--orange); }
+  .pill.red { background: #fbe6e6; color: var(--red); }
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+  .channels {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .channel {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .channel-name {
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .channel-tools {
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+  }
+  .arrow {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .adapter-pack {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 8px 0;
+  }
+  .adapter-pack-name {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .adapter-list {
+    font-size: 13px;
+    color: var(--fg-muted);
+  }
+  footer {
+    margin-top: 80px;
+    padding: 32px 0 0;
+    border-top: 1px solid var(--border);
+    color: var(--fg-subtle);
+    font-size: 13px;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: relative; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    main { padding: 32px 24px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .channels { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside>
+  <h2>Start here</h2>
+  <ol>
+    <li><a href="#what">What is ProjectLens</a></li>
+    <li><a href="#why">Why it exists</a></li>
+    <li><a href="#how">How it works</a></li>
+  </ol>
+
+  <h2>Use it</h2>
+  <ol>
+    <li><a href="#prereq">Prerequisites</a></li>
+    <li><a href="#install">Installation</a></li>
+    <li><a href="#verify">Verify it works</a></li>
+    <li><a href="#uninstall">Uninstall / cleanup</a></li>
+    <li><a href="#channels">The four channels</a></li>
+    <li><a href="#run">Running your first scan</a></li>
+    <li><a href="#output">Reading the output</a></li>
+  </ol>
+
+  <h2>Features</h2>
+  <ol>
+    <li><a href="#tiers">Adaptive tiers</a></li>
+    <li><a href="#adapters">Framework adapters</a></li>
+    <li><a href="#hooks">Session hooks</a></li>
+    <li><a href="#compactor">Compactor</a></li>
+    <li><a href="#memory">Cross-session memory</a></li>
+  </ol>
+
+  <h2>Reference</h2>
+  <ol>
+    <li><a href="#tokens">Token economics</a></li>
+    <li><a href="#performance">Performance</a></li>
+    <li><a href="#security">Security &amp; governance</a></li>
+    <li><a href="#extend">Extending it</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ol>
+</aside>
+
+<main>
+
+<div class="hero">
+  <span class="tag">v0.15.0 — production-ready</span>
+  <h1>ProjectLens</h1>
+  <p class="lead">
+    Single-scan adaptive project lens plus a token-optimized context capsule for any AI coding agent.
+    Turns any codebase into a one-page summary your agent ingests in 800–3,600 tokens instead of reading 30+ files.
+  </p>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="num">30</span>
+      <span class="label">framework adapters</span>
+    </div>
+    <div class="stat">
+      <span class="num">4</span>
+      <span class="label">distribution channels</span>
+    </div>
+    <div class="stat">
+      <span class="num">527</span>
+      <span class="label">tests + 17 perf budgets</span>
+    </div>
+    <div class="stat">
+      <span class="num">70–90%</span>
+      <span class="label">orientation tokens saved</span>
+    </div>
+  </div>
+</div>
+
+<h2 id="what">What is ProjectLens</h2>
+
+<p>
+  ProjectLens is a plugin that <strong>scans a codebase once</strong> and produces two artefacts:
+</p>
+
+<div class="grid-2">
+  <div class="card">
+    <h4>LENS.html</h4>
+    <div class="meta">For humans · single page · 30-second read</div>
+    <p style="margin: 0;">
+      A self-contained HTML page with five panels: what the project is, the architectural picture, a day-1 narrative, hotspots, and risks &amp; unknowns. Drop it on someone's screen and they understand the project before their next sip of coffee.
+    </p>
+  </div>
+  <div class="card">
+    <h4>LENS.capsule.md</h4>
+    <div class="meta">For agents · 800–3,600 tokens · token-bounded</div>
+    <p style="margin: 0;">
+      A Markdown context block your AI agent ingests <em>instead of</em> reading 30+ raw files. Framework-aware sections surface the structural skeleton: routes, models, training loops, vector indexes, agents, graphs, deployments.
+    </p>
+  </div>
+</div>
+
+<p>
+  It also ships <strong>five session hooks</strong> (in Claude Code) that compound across a long session: read deduplication, activity tracking, selective context injection, output compression, and cross-session memory.
+</p>
+
+<p>
+  And a <strong>conversation compactor</strong> (<code>/projectlens compact</code>) that reclaims 8&ndash;25k tokens mid-session by generating a <code>WORKING_CONTEXT.md</code> you load after <code>/clear</code>.
+</p>
+
+<h2 id="why">Why it exists</h2>
+
+<p>
+  Modern AI agents have a context-window problem: the bigger the project, the more tokens they burn just <em>orienting</em>. A typical onboarding flow reads 20–40 files before the agent can do useful work. That's 10–30k tokens spent on understanding, not solving.
+</p>
+
+<p>
+  ProjectLens replaces that with a single 30-second scan. The agent reads <strong>one capsule</strong> instead of dozens of files. Token usage drops 70–90% just from orientation savings — and the rest of the hook system stacks more savings on top of that.
+</p>
+
+<div class="callout">
+  <strong>The headline trade-off:</strong> deterministic structural extraction (fast, free, framework-aware) vs. semantic vector search (slower, embedding cost, generic). ProjectLens does the first. It works alongside semantic tools like Cursor's <code>@codebase</code>, not against them.
+</div>
+
+<h2 id="how">How it works</h2>
+
+<p>The scan engine runs five phases per invocation:</p>
+
+<table>
+  <tr>
+    <th>Phase</th>
+    <th>What it does</th>
+    <th>Output</th>
+  </tr>
+  <tr>
+    <td>1. Walk</td>
+    <td>Respects <code>.gitignore</code> + vendor exclusions. Categorises every file as code/doc/meta.</td>
+    <td>File inventory</td>
+  </tr>
+  <tr>
+    <td>2. Parse</td>
+    <td>Python via stdlib <code>ast</code>. JS/TS/Go/Java via regex. Captures imports + symbols.</td>
+    <td>Per-file metadata</td>
+  </tr>
+  <tr>
+    <td>3. Tier</td>
+    <td>Picks T1/T2/T3 from file count, LOC, top-level dirs, monorepo markers.</td>
+    <td>Token budget</td>
+  </tr>
+  <tr>
+    <td>4. Adapt</td>
+    <td>Lazy-loads matching framework adapters via manifest. Each emits a typed section.</td>
+    <td>Framework records</td>
+  </tr>
+  <tr>
+    <td>5. Render</td>
+    <td>Composes the capsule under tier budget. Writes HTML lens. Caches the result.</td>
+    <td>Capsule + HTML</td>
+  </tr>
+</table>
+
+<p>Total typical runtime: 30 ms (medium) to 113 ms (500 files).</p>
+
+<h2 id="prereq">Prerequisites</h2>
+
+<table>
+  <tr><th>Requirement</th><th>Detail</th></tr>
+  <tr><td>Python</td><td>3.9 or newer (3.10+ recommended)</td></tr>
+  <tr><td>Disk space</td><td>~200 KB for the plugin · ~400 KB for the full source clone</td></tr>
+  <tr><td>Memory</td><td>Negligible (~30 MB peak during scan)</td></tr>
+  <tr><td>OS</td><td>macOS · Linux · Windows (WSL recommended on Windows)</td></tr>
+  <tr><td>Network</td><td>Only for optional <code>--llm</code> compactor (api.anthropic.com)</td></tr>
+  <tr><td>Pip packages</td><td><strong>None.</strong> ProjectLens runs on pure stdlib.</td></tr>
+</table>
+
+<p>Optional but recommended: <code>git</code> on your PATH (powers the hotspots panel — without it the scan still runs but skips git-churn analysis).</p>
+
+<h2 id="install">Installation</h2>
+
+<p>
+  ProjectLens ships in <strong>four distribution channels</strong>. Pick the one matching your tool. You can install more than one — they share the same engine, so updates flow through automatically.
+</p>
+
+<h3>Channel 1 — Claude Code or Cowork plugin</h3>
+
+<p><strong>Step 1.</strong> Download <code>projectlens.plugin</code> (a zipped archive with a custom extension).</p>
+
+<p><strong>Step 2.</strong> Install in your tool:</p>
+<ul>
+  <li><strong>Cowork (desktop):</strong> drag-and-drop the <code>.plugin</code> file into the chat, then click <em>Save plugin</em> on the preview card.</li>
+  <li><strong>Claude Code (CLI):</strong> run <code>claude plugin install projectlens.plugin</code> from the directory where you saved the file.</li>
+</ul>
+
+<p><strong>Step 3.</strong> Files land at:</p>
+<ul>
+  <li>macOS: <code>~/Library/Application Support/Claude/plugins/projectlens/</code></li>
+  <li>Linux: <code>~/.local/share/claude/plugins/projectlens/</code></li>
+  <li>Windows: <code>%APPDATA%\Claude\plugins\projectlens\</code></li>
+</ul>
+
+<p><strong>Step 4.</strong> Restart your tool. The plugin is now active. You'll see <code>SessionStart hook additional context: ProjectLens dedup is active</code> when a new conversation opens — that's the confirmation.</p>
+
+<div class="callout">
+  <strong>What this enables:</strong> all five hooks, the <code>/projectlens</code>, <code>/projectlens compact</code>, and <code>/projectlens stats</code> slash commands, the statusline, plus auto-scan capability. The full experience.
+</div>
+
+<h3>Channel 2 — MCP server (Cursor, VS Code Copilot Chat, Codex, Gemini CLI, …)</h3>
+
+<p><strong>Step 1.</strong> Clone the repo (or unzip <code>projectlens-mcp.zip</code>):</p>
+<pre><code>git clone https://github.com/dewa/projectlens ~/projectlens
+cd ~/projectlens
+python3 -c "from mcp_server.server import SERVER_INFO; print(SERVER_INFO)"
+# expected: {'name': 'projectlens-mcp', 'version': '0.15.0'}</code></pre>
+
+<p><strong>Step 2.</strong> Add to your tool's MCP config. Locations vary:</p>
+
+<table>
+  <tr><th>Tool</th><th>Config file</th></tr>
+  <tr><td>Cursor</td><td><code>.cursor/mcp.json</code> (project) or <code>~/.cursor/mcp.json</code> (global)</td></tr>
+  <tr><td>VS Code Copilot Chat</td><td><code>.vscode/mcp.json</code> or workspace settings</td></tr>
+  <tr><td>Claude Desktop</td><td><code>~/Library/Application Support/Claude/claude_desktop_config.json</code></td></tr>
+  <tr><td>Gemini CLI</td><td><code>~/.config/gemini-cli/mcp.json</code></td></tr>
+  <tr><td>Codex / OpenCode / Trae / Kiro / Antigravity</td><td>Tool-specific (check docs)</td></tr>
+</table>
+
+<p><strong>Step 3.</strong> Paste this snippet (adjust <code>cwd</code> to your clone path):</p>
+<pre><code>{
+  "mcpServers": {
+    "projectlens": {
+      "command": "python3",
+      "args": ["-m", "mcp_server"],
+      "cwd": "/Users/you/projectlens"
+    }
+  }
+}</code></pre>
+
+<p><strong>Step 4.</strong> Restart the MCP servers in your tool (Cursor: Settings → MCP → reload; VS Code: Command Palette → "MCP: Restart Servers"). The three tools <code>projectlens_scan</code>, <code>projectlens_compact</code>, and <code>projectlens_stats</code> should appear in your tool's MCP tool picker.</p>
+
+<h3>Channel 3 — Standalone CLI (Aider, GitHub Copilot CLI, scripts, CI)</h3>
+
+<p><strong>Option A — pip install</strong> (once published to PyPI):</p>
+<pre><code>pip install projectlens
+projectlens --version
+# expected: projectlens 0.15.0
+projectlens .</code></pre>
+
+<p><strong>Option B — from a clone</strong> (works today):</p>
+<pre><code>git clone https://github.com/dewa/projectlens ~/projectlens
+echo 'alias projectlens="python3 ~/projectlens/skills/projectlens/scripts/scan.py"' &gt;&gt; ~/.zshrc
+source ~/.zshrc
+projectlens --version</code></pre>
+
+<p>Both yield the same <code>projectlens</code> command. The plugin/MCP install paths and the CLI install path are independent — you can have all three on one machine.</p>
+
+<h3>Channel 4 — AGENTS.md write mode (any tool that reads context files)</h3>
+
+<p>Already have the CLI installed? You can use AGENTS.md mode right away. It's not a separate install — it's a flag on the CLI:</p>
+<pre><code>projectlens . --install-agents-md          # writes AGENTS.md
+projectlens . --install-agents-md CLAUDE.md
+projectlens . --install-agents-md GEMINI.md
+projectlens . --install-agents-md .cursorrules</code></pre>
+
+<p>The capsule lands inside the target file wrapped in idempotent <code>&lt;!-- projectlens-begin --&gt;</code> / <code>&lt;!-- projectlens-end --&gt;</code> markers. Re-running replaces only the marked block; your other content stays.</p>
+
+<p><strong>Suggested workflow:</strong> add a Makefile target so the file refreshes on demand:</p>
+<pre><code>lens:
+	projectlens . --install-agents-md</code></pre>
+
+<h2 id="verify">Verify it works</h2>
+
+<h3>Plugin (Claude Code / Cowork)</h3>
+<pre><code># In your chat, type:
+/projectlens stats
+# You should see a JSON report. If you see a "command not found" error,
+# the plugin didn't install — re-check Step 4 above.</code></pre>
+
+<h3>MCP server</h3>
+<pre><code># From a terminal at the projectlens clone:
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' \
+  | python3 -m mcp_server
+# Expected output: a JSON-RPC response with serverInfo.</code></pre>
+
+<h3>CLI</h3>
+<pre><code>projectlens --version           # → projectlens 0.15.0
+projectlens . --no-git          # scan current dir
+ls projectlens-out/             # LENS.html, LENS.capsule.md, lens.json</code></pre>
+
+<h3>AGENTS.md mode</h3>
+<pre><code>projectlens . --no-git --install-agents-md
+grep -c "projectlens-begin" AGENTS.md   # → 1</code></pre>
+
+<h2 id="uninstall">Uninstall / cleanup</h2>
+
+<p>ProjectLens is designed to be cleanly removable. Nothing in your project files changes unless you explicitly used <code>--install-agents-md</code>. Below, the cleanup for each channel.</p>
+
+<h3>Uninstall the plugin (Claude Code / Cowork)</h3>
+
+<p><strong>Cowork:</strong> open Settings → Plugins → find <em>projectlens</em> → click Remove.</p>
+
+<p><strong>Claude Code:</strong></p>
+<pre><code>claude plugin uninstall projectlens
+# Or manually:
+rm -rf "~/Library/Application Support/Claude/plugins/projectlens"   # macOS
+rm -rf ~/.local/share/claude/plugins/projectlens                   # Linux</code></pre>
+
+<p>The hooks immediately stop firing on the next session. No restart of your OS required, just close your chat and start a new one.</p>
+
+<h3>Uninstall the MCP server</h3>
+
+<p><strong>Step 1.</strong> Remove the <code>projectlens</code> entry from your tool's MCP config. Other MCP servers in the file are unaffected.</p>
+
+<p><strong>Step 2.</strong> Reload MCP servers in your tool (Cursor: Settings → MCP → reload; VS Code: "MCP: Restart Servers"). The three projectlens tools disappear from your tool picker.</p>
+
+<p><strong>Step 3.</strong> Delete the source clone if you want:</p>
+<pre><code>rm -rf ~/projectlens</code></pre>
+
+<h3>Uninstall the CLI</h3>
+
+<p><strong>If installed via pip:</strong></p>
+<pre><code>pip uninstall projectlens
+which projectlens   # should now return nothing</code></pre>
+
+<p><strong>If installed via alias / clone:</strong></p>
+<pre><code># Remove the alias line from your shell rc
+sed -i '/alias projectlens=/d' ~/.zshrc   # or .bashrc
+rm -rf ~/projectlens</code></pre>
+
+<h3>Remove the AGENTS.md capsule block</h3>
+
+<p>The capsule lives between the two markers in your context file. You have three options:</p>
+
+<p><strong>Option 1 — keep the file, remove just the capsule block (recommended if you have custom content above/below):</strong></p>
+<pre><code># macOS / Linux
+sed -i '' '/&lt;!-- projectlens-begin --&gt;/,/&lt;!-- projectlens-end --&gt;/d' AGENTS.md   # macOS
+sed -i '/&lt;!-- projectlens-begin --&gt;/,/&lt;!-- projectlens-end --&gt;/d' AGENTS.md      # Linux</code></pre>
+
+<p><strong>Option 2 — delete the file entirely:</strong></p>
+<pre><code>rm AGENTS.md</code></pre>
+
+<p><strong>Option 3 — leave it alone.</strong> Without the CLI to refresh it, the capsule simply becomes stale. Nothing breaks.</p>
+
+<h3>Clean up persistent data</h3>
+
+<p>Three locations might contain ProjectLens data. Wipe whichever you want:</p>
+
+<table>
+  <tr><th>Location</th><th>Contents</th><th>Command</th></tr>
+  <tr>
+    <td><code>~/.projectlens/</code></td>
+    <td>Lifetime stats counters (no PII)</td>
+    <td><code>rm -rf ~/.projectlens</code></td>
+  </tr>
+  <tr>
+    <td><code>&lt;project&gt;/.projectlens-memory/</code></td>
+    <td>Cross-session memory entries (per-project)</td>
+    <td><code>rm -rf .projectlens-memory</code></td>
+  </tr>
+  <tr>
+    <td><code>&lt;project&gt;/projectlens-out/</code></td>
+    <td>Last scan artefacts (LENS.html, capsule, session state)</td>
+    <td><code>rm -rf projectlens-out</code></td>
+  </tr>
+</table>
+
+<div class="callout note">
+  <strong>One-liner full cleanup</strong> (after uninstall):
+  <pre style="margin-top: 8px;"><code>rm -rf ~/.projectlens ~/projectlens
+find ~ -type d \( -name ".projectlens-memory" -o -name "projectlens-out" \) \
+       -prune -exec rm -rf {} +</code></pre>
+</div>
+
+<h3>Soft-disable without uninstalling</h3>
+
+<p>If you want to keep ProjectLens installed but temporarily silent (e.g. for one project where it's getting in the way):</p>
+
+<table>
+  <tr><th>Variable</th><th>Effect</th></tr>
+  <tr><td><code>export PROJECTLENS_DEDUP=0</code></td><td>Disables ALL five hooks. Scan engine still available for explicit <code>/projectlens</code> calls.</td></tr>
+  <tr><td><code>export PROJECTLENS_STATS=0</code></td><td>Stops writing to <code>~/.projectlens/stats.json</code>.</td></tr>
+  <tr><td><code>export PROJECTLENS_MEMORY=0</code></td><td>Stops cross-session memory.</td></tr>
+  <tr><td><code>export PROJECTLENS_COMPRESS_OUTPUT=0</code></td><td>Stops output compression only.</td></tr>
+</table>
+
+<p>Unset the variables to re-enable. Nothing else changes — no plugin files moved, no data lost.</p>
+
+<h3>Verify uninstall</h3>
+
+<p>Quick checks that ProjectLens is fully gone:</p>
+<pre><code>which projectlens                            # nothing
+ls "~/Library/Application Support/Claude/plugins/" | grep projectlens   # nothing
+ls ~/.projectlens 2&gt;/dev/null                # No such file or directory
+grep -r "projectlens-begin" .                # no markers in your project files</code></pre>
+
+<h2 id="channels">The four channels</h2>
+
+<div class="channels">
+  <div class="channel">
+    <div class="channel-name">Plugin</div>
+    <div class="channel-tools">Claude Code, Cowork</div>
+    <small>All features. Five hooks active. Slash commands. Statusline. The native experience.</small>
+  </div>
+  <div class="channel">
+    <div class="channel-name">MCP server</div>
+    <div class="channel-tools">Cursor · VS Code Copilot Chat · Codex · Gemini CLI · OpenCode · Trae · Kiro · Antigravity</div>
+    <small>Three tools exposed via JSON-RPC stdio: <code>projectlens_scan</code>, <code>projectlens_compact</code>, <code>projectlens_stats</code>. Pure stdlib server.</small>
+  </div>
+  <div class="channel">
+    <div class="channel-name">CLI</div>
+    <div class="channel-tools">Aider · GitHub Copilot CLI · scripts · CI/CD</div>
+    <small>Just <code>projectlens &lt;path&gt;</code>. Works anywhere Python 3.9+ runs. No tool-specific config needed.</small>
+  </div>
+  <div class="channel">
+    <div class="channel-name">AGENTS.md</div>
+    <div class="channel-tools">Any tool that reads project context files</div>
+    <small>Writes the capsule into <code>AGENTS.md</code> / <code>CLAUDE.md</code> / <code>GEMINI.md</code>. Idempotent markers preserve your other content.</small>
+  </div>
+</div>
+
+<h2 id="run">Running your first scan</h2>
+
+<p>From inside Claude Code or Cowork:</p>
+<pre><code>/projectlens                 # scan the current project
+/projectlens compact         # mid-session: reclaim 8-25k tokens
+/projectlens stats           # lifetime savings report</code></pre>
+
+<p>From the CLI:</p>
+<pre><code>projectlens .                                    # scan current dir
+projectlens . --tier T2                          # force a tier
+projectlens . --capsule-only                     # skip HTML
+projectlens . --no-git                           # skip git hotspots
+projectlens . --output /tmp/lens                 # custom output dir
+projectlens . --install-agents-md GEMINI.md      # write to context file</code></pre>
+
+<h2 id="output">Reading the output</h2>
+
+<h3>The capsule sections</h3>
+
+<p>Every capsule starts with these core sections (the exact mix depends on the tier and which frameworks were detected):</p>
+
+<table>
+  <tr><th>Section</th><th>What it shows</th></tr>
+  <tr><td><code>## SUMMARY</code></td><td>Project kind, primary language, file count, LOC</td></tr>
+  <tr><td><code>## ENTRY</code></td><td>Main entry points (<code>main.py</code>, <code>app.py</code>, <code>cli.py</code>, …)</td></tr>
+  <tr><td><code>## MODULES</code></td><td>Top-level directories with inferred purpose</td></tr>
+  <tr><td><code>## SYMBOLS</code></td><td>Most-imported public signatures (functions, classes)</td></tr>
+  <tr><td><code>## CONVENTIONS</code></td><td>Detected tools (Black, Ruff, pytest, pre-commit, …)</td></tr>
+  <tr><td><code>## HOTSPOTS</code></td><td>Files with the most git churn in the last 90 days</td></tr>
+  <tr><td><code>## RISKS</code></td><td>Stub files, dead modules, possible smells — confidence-tagged</td></tr>
+</table>
+
+<p>Plus one section per detected framework — for example, on an AI/ML project you might see <code>## TORCH</code>, <code>## TRANSFORMERS</code>, <code>## CHAINS</code>, <code>## PINECONE</code>, <code>## MLFLOW</code>, etc., all in the same scan.</p>
+
+<h3>Sample capsule output</h3>
+
+<pre><code># SUMMARY
+
+Python web API in Python; 312 files, 18,450 LOC.
+
+## ROUTES
+- `GET /users`  (api.py:14)
+- `POST /users`  (api.py:23)
+- `DELETE /users/{id}`  (api.py:34)
+
+## SQLALCHEMY
+- model `User` — class User(Base) → table users · 4 cols  (models.py:6)
+- model `Post` — class Post(Base) → table posts · 5 cols  (models.py:18)
+- engine `engine` — create_engine(postgresql://***@host/db)  (db.py:7)
+- relationships: User→Post, Post→User
+
+## TRANSFORMERS
+- model `tok` — AutoTokenizer ← `distilbert-base-uncased`  (ml.py:14)
+- model `model` — AutoModelForSequenceClassification ← `distilbert-base-uncased`  (ml.py:15)
+- trainer `trainer` — Trainer  (ml.py:18)
+
+## PINECONE
+- create `docs` — create_index('docs', dim=1536, metric='cosine')  (rag.py:8)
+- index `idx` — Index('docs')  (rag.py:12)
+- indexes referenced: docs
+- ops: upsert×3, query×8</code></pre>
+
+<p>Every entry includes <code>(path:line)</code> coordinates and a confidence tag (<code>EXTRACTED</code>, <code>INFERRED</code>, or <code>AMBIGUOUS</code>) so your agent calibrates trust appropriately.</p>
+
+<h2 id="tiers">Adaptive tiers</h2>
+
+<p>ProjectLens picks the right depth automatically. You almost never need to override.</p>
+
+<table>
+  <tr>
+    <th>Tier</th>
+    <th>Trigger</th>
+    <th>Capsule budget</th>
+    <th>Use case</th>
+  </tr>
+  <tr>
+    <td><span class="pill green">T1 Sketch</span></td>
+    <td>&lt; 50 files · &lt; 5k LOC · single language</td>
+    <td>500 tokens</td>
+    <td>Quick scripts, demos</td>
+  </tr>
+  <tr>
+    <td><span class="pill">T2 Atlas</span></td>
+    <td>50–1,000 files · 5k–100k LOC · multi-module</td>
+    <td>2,100 tokens</td>
+    <td>Most real projects</td>
+  </tr>
+  <tr>
+    <td><span class="pill orange">T3 Compass</span></td>
+    <td>&gt; 1,000 files · monorepo markers · 5+ top-level dirs</td>
+    <td>3,600 tokens</td>
+    <td>Monorepos, platforms</td>
+  </tr>
+</table>
+
+<p>Override with <code>--tier T1|T2|T3</code> or hint in chat: "quick summary" → T1, "onboard me" → T2, "all services" → T3.</p>
+
+<h2 id="adapters">Framework adapters — 30 across 8 packs</h2>
+
+<p>Adapters are what make ProjectLens framework-aware. Each emits a typed section for its framework, surfacing the structural skeleton an agent needs.</p>
+
+<div class="adapter-pack">
+  <div class="adapter-pack-name">_notebooks <span class="pill">Exploration</span></div>
+  <div class="adapter-list">Jupyter (.ipynb structure, TOC, imports, defines, executed status)</div>
+</div>
+
+<div class="adapter-pack">
+  <div class="adapter-pack-name">_ml_core <span class="pill">Modeling &amp; training</span></div>
+  <div class="adapter-list">PyTorch · Transformers · scikit-learn · HuggingFace Datasets</div>
+</div>
+
+<div class="adapter-pack">
+  <div class="adapter-pack-name">_experiment <span class="pill">Tracking &amp; observability</span></div>
+  <div class="adapter-list">Weights &amp; Biases · MLflow · Comet</div>
+</div>
+
+<div class="adapter-pack">
+  <div class="adapter-pack-name">_vector_db <span class="pill">Embedding stores</span></div>
+  <div class="adapter-list">Pinecone · Weaviate · Qdrant · Chroma</div>
+</div>
+
+<div class="adapter-pack">
+  <div class="adapter-pack-name">_ai_apps <span class="pill">RAG &amp; agentic</span></div>
+  <div class="adapter-list">LangChain · LlamaIndex · LangGraph · Pydantic AI · DSPy</div>
+</div>
+
+<div class="adapter-pack">
+  <div class="adapter-pack-name">_ai_uis <span class="pill">LLM frontends</span></div>
+  <div class="adapter-list">Streamlit · Gradio · Chainlit</div>
+</div>
+
+<div class="adapter-pack">
+  <div class="adapter-pack-name">_serving <span class="pill">Production inference</span></div>
+  <div class="adapter-list">vLLM · NVIDIA Triton · BentoML · Ray Serve</div>
+</div>
+
+<div class="adapter-pack">
+  <div class="adapter-pack-name">_enterprise <span class="pill">Full-stack backend</span></div>
+  <div class="adapter-list">FastAPI · SQLAlchemy · Pydantic · Vue SFC · Tailwind · Docker Compose</div>
+</div>
+
+<div class="callout note">
+  <strong>One scan, full stack:</strong> a single ProjectLens scan on an AI-dev project surfaces every link in the chain — from raw notebooks through training, modeling, embeddings, agentic orchestration, UI components, and production deployments. No other tool covers this breadth.
+</div>
+
+<h2 id="hooks">Session hooks (Claude Code only)</h2>
+
+<p>Five hooks fire during a Claude Code session. They compound — savings stack across the session.</p>
+
+<table>
+  <tr>
+    <th>Hook</th>
+    <th>Event</th>
+    <th>What it does</th>
+  </tr>
+  <tr>
+    <td><code>dedup_hook</code></td>
+    <td>PreToolUse:Read</td>
+    <td>Flags repeated reads of the same file. ~25% savings on long sessions.</td>
+  </tr>
+  <tr>
+    <td><code>activity_hook</code></td>
+    <td>PostToolUse:Edit / Write / Bash</td>
+    <td>Tracks session state. Refreshes the session capsule every 5 turns.</td>
+  </tr>
+  <tr>
+    <td><code>inject_hook</code></td>
+    <td>UserPromptSubmit</td>
+    <td>Injects only the <em>relevant</em> capsule sections per prompt. ~60% savings.</td>
+  </tr>
+  <tr>
+    <td><code>compress_hook</code></td>
+    <td>PostToolUse:Bash / WebFetch</td>
+    <td>Deterministic compression of long tool outputs (HTML, JSON, logs, traces).</td>
+  </tr>
+  <tr>
+    <td><code>memory_loader</code></td>
+    <td>SessionStart</td>
+    <td>Loads cross-session memory of overlapping work.</td>
+  </tr>
+</table>
+
+<div class="callout warn">
+  <strong>Cowork limitation:</strong> only SessionStart fires in Cowork. The other four hooks need Claude Code's CLI hook surface. The scan engine, capsule generation, and compactor still work in Cowork — just without the in-session savings.
+</div>
+
+<h2 id="compactor">Mid-session compaction</h2>
+
+<p>Long sessions eat context. The compactor reclaims 8&ndash;25k tokens in seconds:</p>
+
+<pre><code>/projectlens compact</code></pre>
+
+<p>This generates a <code>WORKING_CONTEXT.md</code> summarising:</p>
+<ul>
+  <li>Which files you actually touched</li>
+  <li>Bash commands you ran (and their results)</li>
+  <li>Tests that passed/failed</li>
+  <li>Decisions made + open threads</li>
+  <li>An optional LLM-enhanced paragraph if <code>ANTHROPIC_API_KEY</code> is set</li>
+</ul>
+
+<p>Then run <code>/clear</code> in your tool and paste <code>WORKING_CONTEXT.md</code> at the top of the next session. You resume with the same shoulder-context but a fresh token budget.</p>
+
+<h2 id="memory">Cross-session memory</h2>
+
+<p>Each compaction also writes a memory entry to <code>&lt;project&gt;/.projectlens-memory/</code>. At the next session start, the memory loader hook pulls the most relevant prior entries — scored by recency × module overlap — and surfaces them as additional context. Max 50 entries per project, LRU eviction.</p>
+
+<p>Opt out: <code>export PROJECTLENS_MEMORY=0</code>.</p>
+
+<h2 id="tokens">Token economics</h2>
+
+<p>Where the savings come from:</p>
+
+<table>
+  <tr>
+    <th>Stage</th>
+    <th>Before ProjectLens</th>
+    <th>With ProjectLens</th>
+    <th>Approximate savings</th>
+  </tr>
+  <tr>
+    <td>Orientation</td>
+    <td>8,000–20,000 tokens reading 20+ files</td>
+    <td>One capsule, 800–3,600 tokens</td>
+    <td><strong>70–90%</strong></td>
+  </tr>
+  <tr>
+    <td>Repeat reads</td>
+    <td>Each re-read costs the full file</td>
+    <td>Dedup flag, ~0 tokens</td>
+    <td><strong>~25%</strong> on long sessions</td>
+  </tr>
+  <tr>
+    <td>Per-prompt re-injection</td>
+    <td>Full capsule every prompt</td>
+    <td>Only relevant sections</td>
+    <td><strong>~60%</strong></td>
+  </tr>
+  <tr>
+    <td>Long tool outputs</td>
+    <td>Raw HTML / JSON / log dump</td>
+    <td>Compressed summary + handle</td>
+    <td><strong>variable</strong> (often 80%+)</td>
+  </tr>
+  <tr>
+    <td>Mid-session compaction</td>
+    <td>Manual /clear loses everything</td>
+    <td><code>WORKING_CONTEXT.md</code> preserves continuity</td>
+    <td><strong>8k–25k</strong> per compaction</td>
+  </tr>
+</table>
+
+<h2 id="performance">Performance</h2>
+
+<p>Measured against synthetic projects:</p>
+
+<table>
+  <tr>
+    <th>Project size</th>
+    <th>Files</th>
+    <th>Scan time</th>
+    <th>Capsule size</th>
+  </tr>
+  <tr><td>Tiny</td><td>20</td><td><strong>41 ms</strong></td><td>402 tok</td></tr>
+  <tr><td>Medium</td><td>100</td><td><strong>29 ms</strong></td><td>529 tok</td></tr>
+  <tr><td>Large</td><td>500</td><td><strong>113 ms</strong></td><td>529 tok</td></tr>
+</table>
+
+<p>Capsule size <strong>stays bounded by tier budget regardless of project size</strong>. Scan time is linear in file count; sub-second even on 500 files.</p>
+
+<p>CI enforces 17 performance + security budgets on every change. Hook subprocess startup &lt; 250 ms. Hook output ≤ 500 tokens per event. Adding adapters can't regress any of these.</p>
+
+<h2 id="security">Security &amp; governance</h2>
+
+<p>ProjectLens is the most security-hardened tool in its category. Every persistent surface has documented opt-outs; every dangerous primitive is banned by static analysis.</p>
+
+<h3>What's banned in shipped code (CI-enforced)</h3>
+<ul>
+  <li><code>exec()</code> · <code>eval()</code> · <code>__import__()</code></li>
+  <li><code>pickle.loads()</code> · <code>marshal.loads()</code></li>
+  <li><code>shell=True</code> · <code>os.system()</code></li>
+  <li>Outbound HTTP outside <code>llm_client.py</code> (single allowlisted endpoint)</li>
+</ul>
+
+<h3>Opt-out env vars</h3>
+
+<table>
+  <tr><th>Variable</th><th>Effect</th></tr>
+  <tr><td><code>PROJECTLENS_DEDUP=0</code></td><td>Disable ALL hooks</td></tr>
+  <tr><td><code>PROJECTLENS_STATS=0</code></td><td>Disable lifetime stats</td></tr>
+  <tr><td><code>PROJECTLENS_MEMORY=0</code></td><td>Disable cross-session memory</td></tr>
+  <tr><td><code>PROJECTLENS_COMPRESS_OUTPUT=0</code></td><td>Disable output compression</td></tr>
+  <tr><td><code>PROJECTLENS_USER_ADAPTERS=1</code></td><td>Opt IN to user-defined adapters (off by default)</td></tr>
+  <tr><td><code>PROJECTLENS_MAX_READ_BYTES=N</code></td><td>Change per-file read cap (default 1 MB)</td></tr>
+  <tr><td><code>PROJECTLENS_STATS_HOME=path</code></td><td>Change where stats live</td></tr>
+</table>
+
+<h3>Data handling</h3>
+<ul>
+  <li><strong>Stats:</strong> <code>~/.projectlens/stats.json</code>. Plain JSON counters, no PII, no file contents.</li>
+  <li><strong>Memory:</strong> <code>&lt;project&gt;/.projectlens-memory/</code>. Plain JSON, max 50 entries per project, LRU eviction.</li>
+  <li><strong>Session state:</strong> <code>&lt;project&gt;/projectlens-out/state.json</code>. Wiped between sessions.</li>
+  <li><strong>Outbound network:</strong> single optional call to <code>api.anthropic.com</code> only if <code>--llm</code> is used AND <code>ANTHROPIC_API_KEY</code> is set.</li>
+</ul>
+
+<p>See <code>SECURITY.md</code> for the full threat model and vulnerability reporting process.</p>
+
+<h2 id="extend">Extending it — write your own adapter</h2>
+
+<p>The adapter SDK is intentionally small. Copy the template to start:</p>
+
+<pre><code>cd skills/projectlens/scripts/frameworks
+cp -r _template _myframework
+mv _myframework/template.py _myframework/myframework.py
+# edit: rename class, update regexes
+# register in manifest.json</code></pre>
+
+<p>Each adapter is ~80–120 LOC and ships with tests. The SDK enforces five rules:</p>
+
+<table>
+  <tr><th>Rule</th><th>What</th></tr>
+  <tr><td>R1</td><td>Hook scripts never import <code>frameworks/*</code></td></tr>
+  <tr><td>R2</td><td>Adapter modules stay small (~80–120 LOC)</td></tr>
+  <tr><td>R3</td><td><code>detect()</code> is O(1) — never opens files</td></tr>
+  <tr><td>R4</td><td><code>extract()</code> opens only files matching your framework's signature</td></tr>
+  <tr><td>R5</td><td><code>capsule_section()</code> respects <code>budget_tokens</code></td></tr>
+</table>
+
+<p>Rules R1 and R3 are enforced by CI. R2/R4/R5 are review conventions.</p>
+
+<p>For org-specific frameworks you don't want to upstream, drop adapters into <code>&lt;project&gt;/.projectlens/frameworks/*.py</code>. They're loaded automatically per-scan once you opt in with <code>PROJECTLENS_USER_ADAPTERS=1</code>.</p>
+
+<h2 id="faq">FAQ</h2>
+
+<h3>Does it work on my JS/TS / Go / Rust project?</h3>
+<p>The base scan (file walk, language detection, symbols) works on JS, TS, Go, Java, Rust, Ruby, PHP, C/C++, and ~20 other languages. The 30 framework-specific adapters are mostly Python-focused right now, with Vue SFC + Tailwind + Docker Compose covering the JS/web side. JS/TS framework adapters (Next.js, Astro, SvelteKit, NestJS) are on the roadmap.</p>
+
+<h3>Will it slow down my Claude Code session?</h3>
+<p>Hook subprocess startup is capped at 250 ms cold (typically 20–30 ms warm). Hook output is capped at 500 tokens per event. Both caps are CI-enforced. The scan itself runs on-demand, not per-prompt.</p>
+
+<h3>Does it send my code anywhere?</h3>
+<p>No, unless you explicitly run <code>/projectlens compact --llm</code> AND have <code>ANTHROPIC_API_KEY</code> set. Even then, only the session activity summary (files touched, commands run) is sent — never file contents.</p>
+
+<h3>Is the capsule different from a README?</h3>
+<p>A README tells humans what the project <em>does</em>. The capsule tells your agent what the project <em>contains</em>: routes, models, training loops, vector indexes, deployments, etc. Different audience, different output.</p>
+
+<h3>What if my framework isn't covered?</h3>
+<p>The base scan still produces a useful capsule (entry points, modules, symbols, hotspots, risks). You also get less framework-specific noise. Add a custom adapter in ~100 LOC if you want richer output for that framework.</p>
+
+<h3>Can I disable everything and just use the scan?</h3>
+<p>Yes — <code>export PROJECTLENS_DEDUP=0</code> disables all five hooks. The scan engine remains available for explicit <code>/projectlens</code> invocations.</p>
+
+<h3>Why not just use Cursor's @codebase or Sourcegraph Cody?</h3>
+<p>Those tools do <em>semantic</em> vector search — they need an embedding model, a vector store, and continuous indexing. ProjectLens does <em>structural</em> extraction — deterministic, fast (sub-second), cheap, and framework-aware. The two are complementary: ProjectLens for orientation, semantic tools for in-depth search.</p>
+
+<h3>Is it free?</h3>
+<p>Yes — MIT licensed. No subscription, no telemetry sent off-device.</p>
+
+<h2>Resources</h2>
+
+<ul>
+  <li><strong><code>README.md</code></strong> — install + quick start</li>
+  <li><strong><code>CHANGELOG.md</code></strong> — full v0.1.0 → v0.15.0 release history</li>
+  <li><strong><code>SECURITY.md</code></strong> — threat model, audit results, vulnerability reporting</li>
+  <li><strong><code>GOVERNANCE.md</code></strong> — scope of use, contribution policy</li>
+  <li><strong><code>BENCHMARK.md</code></strong> — competitive matrix + measured numbers</li>
+  <li><strong><code>docs/integrations/</code></strong> — per-tool recipes (Cursor, VS Code, Codex, Gemini, Aider, generic MCP)</li>
+  <li><strong><code>skills/projectlens/references/</code></strong> — 13 deep-dive reference docs</li>
+</ul>
+
+<footer>
+  <p>ProjectLens v0.15.0 · MIT · Built at DEWA by Sachin Patil · <code>sachin.patil@dewa.gov.ae</code></p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>

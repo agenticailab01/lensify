@@ -1,0 +1,37 @@
+{
+  "name": "projectlens",
+  "owner": {
+    "name": "Sachin Patil",
+    "email": "agenticailab01@gmail.com",
+    "url": "https://github.com/agenticailab01"
+  },
+  "metadata": {
+    "description": "Token-optimized adaptive context capsules for AI coding agents. Cuts orientation tokens by 70-90%.",
+    "version": "0.15.0"
+  },
+  "plugins": [
+    {
+      "name": "projectlens",
+      "source": "../",
+      "description": "Single-scan adaptive project lens + token-optimized context capsule for AI coding agents. 30 framework adapters across 8 packs. Pure stdlib.",
+      "version": "0.15.0",
+      "author": {
+        "name": "Sachin Patil",
+        "email": "agenticailab01@gmail.com"
+      },
+      "homepage": "https://github.com/agenticailab01/projectlens",
+      "repository": "https://github.com/agenticailab01/projectlens",
+      "license": "MIT",
+      "category": ["productivity", "developer-tools"],
+      "tags": [
+        "context-engineering",
+        "tokens",
+        "ai-coding",
+        "project-orientation",
+        "framework-aware",
+        "deterministic-extraction"
+      ],
+      "keywords": ["context", "capsule", "scan", "ai", "agent"]
+    }
+  ]
+}
