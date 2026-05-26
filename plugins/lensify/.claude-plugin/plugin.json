@@ -6,6 +6,5 @@
     "name": "Sachin Patil",
     "email": "agenticailab01@gmail.com"
   },
-  "license": "MIT",
-  "hooks": "./hooks/hooks.json"
+  "license": "MIT"
 }
