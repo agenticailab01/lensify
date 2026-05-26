@@ -20,6 +20,14 @@ ERR() { printf "${RED}✗${NC} %s\n" "$*"; }
 
 # ---------- locate or clone the repo ----------
 REPO_URL="https://github.com/agenticailab01/lensify"
+
+# -- path validation: reject chars that could cause injection into configs or shell
+_raw_dir="${LENSIFY_DIR:-}"
+if [[ -n "$_raw_dir" && "$_raw_dir" =~ [[:space:]\;\|\&\$\`\'\"\<\>] ]]; then
+  ERR "LENSIFY_DIR contains unsafe characters. Aborting."
+  exit 1
+fi
+
 if [[ -d "${LENSIFY_DIR:-}" ]]; then
   PL_DIR="$LENSIFY_DIR"
 elif [[ -d "$HOME/lensify" ]]; then
@@ -43,6 +51,11 @@ fi
 PYTHON_BIN="$(command -v python3 || true)"
 if [[ -z "$PYTHON_BIN" ]]; then
   ERR "python3 not found on PATH. Install Python 3.9+ first."
+  exit 1
+fi
+PY_VER="$("$PYTHON_BIN" -c 'import sys; print(sys.version_info >= (3,9))' 2>/dev/null || true)"
+if [[ "$PY_VER" != "True" ]]; then
+  ERR "Python 3.9+ required. Found: $("$PYTHON_BIN" --version 2>&1)."
   exit 1
 fi
 OK "Using python at: $PYTHON_BIN"
@@ -87,7 +100,7 @@ select_targets() {
 for i in "${!AVAILABLE[@]}"; do
   printf "  %d) %s\n" $((i+1)) "${AVAILABLE[$i]}"
 done
-TARGETS=($(select_targets))
+mapfile -t TARGETS < <(select_targets)
 
 if [[ ${#TARGETS[@]} -eq 0 ]]; then
   ERR "No valid selection. Exiting."
@@ -102,16 +115,25 @@ install_cursor() {
     OK "Cursor configured."
     return
   fi
-  # Fallback: write the JSON config directly
+  # Fallback: write the JSON config directly (atomic via temp file)
   CFG="$HOME/.cursor/mcp.json"
   mkdir -p "$(dirname "$CFG")"
   python3 - "$CFG" "$PYTHON_BIN" "$PL_DIR" <<'PY'
-import json, sys, os
+import json, sys, os, tempfile
 cfg_path, py, cwd = sys.argv[1], sys.argv[2], sys.argv[3]
-try: cfg = json.load(open(cfg_path))
+try:
+    with open(cfg_path) as f: cfg = json.load(f)
 except Exception: cfg = {}
 cfg.setdefault("mcpServers", {})["lensify"] = {"command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
-open(cfg_path, "w").write(json.dumps(cfg, indent=2))
+dir_ = os.path.dirname(os.path.abspath(cfg_path))
+fd, tmp = tempfile.mkstemp(dir=dir_)
+try:
+    with os.fdopen(fd, "w") as fh: fh.write(json.dumps(cfg, indent=2))
+    os.replace(tmp, cfg_path)
+except Exception:
+    try: os.unlink(tmp)
+    except OSError: pass
+    raise
 print(f"  wrote {cfg_path}")
 PY
   OK "Cursor config updated (~/.cursor/mcp.json). Restart Cursor."
@@ -132,12 +154,21 @@ JSON
   CFG="${VSCODE_WORKSPACE:-$PWD}/.vscode/mcp.json"
   mkdir -p "$(dirname "$CFG")"
   python3 - "$CFG" "$PYTHON_BIN" "$PL_DIR" <<'PY'
-import json, sys
+import json, sys, os, tempfile
 cfg_path, py, cwd = sys.argv[1], sys.argv[2], sys.argv[3]
-try: cfg = json.load(open(cfg_path))
+try:
+    with open(cfg_path) as f: cfg = json.load(f)
 except Exception: cfg = {}
 cfg.setdefault("servers", {})["lensify"] = {"type": "stdio", "command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
-open(cfg_path, "w").write(json.dumps(cfg, indent=2))
+dir_ = os.path.dirname(os.path.abspath(cfg_path))
+fd, tmp = tempfile.mkstemp(dir=dir_)
+try:
+    with os.fdopen(fd, "w") as fh: fh.write(json.dumps(cfg, indent=2))
+    os.replace(tmp, cfg_path)
+except Exception:
+    try: os.unlink(tmp)
+    except OSError: pass
+    raise
 print(f"  wrote {cfg_path}")
 PY
   OK "VS Code config updated. Restart VS Code."
@@ -153,12 +184,21 @@ install_claude() {
   WARN "claude mcp add not available — falling back to direct config"
   CFG="$HOME/.claude.json"
   python3 - "$CFG" "$PYTHON_BIN" "$PL_DIR" <<'PY'
-import json, sys, os
+import json, sys, os, tempfile
 cfg_path, py, cwd = sys.argv[1], sys.argv[2], sys.argv[3]
-try: cfg = json.load(open(cfg_path))
+try:
+    with open(cfg_path) as f: cfg = json.load(f)
 except Exception: cfg = {}
 cfg.setdefault("mcpServers", {})["lensify"] = {"command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
-open(cfg_path, "w").write(json.dumps(cfg, indent=2))
+dir_ = os.path.dirname(os.path.abspath(cfg_path))
+fd, tmp = tempfile.mkstemp(dir=dir_)
+try:
+    with os.fdopen(fd, "w") as fh: fh.write(json.dumps(cfg, indent=2))
+    os.replace(tmp, cfg_path)
+except Exception:
+    try: os.unlink(tmp)
+    except OSError: pass
+    raise
 print(f"  wrote {cfg_path}")
 PY
   OK "Claude Code config updated. Restart Claude Code."
@@ -173,12 +213,21 @@ install_gemini() {
   CFG="$HOME/.gemini/settings.json"
   mkdir -p "$(dirname "$CFG")"
   python3 - "$CFG" "$PYTHON_BIN" "$PL_DIR" <<'PY'
-import json, sys
+import json, sys, os, tempfile
 cfg_path, py, cwd = sys.argv[1], sys.argv[2], sys.argv[3]
-try: cfg = json.load(open(cfg_path))
+try:
+    with open(cfg_path) as f: cfg = json.load(f)
 except Exception: cfg = {}
 cfg.setdefault("mcpServers", {})["lensify"] = {"command": py, "args": ["-m", "mcp_server"], "cwd": cwd}
-open(cfg_path, "w").write(json.dumps(cfg, indent=2))
+dir_ = os.path.dirname(os.path.abspath(cfg_path))
+fd, tmp = tempfile.mkstemp(dir=dir_)
+try:
+    with os.fdopen(fd, "w") as fh: fh.write(json.dumps(cfg, indent=2))
+    os.replace(tmp, cfg_path)
+except Exception:
+    try: os.unlink(tmp)
+    except OSError: pass
+    raise
 print(f"  wrote {cfg_path}")
 PY
   OK "Gemini config updated. Restart Gemini CLI."
@@ -188,13 +237,34 @@ install_codex() {
   SAY "Configuring OpenAI Codex CLI..."
   CFG="$HOME/.codex/config.toml"
   mkdir -p "$(dirname "$CFG")"
-  cat >> "$CFG" <<TOML
-
-[mcp_servers.lensify]
-command = "$PYTHON_BIN"
-args    = ["-m", "mcp_server"]
-cwd     = "$PL_DIR"
-TOML
+  # guard against duplicate entries; use atomic Python write to handle path chars safely
+  if grep -q '\[mcp_servers\.lensify\]' "$CFG" 2>/dev/null; then
+    OK "Lensify already present in $CFG — skipping duplicate entry."
+    return
+  fi
+  python3 - "$CFG" "$PYTHON_BIN" "$PL_DIR" <<'PY'
+import sys, os, tempfile, json
+cfg_path, py_bin, cwd = sys.argv[1], sys.argv[2], sys.argv[3]
+existing = ""
+if os.path.exists(cfg_path):
+    with open(cfg_path) as f: existing = f.read()
+entry = (
+    "\n[mcp_servers.lensify]\n"
+    f"command = {json.dumps(py_bin)}\n"
+    'args    = ["-m", "mcp_server"]\n'
+    f"cwd     = {json.dumps(cwd)}\n"
+)
+dir_ = os.path.dirname(os.path.abspath(cfg_path))
+fd, tmp = tempfile.mkstemp(dir=dir_)
+try:
+    with os.fdopen(fd, "w") as fh: fh.write(existing + entry)
+    os.replace(tmp, cfg_path)
+except Exception:
+    try: os.unlink(tmp)
+    except OSError: pass
+    raise
+print(f"  wrote {cfg_path}")
+PY
   OK "Codex CLI config updated ($CFG). Restart Codex."
 }
 
