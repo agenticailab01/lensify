@@ -33,8 +33,35 @@ TOKENS_PER_DEDUPED_READ = 350      # average file Read replaced by a dedup advis
 TOKENS_PER_INJECT_SAVED = 850      # avg full-capsule vs. selective injection delta
 BYTES_PER_TOKEN = 3.5              # conservative bytes→tokens ratio (matches capsule.py)
 
-# Default Claude Opus input pricing for the USD-saved estimate. Override via env.
-DEFAULT_USD_PER_MTOK = 15.0
+# Per-model input pricing (USD per million tokens). Override via LENSIFY_USD_PER_MTOK.
+MODEL_PRICING: dict[str, float] = {
+    "opus":    15.0,   # claude-opus-4-x
+    "sonnet":   3.0,   # claude-sonnet-4-x
+    "haiku":    0.80,  # claude-haiku-4-x
+}
+DEFAULT_USD_PER_MTOK = 15.0  # fallback when model is unknown
+
+
+def _detect_usd_per_mtok() -> float:
+    """Auto-detect pricing from env var, persisted model file, or fall back to Opus rate."""
+    env_override = os.environ.get("LENSIFY_USD_PER_MTOK")
+    if env_override:
+        try:
+            return float(env_override)
+        except ValueError:
+            pass
+    # Try env var first, then the model file written by SessionStart hook
+    model = (os.environ.get("CLAUDE_MODEL") or "").lower()
+    if not model:
+        try:
+            model_file = Path.home() / ".lensify" / "current_model"
+            model = model_file.read_text(encoding="utf-8").strip().lower()
+        except OSError:
+            pass
+    for key, price in MODEL_PRICING.items():
+        if key in model:
+            return price
+    return DEFAULT_USD_PER_MTOK
 
 
 # ---- File location ----
@@ -260,14 +287,8 @@ def format_bytes(n: int) -> str:
 
 
 def usd_saved(tokens: int, usd_per_mtok: float | None = None) -> float:
-    """Convert token savings into a rough USD estimate at Opus input pricing."""
-    rate = usd_per_mtok
-    if rate is None:
-        env = os.environ.get("LENSIFY_USD_PER_MTOK")
-        try:
-            rate = float(env) if env else DEFAULT_USD_PER_MTOK
-        except ValueError:
-            rate = DEFAULT_USD_PER_MTOK
+    """Convert token savings into a rough USD estimate using auto-detected model pricing."""
+    rate = usd_per_mtok if usd_per_mtok is not None else _detect_usd_per_mtok()
     return (tokens / 1_000_000.0) * rate
 
 
@@ -296,8 +317,17 @@ def stats_report(stats: LifetimeStats) -> str:
 
     Includes lifetime totals, per-phase breakdown, top projects.
     """
-    usd = usd_saved(stats.tokens_saved)
+    rate = _detect_usd_per_mtok()
+    usd = usd_saved(stats.tokens_saved, usd_per_mtok=rate)
     age_days = max(0.0, (time.time() - stats.created_at) / 86_400.0)
+
+    model = (os.environ.get("CLAUDE_MODEL") or "").lower()
+    if "sonnet" in model:
+        model_label = "Sonnet"
+    elif "haiku" in model:
+        model_label = "Haiku"
+    else:
+        model_label = "Opus"
 
     out = [
         "Lensify — lifetime stats",
@@ -305,7 +335,7 @@ def stats_report(stats: LifetimeStats) -> str:
         f"Tracking since:   {time.strftime('%Y-%m-%d', time.localtime(stats.created_at))} "
         f"({int(age_days)} day(s) ago)",
         f"Tokens saved:     {stats.tokens_saved:,}",
-        f"Estimated $ saved: ~${usd:.2f}  (at Opus input pricing)",
+        f"Estimated $ saved: ~${usd:.2f}  (at {model_label} input pricing, ${rate:.2f}/M tok)",
         "",
         "By event type:",
         f"  Dedup hooks       {stats.dedup_count:6d} events  "

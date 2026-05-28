@@ -84,7 +84,7 @@ export LENSIFY_DEDUP=0   # disables both hooks
 ## Inspect session state
 
 ```bash
-python /path/to/lensify/skills/lensify/scripts/dedup_hook.py --stats /path/to/project
+python3 /path/to/lensify/skills/lensify/scripts/dedup_hook.py --stats /path/to/project
 ```
 
 Output:

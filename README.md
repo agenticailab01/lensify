@@ -457,7 +457,7 @@ Where the savings come from — concrete numbers from production usage:
 | Long tool outputs | Raw 50 KB Bash output → 12k tokens | Compressed summary + retrieval handle | **80%+** variable |
 | Mid-session compaction | `/clear` loses everything | `WORKING_CONTEXT.md` preserves continuity | **8–25k** reclaimable |
 
-**Cost example (Opus pricing, $15/Mtok input):** a 4-hour coding session that previously cost ~$3 in input tokens drops to ~$0.45–$0.90 with all hooks active.
+**Cost example:** a 4-hour coding session that previously cost ~$3 (Opus) / ~$0.60 (Sonnet) in input tokens drops to ~$0.45–$0.90 / ~$0.09–$0.18 with all hooks active. `/lensify stats` auto-detects which model you're running and shows the correct rate.
 
 ---
 
@@ -723,6 +723,9 @@ A: Run `/lensify compact` first (generates `WORKING_CONTEXT.md`), then `/clear` 
 
 **Q: Is it free?**
 A: Yes — MIT licensed. No subscription, no telemetry sent off-device, no required pip dependencies.
+
+**Q: How do I update to the latest version?**
+A: Depends on your install path. **Claude Code plugin:** run `/plugin uninstall lensify@lensify` then `/plugin install lensify@lensify` inside chat — this refreshes the local cache. **Cowork:** re-download `lensify.plugin` from the Releases page and drag it in again. **MCP / git clone:** `cd ~/lensify && git pull`, then restart your tool. **pip CLI:** `pip install --upgrade lensify`. Full step-by-step in [`USER-INSTALL.md`](USER-INSTALL.md#updating-to-the-latest-version).
 
 **Q: How do I uninstall?**
 A: Claude Code CLI: `/plugin uninstall lensify@lensify` then `/plugin marketplace remove agenticailab01/lensify`. Cowork: settings → Plugins → Lensify → Remove. MCP users: delete the `lensify` entry from your MCP config and `rm -rf ~/lensify`. Pip CLI users: `pip uninstall lensify`. To wipe persisted data: `rm -rf ~/.claude/plugins/lensify ~/.lensify` and `<project>/.lensify-memory`.

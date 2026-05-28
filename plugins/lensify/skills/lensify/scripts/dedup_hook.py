@@ -62,6 +62,19 @@ def _project_root_from_payload(payload: dict) -> str:
     return os.getcwd()
 
 
+def _persist_model(payload: dict) -> None:
+    """Write the current model name to ~/.lensify/current_model for pricing detection."""
+    model = payload.get("model") or ""
+    if not model:
+        return
+    try:
+        model_file = Path.home() / ".lensify" / "current_model"
+        model_file.parent.mkdir(parents=True, exist_ok=True)
+        model_file.write_text(model.strip(), encoding="utf-8")
+    except OSError:
+        pass
+
+
 def handle_session_start(payload: dict) -> None:
     """Reset session state at the start of a new Claude session."""
     if is_disabled():
@@ -69,6 +82,7 @@ def handle_session_start(payload: dict) -> None:
         return
     root = _project_root_from_payload(payload)
     session_id = str(payload.get("session_id", ""))
+    _persist_model(payload)
     reset_state(root, session_id=session_id)
     _emit({
         "hookSpecificOutput": {

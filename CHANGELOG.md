@@ -2,6 +2,19 @@
 
 All notable changes to Lensify.
 
+## v0.15.1 — Model-aware pricing + python3 fix
+
+### Fixed
+- **Model-aware pricing in `/lensify stats`** — savings are now reported at the correct rate for the active model (Sonnet $3/M, Haiku $0.80/M, Opus $15/M). Previously always showed Opus pricing, inflating reported savings 5× for Sonnet users. Auto-detected from the `SessionStart` hook payload; no config needed. Override still available via `LENSIFY_USD_PER_MTOK`.
+- **`python` → `python3` in SKILL.md** — macOS ships without a `python` binary. The skill was calling `python scan.py` (exit 127), relying on Claude Code's automatic `python3` retry. Now calls `python3` directly — no more noisy error before the successful run.
+- **Inject hook hint** — `inject_hook.py` now writes a visible stderr message when `lensify-out/lens.sections.json` is missing, so users know to run `/lensify` first instead of silently getting no context injection.
+
+### Updated
+- `USER-INSTALL.md` — new **Updating to the latest version** section covering all 4 install paths (plugin reinstall, Cowork drag-and-drop, `git pull`, `pip upgrade`).
+- `README.md` — FAQ entry for updating; cost example now shows both Opus and Sonnet figures.
+
+---
+
 ## v0.15.0 — Layered distribution (MCP + CLI + AGENTS.md)
 
 Lensify now ships in **four distribution channels** so it works with virtually any AI coding tool. The Claude Code / Cowork plugin stays exactly as-is — the three new channels are *additive*, reuse the same scan engine, and add zero dependencies to plugin users.

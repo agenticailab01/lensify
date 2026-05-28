@@ -106,6 +106,7 @@ def handle(payload: dict) -> None:
     root = _project_root_from_payload(payload)
     lens = _load_sections(root)
     if not lens:
+        sys.stderr.write("[lensify] No lens found — run /lensify to generate context capsule.\n")
         _emit({})
         return
 

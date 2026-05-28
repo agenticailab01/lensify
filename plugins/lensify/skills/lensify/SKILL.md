@@ -31,7 +31,7 @@ Plus `lens.json`, `lens.sections.json`, and `manifest.json` inside `lensify-out/
 Call the bundled scan engine:
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/skills/lensify/scripts/scan.py <target-path> [flags]
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/lensify/scripts/scan.py <target-path> [flags]
 ```
 
 Flags: `--tier T1|T2|T3|auto`, `--capsule-only`, `--ast-only`, `--output <dir>`, `--no-git`.

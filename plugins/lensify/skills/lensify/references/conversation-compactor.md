@@ -112,7 +112,7 @@ auto-clears anything.
 
 ```bash
 # Run the compactor
-python compact.py /path/to/project
+python3 compact.py /path/to/project
 
 # Open the result
 cat /path/to/project/lensify-out/WORKING_CONTEXT.md

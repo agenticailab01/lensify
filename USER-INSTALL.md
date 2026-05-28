@@ -83,6 +83,44 @@ To uninstall: re-run the same `cursor/code/claude/gemini mcp` command with `remo
 
 ---
 
+## Updating to the latest version
+
+Pick the section that matches how you installed.
+
+### Claude Code plugin (Path A)
+
+Run these two lines inside the Claude Code chat window:
+
+```text
+/plugin uninstall lensify@lensify
+/plugin install lensify@lensify
+```
+
+This pulls the latest code from the marketplace and refreshes the local cache. Start a new conversation to activate the update.
+
+### Cowork plugin (Path B)
+
+1. Download the latest `lensify.plugin` from the [Releases page](https://github.com/agenticailab01/lensify/releases).
+2. Drag it into the Cowork chat window and click **Save plugin** — it overwrites the installed version.
+3. Restart the conversation.
+
+### MCP / git clone (Path C)
+
+```bash
+cd ~/lensify
+git pull
+```
+
+Then fully restart your tool (Cursor, VS Code, Codex, Gemini CLI). No re-registration needed — the MCP config already points to `~/lensify`.
+
+### pip CLI
+
+```bash
+pip install --upgrade lensify
+```
+
+---
+
 ## Why we don't use `curl | bash`
 
 `bash <(curl -fsSL https://...)` fetches a script and runs it in one step
