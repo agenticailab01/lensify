@@ -26,7 +26,7 @@ Capsule size stays **bounded by tier budget** regardless of project size — thi
 - Hook output envelope: ≤ 500 tokens per event (CI-enforced)
 - Activity tracking + injection: amortised over session, near-zero per event
 
-**Test status:** 527 unit tests + 17 perf/security CI budgets pass.
+**Test status:** 544 tests (incl. 17 perf/security CI budgets) pass.
 
 ---
 
@@ -69,7 +69,7 @@ Every other tool produces a fixed-shape output. Lensify reads project size + str
 Repomix and Caveman dump file text. Aider's repo-map gives function signatures. Lensify emits **structural records** per framework: `engine LLM ← Llama-3-8b-Instruct`, `service api → ports 8000`, `model User → table users · 4 cols`, `graph workflow → nodes: classify, search, respond`. Confidence-tagged so the agent calibrates trust.
 
 **3. Hook integration in Claude Code — five hooks that compound.**
-No other tool ships dedup + activity tracking + selective injection + output compression + cross-session memory as an integrated unit. Token savings stack: ~70-90% orientation, ~25% repeat-reads, ~60% per-prompt re-injection, plus 8-25k reclaimable per compaction.
+No other tool ships dedup + activity tracking + selective injection + output compression + cross-session memory as an integrated unit. Savings are reported honestly as **realized vs potential**: orientation (~70-90%) and compaction (8-25k) are realized; repeat-read (~25%) is realized only under `LENSIFY_DEDUP_ENFORCE=1` (advisory otherwise); output compression is realized via the `lensify run` wrapper and potential via the passive hook; selective injection (~60%) is potential vs. a full-capsule baseline. `/lensify stats` headlines the realized figure so the numbers never overstate.
 
 **4. Multi-channel distribution.**
 Plugin (Claude Code/Cowork) + MCP (Cursor/Codex/VS Code/Gemini/Antigravity/Kiro/Trae/OpenCode) + CLI (Aider/Copilot CLI/CI) + AGENTS.md (anything else). Same engine, four artifacts. Nobody else covers this breadth from one project.

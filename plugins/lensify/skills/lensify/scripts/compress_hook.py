@@ -1,17 +1,22 @@
 """PostToolUse hook: compress large Bash / web-fetch outputs.
 
-Fires after Bash, WebFetch, or any tool that produces large textual results.
-When the tool's output exceeds MIN_COMPRESS_BYTES the hook:
+OPT-IN (default OFF). Enable with `LENSIFY_COMPRESS_OUTPUT=1`.
 
+Honesty note: a PostToolUse hook *cannot* suppress the tool's raw output — the
+agent has already received it. This hook only *appends* a summary via
+additionalContext, so within a turn it is net-neutral-to-negative on tokens.
+The only saving is downstream, *if* the session auto-compacts and the summary
+is carried instead of the raw blob — which is not guaranteed. We therefore
+default it OFF and count its savings as **potential**, not realized.
+
+For a *realized* saving, use the `lensify run [--] <cmd>` wrapper instead: it
+compresses before the output ever reaches the model.
+
+When enabled and the tool's output exceeds MIN_COMPRESS_BYTES the hook:
     1. Stores the raw output on disk under `.lensify-outputs/<sha>.txt`
     2. Generates a per-type compressed summary
     3. Returns the summary + retrieval handle as additionalContext
     4. Records a compression event in session_state for telemetry
-
-The original tool response is still seen by the agent (hooks cannot suppress
-it), but the agent now has a much shorter structured form to refer to in
-subsequent turns. Sessions auto-compact later carry forward our summary,
-not the raw blob — that's where the real downstream savings land.
 
 Contract:
     - Exit 0 always
@@ -31,7 +36,7 @@ if str(HERE) not in sys.path:
 
 try:
     from output_compressor import (
-        compress, format_for_agent, is_disabled, MIN_COMPRESS_BYTES,
+        compress, format_for_agent, MIN_COMPRESS_BYTES,
     )
     from session_state import load_state, save_state
     try:
@@ -52,6 +57,17 @@ COMPRESSABLE_TOOLS = {
     "mcp__claude_in_chrome__get_page_text",
     "mcp__Claude_in_Chrome__get_page_text",
 }
+
+
+def _hook_enabled() -> bool:
+    """Opt-in: the passive compression hook is OFF unless explicitly enabled.
+
+    Enable with LENSIFY_COMPRESS_OUTPUT in {1,true,yes,on}. The global
+    LENSIFY_DEDUP=0 kill-switch still disables it regardless.
+    """
+    if os.environ.get("LENSIFY_DEDUP", "1") in ("0", "false", "no", "off"):
+        return False
+    return os.environ.get("LENSIFY_COMPRESS_OUTPUT", "0") in ("1", "true", "yes", "on")
 
 
 def _emit(payload: dict) -> None:
@@ -92,7 +108,7 @@ def _extract_output_text(response: dict) -> str:
 
 
 def handle(payload: dict) -> None:
-    if is_disabled():
+    if not _hook_enabled():
         _emit({})
         return
 

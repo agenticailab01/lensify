@@ -456,7 +456,6 @@ def format_for_agent(result: CompressionResult) -> str:
         result.summary,
     ]
     if result.handle:
-        rel = os.path.relpath(result.handle, start=os.path.dirname(os.path.dirname(result.handle)))
         lines.extend([
             "",
             f"Full raw output saved to `{result.handle}`. "

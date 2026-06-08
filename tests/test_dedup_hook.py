@@ -94,6 +94,61 @@ def test_hook_flags_content_change_distinctly(project):
     assert "changed" in note.lower()
 
 
+def test_enforce_denies_unchanged_duplicate(project):
+    """With LENSIFY_DEDUP_ENFORCE=1, a duplicate read of an unchanged file is blocked."""
+    payload = {
+        "cwd": str(project),
+        "tool_name": "Read",
+        "tool_input": {"file_path": str(project / "src" / "main.py")},
+    }
+    env = {"LENSIFY_DEDUP_ENFORCE": "1"}
+    run_hook(payload, env_extra=env)            # first read — allowed
+    out = run_hook(payload, env_extra=env)      # duplicate — should be denied
+    assert out["hookSpecificOutput"]["permissionDecision"] == "deny"
+    reason = out["hookSpecificOutput"]["permissionDecisionReason"]
+    assert "src/main.py" in reason
+
+
+def test_enforce_allows_first_read(project):
+    out = run_hook({
+        "cwd": str(project),
+        "tool_name": "Read",
+        "tool_input": {"file_path": str(project / "src" / "main.py")},
+    }, env_extra={"LENSIFY_DEDUP_ENFORCE": "1"})
+    assert "hookSpecificOutput" not in out
+
+
+def test_enforce_allows_changed_duplicate(project):
+    """Enforce must NOT block a re-read when the file changed since last read."""
+    payload = {
+        "cwd": str(project),
+        "tool_name": "Read",
+        "tool_input": {"file_path": str(project / "src" / "main.py")},
+    }
+    env = {"LENSIFY_DEDUP_ENFORCE": "1"}
+    run_hook(payload, env_extra=env)
+    (project / "src" / "main.py").write_text("def hello(): pass\n# changed\n")
+    out = run_hook(payload, env_extra=env)
+    # Changed file: advisory note, not a deny.
+    so = out.get("hookSpecificOutput", {})
+    assert so.get("permissionDecision") != "deny"
+    assert "changed" in so.get("additionalContext", "").lower()
+
+
+def test_advisory_is_default_no_deny(project):
+    """Without enforce, a duplicate read is advised but never denied."""
+    payload = {
+        "cwd": str(project),
+        "tool_name": "Read",
+        "tool_input": {"file_path": str(project / "src" / "main.py")},
+    }
+    run_hook(payload)
+    out = run_hook(payload)
+    so = out["hookSpecificOutput"]
+    assert "permissionDecision" not in so
+    assert "DEDUP" in so["additionalContext"]
+
+
 def test_hook_handles_missing_file_path(project):
     out = run_hook({
         "cwd": str(project),

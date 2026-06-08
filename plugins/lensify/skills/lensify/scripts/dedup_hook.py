@@ -50,6 +50,30 @@ def _emit(payload: dict) -> None:
     sys.stdout.flush()
 
 
+# Bytes→tokens ratio for realized-saving estimates (matches stats.BYTES_PER_TOKEN).
+_BYTES_PER_TOKEN = 3.5
+
+
+def _enforce_enabled() -> bool:
+    """Deny-mode opt-in: LENSIFY_DEDUP_ENFORCE=1 blocks unchanged duplicate reads.
+
+    Default is advisory (off) — we only nudge the agent. Enforce mode turns the
+    nudge into a real saving by refusing the re-read so the file's content never
+    re-enters the context window.
+    """
+    return os.environ.get("LENSIFY_DEDUP_ENFORCE", "0") in ("1", "true", "yes", "on")
+
+
+def _record(event: str, root: str, **kwargs) -> None:
+    """Fire a telemetry event; never let a stats failure break the hook."""
+    if _record_event is None:
+        return
+    try:
+        _record_event(event, project_root=root, **kwargs)
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def _project_root_from_payload(payload: dict) -> str:
     """Best-effort: extract project root from the hook payload."""
     # Claude Code passes `cwd` for most hook events; fall back to env / cwd.
@@ -129,14 +153,24 @@ def handle_pre_tool_use(payload: dict) -> None:
         _emit({})
         return
 
-    # Record lifetime telemetry (Phase 8) — never fail the hook on stats error
-    if _record_event is not None:
-        try:
-            _record_event("dedup", project_root=root)
-        except Exception:  # noqa: BLE001
-            pass
+    # Enforce mode blocks an *unchanged* duplicate read — a real, realized
+    # saving (the file's content never re-enters the window). A modified file is
+    # always allowed through; re-reading it is correct.
+    if _enforce_enabled() and not decision.is_modified:
+        _record("dedup_denied", root,
+                 tokens_saved=int(decision.new_record.size_bytes / _BYTES_PER_TOKEN))
+        _emit({
+            "hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": decision.note,
+            }
+        })
+        return
 
-    # Surface the dedup note to the agent
+    # Advisory path (default): nudge only — the read still proceeds, so this is
+    # a *potential* saving, recorded as such.
+    _record("dedup", root)
     _emit({
         "hookSpecificOutput": {
             "hookEventName": "PreToolUse",

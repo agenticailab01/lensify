@@ -15,6 +15,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -356,7 +358,69 @@ def _write_outputs(out_dir: Path, lens_data: dict, capsule: str, capsule_only: b
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
 
+def _run_wrapped(argv: list[str]) -> int:
+    """`lensify run [--] <command> [args...]` — execute a command and print a
+    *compressed* summary of its output instead of the raw blob.
+
+    This is the honest, realized-saving counterpart to the passive PostToolUse
+    compression hook: because the agent sees only the summary (raw is stored to
+    `.lensify-outputs/` and addressable by handle), the bytes never enter the
+    context window at all. The command's exit code is preserved.
+
+    Uses subprocess with a list of args and no shell. To use shell features,
+    invoke an explicit shell yourself: `lensify run -- bash -lc "..."`.
+    """
+    cmd = argv[1:] if argv and argv[0] == "--" else argv
+    if not cmd:
+        print("usage: lensify run [--] <command> [args...]", file=sys.stderr)
+        return 2
+    try:
+        # Exec the argv list directly (no shell) — safe per the forbidden-pattern policy.
+        proc = subprocess.run(cmd, capture_output=True, text=True)
+    except FileNotFoundError:
+        print(json.dumps({"error": f"command not found: {cmd[0]}"}), file=sys.stderr)
+        return 127
+
+    combined = proc.stdout or ""
+    if proc.stderr:
+        combined = (combined + "\n" + proc.stderr) if combined else proc.stderr
+
+    try:
+        from .output_compressor import compress, format_for_agent
+        try:
+            from .stats import record_event as _rec
+        except ImportError:
+            _rec = None
+    except ImportError:
+        from output_compressor import compress, format_for_agent  # type: ignore[no-redef]
+        try:
+            from stats import record_event as _rec  # type: ignore[no-redef]
+        except ImportError:
+            _rec = None
+
+    result = compress(combined, project_root=os.getcwd(), store=True)
+    if result.output_type == "passthrough":
+        # Too small to be worth compressing — pass the raw output straight through.
+        sys.stdout.write(combined)
+        if combined and not combined.endswith("\n"):
+            sys.stdout.write("\n")
+    else:
+        sys.stdout.write(format_for_agent(result) + "\n")
+        if _rec is not None:
+            try:
+                # realized=True: the model only ever sees the summary here.
+                _rec("compression", project_root=os.getcwd(),
+                     bytes_saved=result.bytes_saved, realized=True)
+            except Exception:  # noqa: BLE001
+                pass
+    return proc.returncode
+
+
 def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "run":
+        return _run_wrapped(argv[1:])
+
     parser = argparse.ArgumentParser(description="Lensify — one-page adaptive project lens.")
     parser.add_argument("target", help="Path to scan")
     parser.add_argument("--tier", choices=["T1", "T2", "T3", "auto"], default="auto",

@@ -103,7 +103,15 @@ class LifetimeStats:
     scan_count: int = 0
 
     # Cumulative token signals (always in tokens)
+    #   tokens_saved      = grand total (realized + potential) — kept for continuity
+    #   tokens_realized   = savings that actually left the context window
+    #                       (dedup denies that blocked a re-read, compactor reclaim)
+    #   tokens_potential  = savings that would land only if a mechanism is enforced
+    #                       or a later compaction drops the raw blob (advisory dedup,
+    #                       tool-output compression, selective injection)
     tokens_saved: int = 0
+    tokens_realized: int = 0
+    tokens_potential: int = 0
 
     # Cumulative byte signal from compression (kept separately for the
     # "X MB of raw output compressed" stat)
@@ -119,6 +127,13 @@ class LifetimeStats:
     def from_dict(cls, data: dict) -> "LifetimeStats":
         if not isinstance(data, dict):
             return cls()
+        # Realized/potential split (added v0.16). Legacy files have only
+        # `tokens_saved` — treat that whole legacy total as *potential*, since
+        # the pre-split mechanisms (advisory dedup, compression) never actually
+        # evicted tokens. Honest by construction.
+        realized = int(data.get("tokens_realized", 0))
+        saved = int(data.get("tokens_saved", 0))
+        potential = int(data.get("tokens_potential", max(0, saved - realized)))
         return cls(
             version=int(data.get("version", STATS_VERSION)),
             created_at=float(data.get("created_at", time.time())),
@@ -130,7 +145,9 @@ class LifetimeStats:
             compressions=int(data.get("compressions", 0)),
             selective_injections=int(data.get("selective_injections", 0)),
             scan_count=int(data.get("scan_count", 0)),
-            tokens_saved=int(data.get("tokens_saved", 0)),
+            tokens_saved=saved,
+            tokens_realized=realized,
+            tokens_potential=potential,
             compress_bytes_saved=int(data.get("compress_bytes_saved", 0)),
             by_project=dict(data.get("by_project", {}) or {}),
         )
@@ -171,7 +188,8 @@ def save_stats(stats: LifetimeStats) -> None:
 # ---- Event recording ----
 
 EVENT_TYPES = {
-    "dedup",            # a duplicate Read was flagged
+    "dedup",            # a duplicate Read was flagged (advisory → potential)
+    "dedup_denied",     # a duplicate Read was *blocked* (deny → realized saving)
     "compression",      # a tool output was compressed (provides bytes_saved)
     "compactor",        # /lensify compact ran (provides tokens_reclaimed)
     "memory_recall",    # SessionStart loaded ≥1 past memory
@@ -187,12 +205,18 @@ def record_event(
     project_root: str | None = None,
     bytes_saved: int = 0,
     tokens_saved: int = 0,
+    realized: bool = False,
     extra: dict | None = None,
 ) -> None:
     """Idempotent counter update for a single hook event.
 
     Safe to call from any hook. Never raises — telemetry failure must never
     cascade into agent failure. Respects LENSIFY_STATS=0 opt-out.
+
+    `realized=True` forces an event that is normally counted as *potential*
+    (e.g. compression) into the *realized* bucket. The `lensify run` wrapper
+    uses this: it compresses before the output ever reaches the model, so the
+    saving genuinely lands.
     """
     if is_disabled():
         return
@@ -201,7 +225,7 @@ def record_event(
     try:
         stats = load_stats()
         _apply_event(stats, event, bytes_saved=bytes_saved, tokens_saved=tokens_saved,
-                     project_root=project_root, extra=extra)
+                     project_root=project_root, extra=extra, force_realized=realized)
         save_stats(stats)
     except Exception:  # noqa: BLE001
         pass
@@ -209,33 +233,55 @@ def record_event(
 
 def _apply_event(stats: LifetimeStats, event: str, *,
                  bytes_saved: int, tokens_saved: int,
-                 project_root: str | None, extra: dict | None) -> None:
+                 project_root: str | None, extra: dict | None,
+                 force_realized: bool = False) -> None:
     """Pure in-memory update. Separated for testability."""
+    def _credit(tok: int, *, realized: bool) -> None:
+        realized = realized or force_realized
+        """Add tokens to the grand total and the realized/potential bucket."""
+        stats.tokens_saved += tok
+        if realized:
+            stats.tokens_realized += tok
+        else:
+            stats.tokens_potential += tok
+
     # Compute per-event token delta when the caller didn't supply one
     if event == "dedup":
+        # Advisory only — the re-read still happened. Counts as potential.
         stats.dedup_count += 1
         if tokens_saved == 0:
             tokens_saved = TOKENS_PER_DEDUPED_READ
-        stats.tokens_saved += tokens_saved
+        _credit(tokens_saved, realized=False)
+    elif event == "dedup_denied":
+        # The duplicate Read was blocked — those tokens never re-entered context.
+        stats.dedup_count += 1
+        if tokens_saved == 0:
+            tokens_saved = TOKENS_PER_DEDUPED_READ
+        _credit(tokens_saved, realized=True)
     elif event == "compression":
+        # Raw output is not evicted from the current turn — only a later
+        # compaction may drop it. Counts as potential until that happens.
         stats.compressions += 1
         stats.compress_bytes_saved += max(0, bytes_saved)
         if tokens_saved == 0 and bytes_saved > 0:
             tokens_saved = int(bytes_saved / BYTES_PER_TOKEN)
-        stats.tokens_saved += tokens_saved
+        _credit(tokens_saved, realized=False)
     elif event == "compactor":
+        # Compaction physically rewrites the transcript — realized.
         stats.compactor_runs += 1
-        stats.tokens_saved += tokens_saved
+        _credit(tokens_saved, realized=True)
     elif event == "memory_recall":
         stats.memory_recalls += 1
         # Memory recall savings are not directly measurable; count only.
     elif event == "memory_save":
         stats.memory_saves += 1
     elif event == "selective_inject":
+        # Saving vs. injecting the whole capsule — only counts if the full
+        # capsule would otherwise have been injected. Potential.
         stats.selective_injections += 1
         if tokens_saved == 0:
             tokens_saved = TOKENS_PER_INJECT_SAVED
-        stats.tokens_saved += tokens_saved
+        _credit(tokens_saved, realized=False)
     elif event == "scan":
         stats.scan_count += 1
 
@@ -247,7 +293,7 @@ def _apply_event(stats: LifetimeStats, event: str, *,
             "compressions": 0,
             "compactor_runs": 0,
         })
-        if event == "dedup":
+        if event in ("dedup", "dedup_denied"):
             bucket["dedup_count"] = int(bucket.get("dedup_count", 0)) + 1
             bucket["tokens_saved"] = int(bucket.get("tokens_saved", 0)) + tokens_saved
         elif event == "compression":
@@ -297,11 +343,17 @@ def usd_saved(tokens: int, usd_per_mtok: float | None = None) -> float:
 def statusline_short(stats: LifetimeStats) -> str:
     """The short form for Claude Code's statusline badge.
 
+    Headlines *realized* savings (tokens that actually left the window) so the
+    badge never overstates. Potential savings are shown as a muted suffix to
+    nudge users toward enforce mode.
+
     Aim for ~30 chars. Examples:
-        [LENS] ⛏ 47.2k tok
         [LENS] ⛏ 12.4k · 8d · 2c
+        [LENS] ⛏ 0 (+9.1k pot) · 26d
     """
-    parts = [f"⛏ {format_number(stats.tokens_saved)}"]
+    parts = [f"⛏ {format_number(stats.tokens_realized)}"]
+    if stats.tokens_potential:
+        parts[0] += f" (+{format_number(stats.tokens_potential)} pot)"
     if stats.dedup_count or stats.compactor_runs:
         deets = []
         if stats.dedup_count:
@@ -318,7 +370,7 @@ def stats_report(stats: LifetimeStats) -> str:
     Includes lifetime totals, per-phase breakdown, top projects.
     """
     rate = _detect_usd_per_mtok()
-    usd = usd_saved(stats.tokens_saved, usd_per_mtok=rate)
+    usd = usd_saved(stats.tokens_realized, usd_per_mtok=rate)
     age_days = max(0.0, (time.time() - stats.created_at) / 86_400.0)
 
     model = (os.environ.get("CLAUDE_MODEL") or "").lower()
@@ -334,8 +386,11 @@ def stats_report(stats: LifetimeStats) -> str:
         "=" * 40,
         f"Tracking since:   {time.strftime('%Y-%m-%d', time.localtime(stats.created_at))} "
         f"({int(age_days)} day(s) ago)",
-        f"Tokens saved:     {stats.tokens_saved:,}",
-        f"Estimated $ saved: ~${usd:.2f}  (at {model_label} input pricing, ${rate:.2f}/M tok)",
+        f"Tokens saved (realized):  {stats.tokens_realized:,}",
+        f"Estimated $ saved:        ~${usd:.2f}  (realized only, at {model_label} "
+        f"pricing ${rate:.2f}/M tok)",
+        f"Potential (not realized): {stats.tokens_potential:,}  "
+        f"— set LENSIFY_DEDUP_ENFORCE=1 to capture repeat-read savings",
         "",
         "By event type:",
         f"  Dedup hooks       {stats.dedup_count:6d} events  "

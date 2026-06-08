@@ -132,6 +132,65 @@ def test_compression_bucketed_per_project(stats_dir):
     assert s.by_project["/p"]["tokens_saved"] > 0
 
 
+# ----- Realized vs potential split -----
+
+def test_dedup_advisory_is_potential_not_realized(stats_dir):
+    record_event("dedup")
+    s = load_stats()
+    assert s.tokens_potential == TOKENS_PER_DEDUPED_READ
+    assert s.tokens_realized == 0
+    assert s.tokens_saved == TOKENS_PER_DEDUPED_READ  # grand total preserved
+
+
+def test_dedup_denied_is_realized(stats_dir):
+    record_event("dedup_denied", tokens_saved=420)
+    s = load_stats()
+    assert s.dedup_count == 1
+    assert s.tokens_realized == 420
+    assert s.tokens_potential == 0
+    assert s.tokens_saved == 420
+
+
+def test_compression_is_potential(stats_dir):
+    record_event("compression", bytes_saved=3500)
+    s = load_stats()
+    assert s.tokens_potential == int(3500 / BYTES_PER_TOKEN)
+    assert s.tokens_realized == 0
+
+
+def test_compression_realized_override(stats_dir):
+    """The `lensify run` wrapper records compression as a realized saving."""
+    record_event("compression", bytes_saved=3500, realized=True)
+    s = load_stats()
+    assert s.tokens_realized == int(3500 / BYTES_PER_TOKEN)
+    assert s.tokens_potential == 0
+
+
+def test_compactor_is_realized(stats_dir):
+    record_event("compactor", tokens_saved=10_000)
+    s = load_stats()
+    assert s.tokens_realized == 10_000
+    assert s.tokens_potential == 0
+
+
+def test_legacy_total_loads_as_potential(stats_dir):
+    """A pre-split stats file (only tokens_saved) is honestly treated as potential."""
+    (stats_dir / "stats.json").write_text(json.dumps({"tokens_saved": 5000}))
+    s = load_stats()
+    assert s.tokens_saved == 5000
+    assert s.tokens_realized == 0
+    assert s.tokens_potential == 5000
+
+
+def test_badge_headlines_realized(stats_dir):
+    record_event("dedup")            # potential
+    record_event("dedup_denied", tokens_saved=1000)  # realized
+    s = load_stats()
+    line = statusline_short(s)
+    assert "⛏ 1k" in line            # headlines realized (1000), not the 1350 total
+    assert "pot" in line             # potential surfaced as a suffix
+
+
 # ----- Event types catalogue -----
 
 def test_all_event_types_recognized(stats_dir):

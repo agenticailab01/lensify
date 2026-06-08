@@ -49,6 +49,9 @@ Thumbs.db
 
 # Lensify runtime data (must never be committed)
 lensify-out/
+.lensify-outputs/
+.lensify-session.json
+.lensify/
 .lensify-memory/
 .lensify-state/
 .lensify-cache/

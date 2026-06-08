@@ -57,7 +57,7 @@ Lensify replaces that orientation phase with a **single scan** (sub-100 ms) that
 | Unit tests | **527 passing** |
 | CI-enforced budgets | **17 performance + security** |
 | License | MIT |
-| Token savings | **70–90%** orientation · ~25% repeat-read · ~60% per-prompt re-injection · 8–25k per compaction |
+| Token savings | **70–90%** orientation (realized) · repeat-read + output savings realized with `LENSIFY_DEDUP_ENFORCE=1` / `lensify run` · 8–25k per compaction |
 
 ---
 
@@ -411,15 +411,32 @@ A single Lensify scan on an AI-dev project surfaces every link in the chain: fro
 
 5 hooks compound across a Claude Code session. Token savings stack across the lifetime of the session.
 
-| Hook | Event | Effect | Approximate savings |
+| Hook | Event | Effect | Savings |
 |---|---|---|---|
-| `dedup_hook.py` | PreToolUse:Read | Flags repeated reads of same file — agent gets a "you already saw this at turn N" hint | **~25%** on long sessions |
+| `dedup_hook.py` | PreToolUse:Read | Advisory by default (flags a repeat read). With `LENSIFY_DEDUP_ENFORCE=1`, **blocks** the re-read of an unchanged file — the only path that actually removes tokens. | **Realized** in enforce mode; advisory otherwise (potential) |
 | `activity_hook.py` | PostToolUse:Edit \| Write \| Bash | Tracks session state; refreshes session capsule every 5 turns | Enables compactor |
-| `inject_hook.py` | UserPromptSubmit | Injects only the **relevant** capsule sections per prompt (not the whole capsule) | **~60%** per-prompt savings |
-| `compress_hook.py` | PostToolUse:Bash \| WebFetch | Deterministic compression of long tool outputs (HTML/JSON/log/trace/diff/pytest) | Variable, often 80%+ |
+| `inject_hook.py` | UserPromptSubmit | Injects only the **relevant** capsule sections per prompt (not the whole capsule) | Potential — vs. injecting the full capsule each prompt |
+| `compress_hook.py` | PostToolUse:Bash \| WebFetch | **Opt-in** (`LENSIFY_COMPRESS_OUTPUT=1`). Appends a compressed summary of long tool output. A PostToolUse hook can't suppress the raw output, so this only helps downstream on compaction → counted as **potential**. For a realized saving use `lensify run` (below). | Potential |
 | `memory_loader.py` | SessionStart | Loads cross-session memory of overlapping work | Carries context across `/clear` boundaries |
 
-**Cowork limitation:** only SessionStart fires in Cowork's hook surface. The scan engine, capsule generation, and `/lensify compact` still work — but the 5 hook-driven optimizations only activate in Claude Code's terminal CLI.
+### Realized vs potential savings
+
+Lensify is deliberately honest about *when* a saving lands:
+
+- **Realized** = tokens that never entered (or were physically removed from) the context window: dedup **deny** mode, the `lensify run` wrapper, and `/lensify compact`.
+- **Potential** = an estimate of what *would* be saved if a mechanism were enforced or a later compaction dropped the raw blob: advisory dedup, the passive compress hook, selective injection.
+
+`/lensify stats` and the statusline badge headline **realized** and show potential separately, so the numbers never overstate. To convert potential into realized, set `LENSIFY_DEDUP_ENFORCE=1` and prefer `lensify run` for noisy commands.
+
+### `lensify run` — realized output compression
+
+```bash
+lensify run -- <command> [args...]      # e.g. lensify run -- pytest -q
+```
+
+Runs the command, stores the raw output to `.lensify-outputs/`, and prints only a compressed summary + retrieval handle. The agent sees the summary, not the blob — so the bytes never reach the context window. Exit code is preserved. For shell features, wrap a shell explicitly: `lensify run -- bash -lc "…"`.
+
+**Cowork limitation:** only SessionStart fires in Cowork's hook surface. The scan engine, capsule generation, `lensify run`, and `/lensify compact` still work — but the hook-driven optimizations only activate in Claude Code's terminal CLI.
 
 ---
 
@@ -449,21 +466,23 @@ Empty state warning: if no PostToolUse hooks fired (typical in Cowork), the comp
 
 Where the savings come from — concrete numbers from production usage:
 
-| Stage | Before Lensify | With Lensify | Savings |
-|---|---|---|---:|
-| Initial orientation | 8,000–20,000 tokens reading 20+ files | One capsule, 800–3,300 tokens | **70–90%** |
-| Repeat reads | Each re-read costs full file (≈400 tok / 100 LOC) | Dedup flag, ~0 tokens | **~25%** on long sessions |
-| Per-prompt re-injection | Full capsule (2,100 tok) every prompt | Only relevant sections (~800 tok) | **~60%** |
-| Long tool outputs | Raw 50 KB Bash output → 12k tokens | Compressed summary + retrieval handle | **80%+** variable |
-| Mid-session compaction | `/clear` loses everything | `WORKING_CONTEXT.md` preserves continuity | **8–25k** reclaimable |
+| Stage | Before Lensify | With Lensify | Savings | Realized? |
+|---|---|---|---:|---|
+| Initial orientation | 8,000–20,000 tokens reading 20+ files | One capsule, 800–3,300 tokens | **70–90%** | ✅ realized |
+| Repeat reads | Each re-read costs full file (≈400 tok / 100 LOC) | Blocked re-read, ~0 tokens | **~25%** on long sessions | ⚙️ realized **only with `LENSIFY_DEDUP_ENFORCE=1`** (advisory otherwise) |
+| Per-prompt re-injection | Full capsule (2,100 tok) every prompt | Only relevant sections (~800 tok) | **~60%** | ⚠️ potential — vs. a full-capsule baseline |
+| Long tool outputs | Raw 50 KB Bash output → 12k tokens | `lensify run` → summary + handle | **80%+** variable | ✅ realized via `lensify run`; ⚠️ potential via the passive hook |
+| Mid-session compaction | `/clear` loses everything | `WORKING_CONTEXT.md` preserves continuity | **8–25k** reclaimable | ✅ realized |
 
-**Cost example:** a 4-hour coding session that previously cost ~$3 (Opus) / ~$0.60 (Sonnet) in input tokens drops to ~$0.45–$0.90 / ~$0.09–$0.18 with all hooks active. `/lensify stats` auto-detects which model you're running and shows the correct rate.
+The table above shows *potential* per-stage savings. Actual realized savings depend on enabling enforce mode and using `lensify run`; `/lensify stats` reports the realized figure separately from potential so you always see the true number.
+
+**Cost example:** a 4-hour session's input-token cost can drop substantially with enforce mode + `lensify run` active. The exact figure depends on how much repeat-reading and noisy-command output your session produces — `/lensify stats` auto-detects your model and reports the realized $ saved at the correct rate.
 
 ---
 
 ## Tests & performance
 
-**527 unit tests** + **17 CI-enforced performance + security budgets** run on every commit across macOS / Linux / Windows × Python 3.9–3.12.
+**544 tests** including **17 CI-enforced performance + security budgets** run on every commit across macOS / Linux / Windows × Python 3.9–3.12.
 
 Measured performance on synthetic project sizes:
 
@@ -524,7 +543,8 @@ All persistent surfaces have documented env var opt-outs:
 ```bash
 # Hook control
 export LENSIFY_DEDUP=0              # disable ALL hooks (dedup/activity/inject/compress/memory)
-export LENSIFY_COMPRESS_OUTPUT=0    # disable just output compression
+export LENSIFY_DEDUP_ENFORCE=1     # turn dedup from advisory into a real block (realized savings)
+export LENSIFY_COMPRESS_OUTPUT=1   # enable the (opt-in, default-off) passive output-compression hook
 
 # Persistence control
 export LENSIFY_STATS=0              # disable lifetime stats counters

@@ -19,6 +19,9 @@ HOOK_SCRIPT = (
 
 def run_hook(payload: dict, env_extra: dict | None = None) -> dict:
     env = os.environ.copy()
+    # The passive compression hook is opt-in (default OFF). Enable it for these
+    # tests; individual tests can still override (e.g. set it to "0").
+    env["LENSIFY_COMPRESS_OUTPUT"] = "1"
     if env_extra:
         env.update(env_extra)
     proc = subprocess.run(
@@ -111,6 +114,27 @@ def test_hook_disabled_by_env(tmp_path):
         "tool_response": {"stdout": big, "exit_code": 0},
     }
     out = run_hook(payload, env_extra={"LENSIFY_COMPRESS_OUTPUT": "0"})
+    assert "hookSpecificOutput" not in out
+
+
+def test_hook_off_by_default(tmp_path):
+    """Passive compression is opt-in — with no env set, the hook stays silent."""
+    big = json.dumps({"items": [{"id": i, "name": "x" * 20} for i in range(200)]})
+    payload = {
+        "cwd": str(tmp_path),
+        "tool_name": "Bash",
+        "tool_input": {"command": "curl ..."},
+        "tool_response": {"stdout": big, "exit_code": 0},
+    }
+    # Bypass run_hook's auto-enable: run the subprocess with the var explicitly absent.
+    env = os.environ.copy()
+    env.pop("LENSIFY_COMPRESS_OUTPUT", None)
+    proc = subprocess.run(
+        [sys.executable, str(HOOK_SCRIPT)],
+        input=json.dumps(payload), capture_output=True, text=True, env=env, timeout=10,
+    )
+    assert proc.returncode == 0
+    out = json.loads(proc.stdout) if proc.stdout.strip() else {}
     assert "hookSpecificOutput" not in out
 
 

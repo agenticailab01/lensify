@@ -64,7 +64,8 @@ def test_compress_hook_bumps_compression_count(env, tmp_path):
         "tool_input": {"command": "echo big"},
         "tool_response": {"stdout": big, "exit_code": 0},
     }
-    run_hook("compress_hook.py", payload, env_extra)
+    # Passive compression is opt-in (default OFF) — enable it for this wiring test.
+    run_hook("compress_hook.py", payload, {**env_extra, "LENSIFY_COMPRESS_OUTPUT": "1"})
     os.environ["LENSIFY_STATS_HOME"] = str(stats_home)
     s = load_stats()
     assert s.compressions == 1
